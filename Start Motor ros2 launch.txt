@@ -1,0 +1,40 @@
+Start Motor: 
+ 	ros2 launch robp_launch phidgets_launch.py
+
+Start controller_node: 
+	ros2 run controller controller
+
+Start joystick:
+	ros2 launch teleop_twist_joy teleop-launch.py
+	
+Start odometry:
+	ros2 run odometry odometry
+
+Start Rviz:
+	ros2 run rviz2 rviz2
+	
+Static broadcaster:
+	ros2 run tf2_ros static_transform_publisher --frame-id map --child-frame-id odom
+	
+Start arm:
+	ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/hiwonder_arm -v6
+	
+Arm Controller: 
+	ros2 run pickup pickup
+
+Front Camera: 
+	ros2 run detection detection
+	(ALSO NEED STATIC TRANSFORM IT IS IN THE LAUNCH FILE IDK  	COMMAND)
+	 
+Lidar Launch:
+	ros2 launch robp_launch lidar_launch.yaml
+	
+	
+	
+USE THIS TO RUN EVERYTHING:
+	ros2 launch robp_launch all_nodes_launch.py
+	ros2 run pickup pickup
+	
+Rosbag:
+	ros2 bag record -o Test1 --all
+	ros2 bag play --read-ahead-queue-size 100 -r 1.0 --start-paused "bag name"
