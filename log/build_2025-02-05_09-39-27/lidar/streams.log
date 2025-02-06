@@ -1,0 +1,24 @@
+[3.310s] Invoking command in '/home/group1/dd2419_ws/build/lidar': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/lidar/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/lidar/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/lidar/build --no-deps symlink_data
+[4.130s] running develop
+[4.586s] running egg_info
+[4.587s] creating lidar.egg-info
+[4.635s] writing lidar.egg-info/PKG-INFO
+[4.635s] writing dependency_links to lidar.egg-info/dependency_links.txt
+[4.635s] writing entry points to lidar.egg-info/entry_points.txt
+[4.635s] writing requirements to lidar.egg-info/requires.txt
+[4.636s] writing top-level names to lidar.egg-info/top_level.txt
+[4.636s] writing manifest file 'lidar.egg-info/SOURCES.txt'
+[4.720s] reading manifest file 'lidar.egg-info/SOURCES.txt'
+[4.722s] writing manifest file 'lidar.egg-info/SOURCES.txt'
+[4.782s] running build_ext
+[4.782s] Creating /home/group1/dd2419_ws/install/lidar/lib/python3.12/site-packages/lidar.egg-link (link to .)
+[4.788s] Installing lidar script to /home/group1/dd2419_ws/install/lidar/lib/lidar
+[4.788s] 
+[4.788s] Installed /home/group1/dd2419_ws/build/lidar
+[4.789s] running symlink_data
+[4.789s] creating /home/group1/dd2419_ws/install/lidar/share/ament_index
+[4.789s] creating /home/group1/dd2419_ws/install/lidar/share/ament_index/resource_index
+[4.790s] creating /home/group1/dd2419_ws/install/lidar/share/ament_index/resource_index/packages
+[4.790s] symbolically linking /home/group1/dd2419_ws/build/lidar/resource/lidar -> /home/group1/dd2419_ws/install/lidar/share/ament_index/resource_index/packages
+[4.790s] symbolically linking /home/group1/dd2419_ws/build/lidar/package.xml -> /home/group1/dd2419_ws/install/lidar/share/lidar
+[5.078s] Invoked command in '/home/group1/dd2419_ws/build/lidar' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/lidar/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/lidar/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/lidar/build --no-deps symlink_data

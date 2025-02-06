@@ -1,0 +1,91 @@
+[0.026s] Invoking command in '/home/group1/dd2419_ws/build/usb_cam': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/usb_cam -- -j8 -l8
+[0.074s] -- Found ament_cmake_auto: 2.5.3 (/opt/ros/jazzy/share/ament_cmake_auto/cmake)
+[0.505s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.687s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.699s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.714s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.733s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.814s] -- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.817s] -- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.899s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[1.177s] -- Setting yaml-cpp_DIR to: '/opt/ros/jazzy/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/share/cmake/yaml-cpp'
+[1.369s] -- Found rosidl_adapter: 4.6.5 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[1.410s] -- Found ament_lint_auto: 0.17.1 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[1.422s] -- Found gtest sources under '/opt/ros/jazzy/src/gtest_vendor': C++ tests using 'Google Test' will be built
+[1.441s] -- Added test 'copyright' to check source files copyright and LICENSE
+[1.444s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[1.445s] -- Configured cppcheck include dirs: /home/group1/dd2419_ws/src/robp_robot/usb_cam/include
+[1.445s] -- Configured cppcheck exclude dirs and/or files: 
+[1.448s] -- Added test 'cpplint' to check C / C++ code against the Google style
+[1.448s] -- Configured cpplint exclude dirs and/or files: 
+[1.450s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.450s] -- Configured 'flake8' exclude dirs and/or files: 
+[1.451s] -- Added test 'lint_cmake' to check CMake code style
+[1.453s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.455s] -- Added test 'uncrustify' to check C / C++ code style
+[1.456s] -- Configured uncrustify additional arguments: 
+[1.457s] -- Added test 'xmllint' to check XML markup files
+[1.460s] -- Configuring done (1.4s)
+[1.506s] -- Generating done (0.0s)
+[1.519s] -- Build files have been written to: /home/group1/dd2419_ws/build/usb_cam
+[1.587s] [ 14%] Built target usb_cam
+[1.588s] [ 28%] Built target gtest_main
+[1.588s] [ 42%] Built target gtest
+[1.598s] [ 50%] [32mBuilding CXX object CMakeFiles/usb_cam_node_exe.dir/rclcpp_components/node_main_usb_cam_node_exe.cpp.o[0m
+[1.631s] [ 64%] Built target test_usb_cam_utils
+[1.633s] [ 78%] Built target test_pixel_formats
+[1.642s] [ 92%] Built target usb_cam_node
+[5.314s] [100%] [32m[1mLinking CXX executable usb_cam_node_exe[0m
+[5.464s] [100%] Built target usb_cam_node_exe
+[5.477s] Invoked command in '/home/group1/dd2419_ws/build/usb_cam' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/usb_cam -- -j8 -l8
+[5.479s] Invoking command in '/home/group1/dd2419_ws/build/usb_cam': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/group1/dd2419_ws/build/usb_cam
+[5.489s] -- Install configuration: ""
+[5.489s] -- Execute custom install script
+[5.490s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/environment/library_path.sh
+[5.490s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/environment/library_path.dsv
+[5.490s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/lib/usb_cam/usb_cam_node_exe
+[5.490s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/lib/usb_cam/show_image.py
+[5.491s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/lib/libusb_cam.so
+[5.491s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/lib/libusb_cam_node.so
+[5.491s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/constants.hpp
+[5.491s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/conversions.hpp
+[5.492s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/formats/av_pixel_format_helper.hpp
+[5.492s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/formats/m420.hpp
+[5.492s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/formats/mjpeg.hpp
+[5.492s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/formats/mono.hpp
+[5.492s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/formats/pixel_format_base.hpp
+[5.492s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/formats/rgb.hpp
+[5.492s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/formats/utils.hpp
+[5.493s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/formats/uyvy.hpp
+[5.493s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/formats/yuyv.hpp
+[5.493s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/usb_cam.hpp
+[5.493s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/usb_cam_node.hpp
+[5.493s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/include/usb_cam/utils.hpp
+[5.493s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/lib/libusb_cam_node.so
+[5.494s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/launch/__init__.py
+[5.494s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/launch/__pycache__/camera_config.cpython-312.pyc
+[5.494s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/launch/camera.launch.py
+[5.495s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/launch/camera_config.py
+[5.495s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/config/camera_info.yaml
+[5.495s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/config/params_1.yaml
+[5.495s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/config/params_2.yaml
+[5.495s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/ament_index/resource_index/package_run_dependencies/usb_cam
+[5.495s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/ament_index/resource_index/parent_prefix_path/usb_cam
+[5.495s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/environment/ament_prefix_path.sh
+[5.496s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/environment/ament_prefix_path.dsv
+[5.496s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/environment/path.sh
+[5.496s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/environment/path.dsv
+[5.496s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/local_setup.bash
+[5.496s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/local_setup.sh
+[5.496s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/local_setup.zsh
+[5.496s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/local_setup.dsv
+[5.496s] -- Symlinking: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/package.dsv
+[5.508s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/ament_index/resource_index/packages/usb_cam
+[5.508s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/ament_index/resource_index/rclcpp_components/usb_cam
+[5.508s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/cmake/ament_cmake_export_libraries-extras.cmake
+[5.508s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/cmake/ament_cmake_export_dependencies-extras.cmake
+[5.508s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/cmake/ament_cmake_export_include_directories-extras.cmake
+[5.508s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/cmake/usb_camConfig.cmake
+[5.508s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/cmake/usb_camConfig-version.cmake
+[5.508s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/usb_cam/share/usb_cam/package.xml
+[5.511s] Invoked command in '/home/group1/dd2419_ws/build/usb_cam' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/group1/dd2419_ws/build/usb_cam

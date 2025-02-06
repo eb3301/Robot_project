@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_targets("TARGET_FILES" "/home/group1/dd2419_ws/build/robp_phidgets_temperature/librobp_phidgets_temperature.so" "TARGETS" "robp_phidgets_temperature" "ARCHIVE_DESTINATION" "lib" "LIBRARY_DESTINATION" "lib" "RUNTIME_DESTINATION" "bin")

@@ -1,0 +1,33 @@
+[2.299s] Invoking command in '/home/group1/dd2419_ws/build/arm_servos_pubs_subs': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/arm_servos_pubs_subs/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/group1/dd2419_ws/build/arm_servos_pubs_subs/build
+[2.914s] running develop
+[3.319s] Removing /home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm-servos-pubs-subs.egg-link (link to .)
+[3.398s] Invoked command in '/home/group1/dd2419_ws/build/arm_servos_pubs_subs' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/arm_servos_pubs_subs/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/group1/dd2419_ws/build/arm_servos_pubs_subs/build
+[3.402s] Invoking command in '/home/group1/dd2419_ws/src/robp_robot/robp_arm/arm_servos_pubs_subs': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/arm_servos_pubs_subs/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../../build/arm_servos_pubs_subs build --build-base /home/group1/dd2419_ws/build/arm_servos_pubs_subs/build install --record /home/group1/dd2419_ws/build/arm_servos_pubs_subs/install.log --single-version-externally-managed install_data --force
+[3.961s] running egg_info
+[3.996s] writing ../../../../build/arm_servos_pubs_subs/arm_servos_pubs_subs.egg-info/PKG-INFO
+[3.998s] writing dependency_links to ../../../../build/arm_servos_pubs_subs/arm_servos_pubs_subs.egg-info/dependency_links.txt
+[3.998s] writing entry points to ../../../../build/arm_servos_pubs_subs/arm_servos_pubs_subs.egg-info/entry_points.txt
+[3.998s] writing requirements to ../../../../build/arm_servos_pubs_subs/arm_servos_pubs_subs.egg-info/requires.txt
+[3.998s] writing top-level names to ../../../../build/arm_servos_pubs_subs/arm_servos_pubs_subs.egg-info/top_level.txt
+[4.078s] reading manifest file '../../../../build/arm_servos_pubs_subs/arm_servos_pubs_subs.egg-info/SOURCES.txt'
+[4.080s] writing manifest file '../../../../build/arm_servos_pubs_subs/arm_servos_pubs_subs.egg-info/SOURCES.txt'
+[4.080s] running build
+[4.080s] running build_py
+[4.081s] running install
+[4.096s] running install_lib
+[4.135s] creating /home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm_servos_pubs_subs
+[4.135s] copying /home/group1/dd2419_ws/build/arm_servos_pubs_subs/build/lib/arm_servos_pubs_subs/__init__.py -> /home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm_servos_pubs_subs
+[4.135s] copying /home/group1/dd2419_ws/build/arm_servos_pubs_subs/build/lib/arm_servos_pubs_subs/servo_pos_subscriber.py -> /home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm_servos_pubs_subs
+[4.136s] copying /home/group1/dd2419_ws/build/arm_servos_pubs_subs/build/lib/arm_servos_pubs_subs/move_servos_publisher.py -> /home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm_servos_pubs_subs
+[4.137s] byte-compiling /home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm_servos_pubs_subs/__init__.py to __init__.cpython-312.pyc
+[4.137s] byte-compiling /home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm_servos_pubs_subs/servo_pos_subscriber.py to servo_pos_subscriber.cpython-312.pyc
+[4.138s] byte-compiling /home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm_servos_pubs_subs/move_servos_publisher.py to move_servos_publisher.cpython-312.pyc
+[4.139s] running install_data
+[4.139s] copying resource/arm_servos_pubs_subs -> /home/group1/dd2419_ws/install/arm_servos_pubs_subs/share/ament_index/resource_index/packages
+[4.140s] copying package.xml -> /home/group1/dd2419_ws/install/arm_servos_pubs_subs/share/arm_servos_pubs_subs
+[4.140s] running install_egg_info
+[4.182s] Copying ../../../../build/arm_servos_pubs_subs/arm_servos_pubs_subs.egg-info to /home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages/arm_servos_pubs_subs-0.0.0-py3.12.egg-info
+[4.183s] running install_scripts
+[4.409s] Installing listener script to /home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/arm_servos_pubs_subs
+[4.409s] Installing talker script to /home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/arm_servos_pubs_subs
+[4.410s] writing list of installed files to '/home/group1/dd2419_ws/build/arm_servos_pubs_subs/install.log'

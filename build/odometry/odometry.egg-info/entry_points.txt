@@ -1,0 +1,2 @@
+[console_scripts]
+odometry = odometry.odometry:main

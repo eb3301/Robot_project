@@ -1,0 +1,17 @@
+[3.556s] Invoking command in '/home/group1/dd2419_ws/build/detection': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/detection/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/detection/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/detection/build --no-deps symlink_data
+[4.261s] running develop
+[4.860s] running egg_info
+[4.906s] writing detection.egg-info/PKG-INFO
+[4.907s] writing dependency_links to detection.egg-info/dependency_links.txt
+[4.908s] writing entry points to detection.egg-info/entry_points.txt
+[4.908s] writing requirements to detection.egg-info/requires.txt
+[4.909s] writing top-level names to detection.egg-info/top_level.txt
+[5.005s] reading manifest file 'detection.egg-info/SOURCES.txt'
+[5.008s] writing manifest file 'detection.egg-info/SOURCES.txt'
+[5.055s] running build_ext
+[5.057s] Creating /home/group1/dd2419_ws/install/detection/lib/python3.12/site-packages/detection.egg-link (link to .)
+[5.057s] Installing detection script to /home/group1/dd2419_ws/install/detection/lib/detection
+[5.057s] 
+[5.057s] Installed /home/group1/dd2419_ws/build/detection
+[5.058s] running symlink_data
+[5.134s] Invoked command in '/home/group1/dd2419_ws/build/detection' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/detection/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/detection/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/detection/build --no-deps symlink_data

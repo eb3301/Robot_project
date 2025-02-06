@@ -1,0 +1,30 @@
+[0.020s] Invoking command in '/home/group1/dd2419_ws/build/usb_cam': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/group1/dd2419_ws/src/robp_robot/usb_cam -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/group1/dd2419_ws/install/usb_cam
+[0.048s] -- Found ament_cmake_auto: 2.5.3 (/opt/ros/jazzy/share/ament_cmake_auto/cmake)
+[0.463s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.727s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.741s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.756s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.773s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.868s] -- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.870s] -- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.949s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[1.188s] -- Setting yaml-cpp_DIR to: '/opt/ros/jazzy/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/share/cmake/yaml-cpp'
+[1.305s] -- Found rosidl_adapter: 4.6.5 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[1.328s] -- Found ament_lint_auto: 0.17.1 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[1.336s] -- Found gtest sources under '/opt/ros/jazzy/src/gtest_vendor': C++ tests using 'Google Test' will be built
+[1.353s] -- Added test 'copyright' to check source files copyright and LICENSE
+[1.357s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[1.358s] -- Configured cppcheck include dirs: /home/group1/dd2419_ws/src/robp_robot/usb_cam/include
+[1.358s] -- Configured cppcheck exclude dirs and/or files: 
+[1.361s] -- Added test 'cpplint' to check C / C++ code against the Google style
+[1.361s] -- Configured cpplint exclude dirs and/or files: 
+[1.361s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.361s] -- Configured 'flake8' exclude dirs and/or files: 
+[1.362s] -- Added test 'lint_cmake' to check CMake code style
+[1.363s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.366s] -- Added test 'uncrustify' to check C / C++ code style
+[1.366s] -- Configured uncrustify additional arguments: 
+[1.366s] -- Added test 'xmllint' to check XML markup files
+[1.371s] -- Configuring done (1.3s)
+[1.418s] -- Generating done (0.0s)
+[1.429s] -- Build files have been written to: /home/group1/dd2419_ws/build/usb_cam

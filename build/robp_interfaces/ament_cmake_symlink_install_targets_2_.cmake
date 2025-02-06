@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_targets("TARGET_FILES" "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_py/robp_interfaces/robp_interfaces_s__rosidl_typesupport_c.so" "TARGETS" "robp_interfaces_s__rosidl_typesupport_c" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces")

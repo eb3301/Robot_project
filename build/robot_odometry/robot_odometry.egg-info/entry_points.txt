@@ -1,0 +1,2 @@
+[console_scripts]
+robot_odometry = robot_odometry.robot_odometry:main

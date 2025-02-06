@@ -1,0 +1,139 @@
+[0.050s] Invoking command in '/home/group1/dd2419_ws/build/robp_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/robp_interfaces -- -j8 -l8
+[1.137s] [  2%] Built target robp_interfaces__rosidl_generator_type_description
+[1.137s] [  2%] Built target ament_cmake_python_symlink_robp_interfaces
+[1.137s] [  4%] Built target robp_interfaces__cpp
+[1.137s] [ 22%] Built target robp_interfaces__rosidl_generator_c
+[1.138s] [ 31%] Built target robp_interfaces__rosidl_typesupport_introspection_c
+[1.138s] [ 50%] Built target robp_interfaces__rosidl_typesupport_cpp
+[1.138s] [ 50%] Built target robp_interfaces__rosidl_typesupport_c
+[1.138s] [ 59%] Built target robp_interfaces__rosidl_typesupport_introspection_cpp
+[1.138s] [ 77%] Built target robp_interfaces__rosidl_typesupport_fastrtps_cpp
+[1.138s] [ 77%] Built target robp_interfaces__rosidl_typesupport_fastrtps_c
+[1.138s] [ 77%] Built target robp_interfaces
+[1.138s] [ 79%] Built target robp_interfaces__py
+[1.138s] [ 86%] Built target robp_interfaces__rosidl_generator_py
+[1.138s] [ 90%] Built target robp_interfaces_s__rosidl_typesupport_c
+[1.138s] [ 95%] Built target robp_interfaces_s__rosidl_typesupport_introspection_c
+[1.138s] [100%] Built target robp_interfaces_s__rosidl_typesupport_fastrtps_c
+[1.139s] running egg_info
+[1.139s] writing robp_interfaces.egg-info/PKG-INFO
+[1.139s] writing dependency_links to robp_interfaces.egg-info/dependency_links.txt
+[1.139s] writing top-level names to robp_interfaces.egg-info/top_level.txt
+[1.139s] reading manifest file 'robp_interfaces.egg-info/SOURCES.txt'
+[1.139s] writing manifest file 'robp_interfaces.egg-info/SOURCES.txt'
+[1.139s] [100%] Built target ament_cmake_python_build_robp_interfaces_egg
+[1.143s] Invoked command in '/home/group1/dd2419_ws/build/robp_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/robp_interfaces -- -j8 -l8
+[1.154s] Invoking command in '/home/group1/dd2419_ws/build/robp_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/group1/dd2419_ws/build/robp_interfaces
+[1.164s] -- Install configuration: ""
+[1.169s] -- Execute custom install script
+[1.170s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/ament_index/resource_index/rosidl_interfaces/robp_interfaces
+[1.170s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/msg/DutyCycles.json
+[1.170s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/msg/Encoders.json
+[1.170s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/duty_cycles__functions.h
+[1.170s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/duty_cycles__struct.h
+[1.171s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/duty_cycles__type_support.h
+[1.171s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/encoders__functions.h
+[1.171s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/encoders__struct.h
+[1.171s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/encoders__type_support.h
+[1.171s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/duty_cycles.h
+[1.171s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/encoders.h
+[1.172s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/rosidl_generator_c__visibility_control.h
+[1.172s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/environment/library_path.sh
+[1.174s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/environment/library_path.dsv
+[1.175s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/duty_cycles__rosidl_typesupport_fastrtps_c.h
+[1.175s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/encoders__rosidl_typesupport_fastrtps_c.h
+[1.175s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[1.175s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/duty_cycles__rosidl_typesupport_introspection_c.h
+[1.175s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/encoders__rosidl_typesupport_introspection_c.h
+[1.175s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[1.176s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/duty_cycles__builder.hpp
+[1.176s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/duty_cycles__struct.hpp
+[1.176s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/duty_cycles__traits.hpp
+[1.176s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/duty_cycles__type_support.hpp
+[1.177s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/encoders__builder.hpp
+[1.177s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/encoders__struct.hpp
+[1.184s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/encoders__traits.hpp
+[1.184s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/encoders__type_support.hpp
+[1.185s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/duty_cycles.hpp
+[1.185s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/encoders.hpp
+[1.185s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/rosidl_generator_cpp__visibility_control.hpp
+[1.185s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/duty_cycles__rosidl_typesupport_fastrtps_cpp.hpp
+[1.185s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/encoders__rosidl_typesupport_fastrtps_cpp.hpp
+[1.185s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[1.185s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/duty_cycles__rosidl_typesupport_introspection_cpp.hpp
+[1.186s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/include/robp_interfaces/robp_interfaces/msg/detail/encoders__rosidl_typesupport_introspection_cpp.hpp
+[1.186s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/environment/pythonpath.sh
+[1.186s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/environment/pythonpath.dsv
+[1.186s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces-1.0.0-py3.12.egg-info/PKG-INFO
+[1.186s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces-1.0.0-py3.12.egg-info/SOURCES.txt
+[1.187s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces-1.0.0-py3.12.egg-info/dependency_links.txt
+[1.187s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces-1.0.0-py3.12.egg-info/top_level.txt
+[1.187s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/__init__.py
+[1.187s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/_robp_interfaces_s.ep.rosidl_typesupport_c.c
+[1.188s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/_robp_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+[1.188s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/_robp_interfaces_s.ep.rosidl_typesupport_introspection_c.c
+[1.189s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/msg/__init__.py
+[1.189s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/msg/_duty_cycles.py
+[1.193s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/msg/_duty_cycles_s.c
+[1.193s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/msg/_encoders.py
+[1.194s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/msg/_encoders_s.c
+[1.194s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/robp_interfaces_s__rosidl_typesupport_c.so
+[1.194s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/robp_interfaces_s__rosidl_typesupport_fastrtps_c.so
+[1.194s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/robp_interfaces_s__rosidl_typesupport_introspection_c.so
+[1.194s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/robp_interfaces_s__rosidl_typesupport_fastrtps_c.so
+[1.194s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/robp_interfaces_s__rosidl_typesupport_introspection_c.so
+[1.194s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/robp_interfaces_s__rosidl_typesupport_c.so
+[1.195s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/msg/DutyCycles.idl
+[1.195s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/msg/Encoders.idl
+[1.195s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/msg/DutyCycles.msg
+[1.195s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/msg/Encoders.msg
+[1.195s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/ament_index/resource_index/package_run_dependencies/robp_interfaces
+[1.196s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/ament_index/resource_index/parent_prefix_path/robp_interfaces
+[1.196s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/environment/ament_prefix_path.sh
+[1.196s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/environment/ament_prefix_path.dsv
+[1.196s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/environment/path.sh
+[1.196s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/environment/path.dsv
+[1.197s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/local_setup.bash
+[1.197s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/local_setup.sh
+[1.197s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/local_setup.zsh
+[1.197s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/local_setup.dsv
+[1.197s] -- Symlinking: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.dsv
+[1.213s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/ament_index/resource_index/packages/robp_interfaces
+[1.214s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/rosidl_cmake-extras.cmake
+[1.214s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake
+[1.214s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake
+[1.214s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/ament_cmake_export_libraries-extras.cmake
+[1.218s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/ament_cmake_export_targets-extras.cmake
+[1.219s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[1.219s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[1.219s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/robp_interfacesConfig.cmake
+[1.219s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/robp_interfacesConfig-version.cmake
+[1.219s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.xml
+[1.220s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_c.so
+[1.220s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_c.so
+[1.220s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_c.so
+[1.220s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_c.so
+[1.221s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_cpp.so
+[1.222s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_cpp.so
+[1.223s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_cpp.so
+[1.312s] Listing '/home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces'...
+[1.312s] Listing '/home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages/robp_interfaces/msg'...
+[1.316s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_py.so
+[1.317s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/export_robp_interfaces__rosidl_generator_cExport.cmake
+[1.317s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/export_robp_interfaces__rosidl_generator_cExport-noconfig.cmake
+[1.318s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/export_robp_interfaces__rosidl_typesupport_fastrtps_cExport.cmake
+[1.318s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/export_robp_interfaces__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[1.318s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/robp_interfaces__rosidl_typesupport_introspection_cExport.cmake
+[1.318s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/robp_interfaces__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[1.318s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/robp_interfaces__rosidl_typesupport_cExport.cmake
+[1.318s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/robp_interfaces__rosidl_typesupport_cExport-noconfig.cmake
+[1.319s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/export_robp_interfaces__rosidl_generator_cppExport.cmake
+[1.319s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/export_robp_interfaces__rosidl_typesupport_fastrtps_cppExport.cmake
+[1.319s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/export_robp_interfaces__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[1.319s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/robp_interfaces__rosidl_typesupport_introspection_cppExport.cmake
+[1.319s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/robp_interfaces__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[1.320s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/robp_interfaces__rosidl_typesupport_cppExport.cmake
+[1.320s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/robp_interfaces__rosidl_typesupport_cppExport-noconfig.cmake
+[1.320s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/export_robp_interfaces__rosidl_generator_pyExport.cmake
+[1.320s] -- Up-to-date: /home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/cmake/export_robp_interfaces__rosidl_generator_pyExport-noconfig.cmake
+[1.323s] Invoked command in '/home/group1/dd2419_ws/build/robp_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/group1/dd2419_ws/build/robp_interfaces
