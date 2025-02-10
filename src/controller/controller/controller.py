@@ -33,24 +33,24 @@ class Controller(Node):
         #Joy stick returns float in [-1,1]
         joy_vel = msg.axes[3]
         joy_rot = msg.axes[2] 
+        
+        rot = abs(joy_rot)
 
         #Transform joy stick reading to velocity
         max_vel = 0.5 #m/s 
-        max_rot = 30 #degrees
         
         vel = joy_vel * max_vel
-        rotation = joy_rot * max_rot
 
         #Create DutyCycles msg
         duty_cycles_msg = DutyCycles()
 
         duty_cycles_msg.header = header
         if joy_rot > 0: 
-            duty_cycles_msg.duty_cycle_left = vel * 0.5
-            duty_cycles_msg.duty_cycle_right = vel
+            duty_cycles_msg.duty_cycle_left = vel * rot
+            duty_cycles_msg.duty_cycle_right = vel * (1 - rot)
         elif joy_rot < 0:
-            duty_cycles_msg.duty_cycle_right = vel * 0.5
-            duty_cycles_msg.duty_cycle_left = vel
+            duty_cycles_msg.duty_cycle_right = vel * rot
+            duty_cycles_msg.duty_cycle_left = vel * (1 - rot)
         else:
             duty_cycles_msg.duty_cycle_right = vel
             duty_cycles_msg.duty_cycle_left = vel

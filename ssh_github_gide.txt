@@ -1,5 +1,5 @@
 -------------- CONNECTING TO SSH SERVER ---------------- 
-ssh group1@130.229.158.128
+ssh group1@192.168.128.112
 (IP might change on edu-roam)
 
 -------------- GITHUB SSH AUTHENTICATOR SETUP -----------------
