@@ -1,0 +1,70 @@
+-------------- CONNECTING TO SSH SERVER ---------------- 
+ssh group1@192.168.128.112
+(IP might change on edu-roam)
+
+-------------- GITHUB SSH AUTHENTICATOR SETUP -----------------
+
+Run to check what key names are taken (Do not use one of these)
+	ls -al ~/.ssh
+
+Create your own key and password:
+	ssh-keygen -t rsa -b 4096 -C {INSERT YOUR EMAIL}	
+	ENTER THIS FILE PATH: /home/robot/.ssh/id_{YOUR_NAME}
+
+Start SSH agent: 
+	eval "$(ssh-agent -s)"
+
+Add your key o agent: 
+	ssh-add ~/.ssh/id_rsa
+
+Print your public key and copy it:
+	cat ~/.ssh/id_rsa.pub | pbcopy
+
+Go to github.com --> settings --> SSH and GPG keys --> new ssh key
+Paste your key here...	
+
+
+----------- Authenticating --------------
+
+Connect to (or check idk) ssh agent:
+	eval "$(ssh-agent -s)"
+
+Authenticate your github:
+	ssh-add ~/.ssh/{YOURNAME}
+	
+Check github connection:
+	group1@group1:~$ ssh -i ~/.ssh/id_loke -T git@github.com
+
+
+-------------------- FIRST TIME DOWNLOAD FROM GITHUB -------------------
+
+Download the main branch from github and save in a folder called "dd2419_ws".
+Makes this a local repository that can be used in the future.
+(robp_robot will be empty)
+	git clone git@github.com:eb3301/Robot_project.git dd2419_ws
+
+Follow this to download robp_robot 
+	https://dd2419.slack.com/archives/C0889JSBLER/p1738601148169099
+
+
+------------ TO DOWNLOAD FROM GITHUB (NOT FIRST TIME) ---------
+	git pull origin <branch-name>
+
+------------------ TO UPLOAD TO GITHUB ----------------------
+WORK ON YOUR BRANCH NOT ON MAIN!
+
+Create, and switch to, your branch (in git repository)
+	git checkout -b <new-branch-name>
+
+Add files (locally) to your branch
+	git add <file-name>    # For specific files
+	git add .              # For all modified files
+
+Commit changes 
+	git commit -m "Description of changes"
+
+Push changes to github server
+	git push origin <branch-name> 
+	
+	
+
