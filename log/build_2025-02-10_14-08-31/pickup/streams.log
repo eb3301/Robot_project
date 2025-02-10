@@ -1,0 +1,17 @@
+[1.783s] Invoking command in '/home/group1/dd2419_ws/build/pickup': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/pickup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/pickup/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/pickup/build --no-deps symlink_data
+[2.529s] running develop
+[2.802s] running egg_info
+[2.825s] writing pickup.egg-info/PKG-INFO
+[2.825s] writing dependency_links to pickup.egg-info/dependency_links.txt
+[2.826s] writing entry points to pickup.egg-info/entry_points.txt
+[2.826s] writing requirements to pickup.egg-info/requires.txt
+[2.826s] writing top-level names to pickup.egg-info/top_level.txt
+[2.885s] reading manifest file 'pickup.egg-info/SOURCES.txt'
+[2.886s] writing manifest file 'pickup.egg-info/SOURCES.txt'
+[2.906s] running build_ext
+[2.907s] Creating /home/group1/dd2419_ws/install/pickup/lib/python3.12/site-packages/pickup.egg-link (link to .)
+[2.907s] Installing pickup script to /home/group1/dd2419_ws/install/pickup/lib/pickup
+[2.907s] 
+[2.907s] Installed /home/group1/dd2419_ws/build/pickup
+[2.907s] running symlink_data
+[3.219s] Invoked command in '/home/group1/dd2419_ws/build/pickup' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/pickup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/pickup/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/pickup/build --no-deps symlink_data

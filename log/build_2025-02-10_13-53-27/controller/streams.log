@@ -1,0 +1,24 @@
+[2.880s] Invoking command in '/home/group1/dd2419_ws/build/controller': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/controller/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/controller/build --no-deps symlink_data
+[3.547s] running develop
+[3.951s] running egg_info
+[3.951s] creating controller.egg-info
+[3.990s] writing controller.egg-info/PKG-INFO
+[3.990s] writing dependency_links to controller.egg-info/dependency_links.txt
+[3.991s] writing entry points to controller.egg-info/entry_points.txt
+[3.991s] writing requirements to controller.egg-info/requires.txt
+[3.991s] writing top-level names to controller.egg-info/top_level.txt
+[3.991s] writing manifest file 'controller.egg-info/SOURCES.txt'
+[4.071s] reading manifest file 'controller.egg-info/SOURCES.txt'
+[4.073s] writing manifest file 'controller.egg-info/SOURCES.txt'
+[4.115s] running build_ext
+[4.115s] Creating /home/group1/dd2419_ws/install/controller/lib/python3.12/site-packages/controller.egg-link (link to .)
+[4.115s] Installing controller script to /home/group1/dd2419_ws/install/controller/lib/controller
+[4.116s] 
+[4.116s] Installed /home/group1/dd2419_ws/build/controller
+[4.117s] running symlink_data
+[4.117s] creating /home/group1/dd2419_ws/install/controller/share/ament_index
+[4.118s] creating /home/group1/dd2419_ws/install/controller/share/ament_index/resource_index
+[4.121s] creating /home/group1/dd2419_ws/install/controller/share/ament_index/resource_index/packages
+[4.122s] symbolically linking /home/group1/dd2419_ws/build/controller/resource/controller -> /home/group1/dd2419_ws/install/controller/share/ament_index/resource_index/packages
+[4.122s] symbolically linking /home/group1/dd2419_ws/build/controller/package.xml -> /home/group1/dd2419_ws/install/controller/share/controller
+[4.231s] Invoked command in '/home/group1/dd2419_ws/build/controller' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/controller/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/controller/build --no-deps symlink_data

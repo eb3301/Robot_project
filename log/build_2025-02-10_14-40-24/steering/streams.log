@@ -1,0 +1,18 @@
+[1.416s] Invoking command in '/home/group1/dd2419_ws/build/steering': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/steering/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/steering/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/steering/build --no-deps symlink_data
+[1.843s] running develop
+[2.094s] running egg_info
+[2.117s] writing steering.egg-info/PKG-INFO
+[2.117s] writing dependency_links to steering.egg-info/dependency_links.txt
+[2.117s] writing entry points to steering.egg-info/entry_points.txt
+[2.118s] writing requirements to steering.egg-info/requires.txt
+[2.118s] writing top-level names to steering.egg-info/top_level.txt
+[2.166s] reading manifest file 'steering.egg-info/SOURCES.txt'
+[2.167s] writing manifest file 'steering.egg-info/SOURCES.txt'
+[2.193s] running build_ext
+[2.193s] Creating /home/group1/dd2419_ws/install/steering/lib/python3.12/site-packages/steering.egg-link (link to .)
+[2.194s] Installing auto_control script to /home/group1/dd2419_ws/install/steering/lib/steering
+[2.194s] Installing wheel_control script to /home/group1/dd2419_ws/install/steering/lib/steering
+[2.194s] 
+[2.194s] Installed /home/group1/dd2419_ws/build/steering
+[2.195s] running symlink_data
+[2.234s] Invoked command in '/home/group1/dd2419_ws/build/steering' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/steering/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/steering/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/steering/build --no-deps symlink_data

@@ -1,0 +1,23 @@
+[100%] Built target robp_phidgets_encoders
+-- Install configuration: "Release"
+-- Execute custom install script
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/lib/librobp_phidgets_encoders.so
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/include/robp_phidgets_encoders/encoder.hpp
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/include/robp_phidgets_encoders/encoders.hpp
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/launch/encoders_launch.py
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/ament_index/resource_index/package_run_dependencies/robp_phidgets_encoders
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/ament_index/resource_index/parent_prefix_path/robp_phidgets_encoders
+-- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/environment/ament_prefix_path.sh
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/environment/ament_prefix_path.dsv
+-- Up-to-date symlink: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/environment/path.sh
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/environment/path.dsv
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/local_setup.bash
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/local_setup.sh
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/local_setup.zsh
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/local_setup.dsv
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/package.dsv
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/ament_index/resource_index/packages/robp_phidgets_encoders
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/ament_index/resource_index/rclcpp_components/robp_phidgets_encoders
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/cmake/robp_phidgets_encodersConfig.cmake
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/cmake/robp_phidgets_encodersConfig-version.cmake
+-- Symlinking: /home/group1/dd2419_ws/install/robp_phidgets_encoders/share/robp_phidgets_encoders/package.xml

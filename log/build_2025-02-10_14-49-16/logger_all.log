@@ -1,0 +1,810 @@
+[0.130s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--symlink-install']
+[0.130s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=True, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=8, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x77a63c883920>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x77a63d4ff230>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x77a63d4ff230>>)
+[0.177s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.177s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.177s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.177s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.177s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.177s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.177s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/group1/dd2419_ws'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.210s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.210s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.210s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.210s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.210s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.210s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.211s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src/build) by extensions ['ignore', 'ignore_ament_install']
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src/build) by extension 'ignore'
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src/build) ignored
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src/controller) by extensions ['ignore', 'ignore_ament_install']
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src/controller) by extension 'ignore'
+[0.212s] Level 1:colcon.colcon_core.package_identification:_identify(src/controller) by extension 'ignore_ament_install'
+[0.213s] Level 1:colcon.colcon_core.package_identification:_identify(src/controller) by extensions ['colcon_pkg']
+[0.213s] Level 1:colcon.colcon_core.package_identification:_identify(src/controller) by extension 'colcon_pkg'
+[0.213s] Level 1:colcon.colcon_core.package_identification:_identify(src/controller) by extensions ['colcon_meta']
+[0.213s] Level 1:colcon.colcon_core.package_identification:_identify(src/controller) by extension 'colcon_meta'
+[0.213s] Level 1:colcon.colcon_core.package_identification:_identify(src/controller) by extensions ['ros']
+[0.213s] Level 1:colcon.colcon_core.package_identification:_identify(src/controller) by extension 'ros'
+[0.215s] DEBUG:colcon.colcon_core.package_identification:Package 'src/controller' with type 'ros.ament_python' and name 'controller'
+[0.216s] Level 1:colcon.colcon_core.package_identification:_identify(src/detection) by extensions ['ignore', 'ignore_ament_install']
+[0.216s] Level 1:colcon.colcon_core.package_identification:_identify(src/detection) by extension 'ignore'
+[0.216s] Level 1:colcon.colcon_core.package_identification:_identify(src/detection) by extension 'ignore_ament_install'
+[0.216s] Level 1:colcon.colcon_core.package_identification:_identify(src/detection) by extensions ['colcon_pkg']
+[0.216s] Level 1:colcon.colcon_core.package_identification:_identify(src/detection) by extension 'colcon_pkg'
+[0.216s] Level 1:colcon.colcon_core.package_identification:_identify(src/detection) by extensions ['colcon_meta']
+[0.216s] Level 1:colcon.colcon_core.package_identification:_identify(src/detection) by extension 'colcon_meta'
+[0.216s] Level 1:colcon.colcon_core.package_identification:_identify(src/detection) by extensions ['ros']
+[0.216s] Level 1:colcon.colcon_core.package_identification:_identify(src/detection) by extension 'ros'
+[0.217s] DEBUG:colcon.colcon_core.package_identification:Package 'src/detection' with type 'ros.ament_python' and name 'detection'
+[0.217s] Level 1:colcon.colcon_core.package_identification:_identify(src/display) by extensions ['ignore', 'ignore_ament_install']
+[0.217s] Level 1:colcon.colcon_core.package_identification:_identify(src/display) by extension 'ignore'
+[0.217s] Level 1:colcon.colcon_core.package_identification:_identify(src/display) by extension 'ignore_ament_install'
+[0.217s] Level 1:colcon.colcon_core.package_identification:_identify(src/display) by extensions ['colcon_pkg']
+[0.217s] Level 1:colcon.colcon_core.package_identification:_identify(src/display) by extension 'colcon_pkg'
+[0.217s] Level 1:colcon.colcon_core.package_identification:_identify(src/display) by extensions ['colcon_meta']
+[0.217s] Level 1:colcon.colcon_core.package_identification:_identify(src/display) by extension 'colcon_meta'
+[0.217s] Level 1:colcon.colcon_core.package_identification:_identify(src/display) by extensions ['ros']
+[0.217s] Level 1:colcon.colcon_core.package_identification:_identify(src/display) by extension 'ros'
+[0.218s] DEBUG:colcon.colcon_core.package_identification:Package 'src/display' with type 'ros.ament_python' and name 'display'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/install) by extensions ['ignore', 'ignore_ament_install']
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/install) by extension 'ignore'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/install) ignored
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extensions ['ignore', 'ignore_ament_install']
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extension 'ignore'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extension 'ignore_ament_install'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extensions ['colcon_pkg']
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extension 'colcon_pkg'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extensions ['colcon_meta']
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extension 'colcon_meta'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extensions ['ros']
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extension 'ros'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extensions ['cmake', 'python']
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extension 'cmake'
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extension 'python'
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extensions ['python_setup_py']
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/launch) by extension 'python_setup_py'
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/lidar) by extensions ['ignore', 'ignore_ament_install']
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/lidar) by extension 'ignore'
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/lidar) by extension 'ignore_ament_install'
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/lidar) by extensions ['colcon_pkg']
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/lidar) by extension 'colcon_pkg'
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/lidar) by extensions ['colcon_meta']
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/lidar) by extension 'colcon_meta'
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/lidar) by extensions ['ros']
+[0.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/lidar) by extension 'ros'
+[0.220s] DEBUG:colcon.colcon_core.package_identification:Package 'src/lidar' with type 'ros.ament_python' and name 'lidar'
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/log) by extensions ['ignore', 'ignore_ament_install']
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/log) by extension 'ignore'
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/log) ignored
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/odometry) by extensions ['ignore', 'ignore_ament_install']
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/odometry) by extension 'ignore'
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/odometry) by extension 'ignore_ament_install'
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/odometry) by extensions ['colcon_pkg']
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/odometry) by extension 'colcon_pkg'
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/odometry) by extensions ['colcon_meta']
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/odometry) by extension 'colcon_meta'
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/odometry) by extensions ['ros']
+[0.220s] Level 1:colcon.colcon_core.package_identification:_identify(src/odometry) by extension 'ros'
+[0.221s] DEBUG:colcon.colcon_core.package_identification:Package 'src/odometry' with type 'ros.ament_python' and name 'odometry'
+[0.221s] Level 1:colcon.colcon_core.package_identification:_identify(src/pickup) by extensions ['ignore', 'ignore_ament_install']
+[0.221s] Level 1:colcon.colcon_core.package_identification:_identify(src/pickup) by extension 'ignore'
+[0.221s] Level 1:colcon.colcon_core.package_identification:_identify(src/pickup) by extension 'ignore_ament_install'
+[0.221s] Level 1:colcon.colcon_core.package_identification:_identify(src/pickup) by extensions ['colcon_pkg']
+[0.221s] Level 1:colcon.colcon_core.package_identification:_identify(src/pickup) by extension 'colcon_pkg'
+[0.221s] Level 1:colcon.colcon_core.package_identification:_identify(src/pickup) by extensions ['colcon_meta']
+[0.222s] Level 1:colcon.colcon_core.package_identification:_identify(src/pickup) by extension 'colcon_meta'
+[0.222s] Level 1:colcon.colcon_core.package_identification:_identify(src/pickup) by extensions ['ros']
+[0.222s] Level 1:colcon.colcon_core.package_identification:_identify(src/pickup) by extension 'ros'
+[0.222s] DEBUG:colcon.colcon_core.package_identification:Package 'src/pickup' with type 'ros.ament_python' and name 'pickup'
+[0.222s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_odometry) by extensions ['ignore', 'ignore_ament_install']
+[0.222s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_odometry) by extension 'ignore'
+[0.222s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_odometry) by extension 'ignore_ament_install'
+[0.222s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_odometry) by extensions ['colcon_pkg']
+[0.222s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_odometry) by extension 'colcon_pkg'
+[0.222s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_odometry) by extensions ['colcon_meta']
+[0.223s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_odometry) by extension 'colcon_meta'
+[0.223s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_odometry) by extensions ['ros']
+[0.223s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_odometry) by extension 'ros'
+[0.223s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robot_odometry' with type 'ros.ament_python' and name 'robot_odometry'
+[0.223s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extensions ['ignore', 'ignore_ament_install']
+[0.223s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extension 'ignore'
+[0.223s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extension 'ignore_ament_install'
+[0.223s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extensions ['colcon_pkg']
+[0.223s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extension 'colcon_pkg'
+[0.223s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extensions ['colcon_meta']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extension 'colcon_meta'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extensions ['ros']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extension 'ros'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extensions ['cmake', 'python']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extension 'cmake'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extension 'python'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extensions ['python_setup_py']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot) by extension 'python_setup_py'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extensions ['ignore', 'ignore_ament_install']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extension 'ignore'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extension 'ignore_ament_install'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extensions ['colcon_pkg']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extension 'colcon_pkg'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extensions ['colcon_meta']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extension 'colcon_meta'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extensions ['ros']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extension 'ros'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extensions ['cmake', 'python']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extension 'cmake'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extension 'python'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extensions ['python_setup_py']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm) by extension 'python_setup_py'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extensions ['ignore', 'ignore_ament_install']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extension 'ignore'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extension 'ignore_ament_install'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extensions ['colcon_pkg']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extension 'colcon_pkg'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extensions ['colcon_meta']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extension 'colcon_meta'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extensions ['ros']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extension 'ros'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extensions ['cmake', 'python']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extension 'cmake'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extension 'python'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extensions ['python_setup_py']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2) by extension 'python_setup_py'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extensions ['ignore', 'ignore_ament_install']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extension 'ignore'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extension 'ignore_ament_install'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extensions ['colcon_pkg']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extension 'colcon_pkg'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extensions ['colcon_meta']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extension 'colcon_meta'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extensions ['ros']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extension 'ros'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extensions ['cmake', 'python']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extension 'cmake'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extension 'python'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extensions ['python_setup_py']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/include) by extension 'python_setup_py'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extensions ['ignore', 'ignore_ament_install']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extension 'ignore'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extension 'ignore_ament_install'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extensions ['colcon_pkg']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extension 'colcon_pkg'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extensions ['colcon_meta']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extension 'colcon_meta'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extensions ['ros']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extension 'ros'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extensions ['cmake', 'python']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extension 'cmake'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extension 'python'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extensions ['python_setup_py']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/lib) by extension 'python_setup_py'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extensions ['ignore', 'ignore_ament_install']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extension 'ignore'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extension 'ignore_ament_install'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extensions ['colcon_pkg']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extension 'colcon_pkg'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extensions ['colcon_meta']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extension 'colcon_meta'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extensions ['ros']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extension 'ros'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extensions ['cmake', 'python']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extension 'cmake'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extension 'python'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extensions ['python_setup_py']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/src) by extension 'python_setup_py'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extensions ['ignore', 'ignore_ament_install']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extension 'ignore'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extension 'ignore_ament_install'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extensions ['colcon_pkg']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extension 'colcon_pkg'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extensions ['colcon_meta']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extension 'colcon_meta'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extensions ['ros']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extension 'ros'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extensions ['cmake', 'python']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extension 'cmake'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extension 'python'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extensions ['python_setup_py']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/Hiwonder_xArm_ROS2/test) by extension 'python_setup_py'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/arm_servos_pubs_subs) by extensions ['ignore', 'ignore_ament_install']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/arm_servos_pubs_subs) by extension 'ignore'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/arm_servos_pubs_subs) by extension 'ignore_ament_install'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/arm_servos_pubs_subs) by extensions ['colcon_pkg']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/arm_servos_pubs_subs) by extension 'colcon_pkg'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/arm_servos_pubs_subs) by extensions ['colcon_meta']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/arm_servos_pubs_subs) by extension 'colcon_meta'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/arm_servos_pubs_subs) by extensions ['ros']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/arm_servos_pubs_subs) by extension 'ros'
+[0.230s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robp_robot/robp_arm/arm_servos_pubs_subs' with type 'ros.ament_python' and name 'arm_servos_pubs_subs'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extensions ['ignore', 'ignore_ament_install']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extension 'ignore'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extension 'ignore_ament_install'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extensions ['colcon_pkg']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extension 'colcon_pkg'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extensions ['colcon_meta']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extension 'colcon_meta'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extensions ['ros']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extension 'ros'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extensions ['cmake', 'python']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extension 'cmake'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extension 'python'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extensions ['python_setup_py']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/assets) by extension 'python_setup_py'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extensions ['ignore', 'ignore_ament_install']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extension 'ignore'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extension 'ignore_ament_install'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extensions ['colcon_pkg']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extension 'colcon_pkg'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extensions ['colcon_meta']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extension 'colcon_meta'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extensions ['ros']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extension 'ros'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extensions ['cmake', 'python']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extension 'cmake'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extension 'python'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extensions ['python_setup_py']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch) by extension 'python_setup_py'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extension 'ignore'
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extension 'ignore_ament_install'
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extensions ['colcon_pkg']
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extension 'colcon_pkg'
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extensions ['colcon_meta']
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extension 'colcon_meta'
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extensions ['ros']
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extension 'ros'
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extensions ['cmake', 'python']
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extension 'cmake'
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extension 'python'
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extensions ['python_setup_py']
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_arm/launch/__pycache__) by extension 'python_setup_py'
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_interfaces) by extensions ['ignore', 'ignore_ament_install']
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_interfaces) by extension 'ignore'
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_interfaces) by extension 'ignore_ament_install'
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_interfaces) by extensions ['colcon_pkg']
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_interfaces) by extension 'colcon_pkg'
+[0.232s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_interfaces) by extensions ['colcon_meta']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_interfaces) by extension 'colcon_meta'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_interfaces) by extensions ['ros']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_interfaces) by extension 'ros'
+[0.233s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robp_robot/robp_interfaces' with type 'ros.ament_cmake' and name 'robp_interfaces'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_launch) by extensions ['ignore', 'ignore_ament_install']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_launch) by extension 'ignore'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_launch) by extension 'ignore_ament_install'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_launch) by extensions ['colcon_pkg']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_launch) by extension 'colcon_pkg'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_launch) by extensions ['colcon_meta']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_launch) by extension 'colcon_meta'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_launch) by extensions ['ros']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_launch) by extension 'ros'
+[0.234s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robp_robot/robp_launch' with type 'ros.ament_python' and name 'robp_launch'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extensions ['ignore', 'ignore_ament_install']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extension 'ignore'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extension 'ignore_ament_install'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extensions ['colcon_pkg']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extension 'colcon_pkg'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extensions ['colcon_meta']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extension 'colcon_meta'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extensions ['ros']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extension 'ros'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extensions ['cmake', 'python']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extension 'cmake'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extension 'python'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extensions ['python_setup_py']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets) by extension 'python_setup_py'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_encoders) by extensions ['ignore', 'ignore_ament_install']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_encoders) by extension 'ignore'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_encoders) by extension 'ignore_ament_install'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_encoders) by extensions ['colcon_pkg']
+[0.236s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_encoders) by extension 'colcon_pkg'
+[0.236s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_encoders) by extensions ['colcon_meta']
+[0.236s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_encoders) by extension 'colcon_meta'
+[0.236s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_encoders) by extensions ['ros']
+[0.236s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_encoders) by extension 'ros'
+[0.237s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robp_robot/robp_phidgets/robp_phidgets_encoders' with type 'ros.ament_cmake' and name 'robp_phidgets_encoders'
+[0.237s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_motors) by extensions ['ignore', 'ignore_ament_install']
+[0.237s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_motors) by extension 'ignore'
+[0.237s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_motors) by extension 'ignore_ament_install'
+[0.237s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_motors) by extensions ['colcon_pkg']
+[0.237s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_motors) by extension 'colcon_pkg'
+[0.237s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_motors) by extensions ['colcon_meta']
+[0.237s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_motors) by extension 'colcon_meta'
+[0.237s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_motors) by extensions ['ros']
+[0.237s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_motors) by extension 'ros'
+[0.238s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robp_robot/robp_phidgets/robp_phidgets_motors' with type 'ros.ament_cmake' and name 'robp_phidgets_motors'
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_spatial) by extensions ['ignore', 'ignore_ament_install']
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_spatial) by extension 'ignore'
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_spatial) by extension 'ignore_ament_install'
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_spatial) by extensions ['colcon_pkg']
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_spatial) by extension 'colcon_pkg'
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_spatial) by extensions ['colcon_meta']
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_spatial) by extension 'colcon_meta'
+[0.238s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_spatial) by extensions ['ros']
+[0.239s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_spatial) by extension 'ros'
+[0.240s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robp_robot/robp_phidgets/robp_phidgets_spatial' with type 'ros.ament_cmake' and name 'robp_phidgets_spatial'
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_temperature) by extensions ['ignore', 'ignore_ament_install']
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_temperature) by extension 'ignore'
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_temperature) by extension 'ignore_ament_install'
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_temperature) by extensions ['colcon_pkg']
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_temperature) by extension 'colcon_pkg'
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_temperature) by extensions ['colcon_meta']
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_temperature) by extension 'colcon_meta'
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_temperature) by extensions ['ros']
+[0.240s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/robp_phidgets/robp_phidgets_temperature) by extension 'ros'
+[0.241s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robp_robot/robp_phidgets/robp_phidgets_temperature' with type 'ros.ament_cmake' and name 'robp_phidgets_temperature'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/sllidar_ros2) by extensions ['ignore', 'ignore_ament_install']
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/sllidar_ros2) by extension 'ignore'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/sllidar_ros2) by extension 'ignore_ament_install'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/sllidar_ros2) by extensions ['colcon_pkg']
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/sllidar_ros2) by extension 'colcon_pkg'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/sllidar_ros2) by extensions ['colcon_meta']
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/sllidar_ros2) by extension 'colcon_meta'
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/sllidar_ros2) by extensions ['ros']
+[0.241s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/sllidar_ros2) by extension 'ros'
+[0.242s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robp_robot/sllidar_ros2' with type 'ros.ament_cmake' and name 'sllidar_ros2'
+[0.242s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/usb_cam) by extensions ['ignore', 'ignore_ament_install']
+[0.242s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/usb_cam) by extension 'ignore'
+[0.242s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/usb_cam) by extension 'ignore_ament_install'
+[0.242s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/usb_cam) by extensions ['colcon_pkg']
+[0.242s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/usb_cam) by extension 'colcon_pkg'
+[0.242s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/usb_cam) by extensions ['colcon_meta']
+[0.242s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/usb_cam) by extension 'colcon_meta'
+[0.243s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/usb_cam) by extensions ['ros']
+[0.243s] Level 1:colcon.colcon_core.package_identification:_identify(src/robp_robot/usb_cam) by extension 'ros'
+[0.244s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robp_robot/usb_cam' with type 'ros.ament_cmake' and name 'usb_cam'
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(src/stearing) by extensions ['ignore', 'ignore_ament_install']
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(src/stearing) by extension 'ignore'
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(src/stearing) by extension 'ignore_ament_install'
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(src/stearing) by extensions ['colcon_pkg']
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(src/stearing) by extension 'colcon_pkg'
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(src/stearing) by extensions ['colcon_meta']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(src/stearing) by extension 'colcon_meta'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(src/stearing) by extensions ['ros']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(src/stearing) by extension 'ros'
+[0.245s] DEBUG:colcon.colcon_core.package_identification:Package 'src/stearing' with type 'ros.ament_python' and name 'stearing'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(src/steering) by extensions ['ignore', 'ignore_ament_install']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(src/steering) by extension 'ignore'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(src/steering) by extension 'ignore_ament_install'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(src/steering) by extensions ['colcon_pkg']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(src/steering) by extension 'colcon_pkg'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(src/steering) by extensions ['colcon_meta']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(src/steering) by extension 'colcon_meta'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/steering) by extensions ['ros']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/steering) by extension 'ros'
+[0.246s] DEBUG:colcon.colcon_core.package_identification:Package 'src/steering' with type 'ros.ament_python' and name 'steering'
+[0.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.273s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.273s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.276s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 3 installed packages in /home/group1/esp32_microros_ws/install
+[0.277s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 18 installed packages in /home/group1/dd2419_ws/install
+[0.278s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 297 installed packages in /opt/ros/jazzy
+[0.279s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.330s] Level 5:colcon.colcon_core.verb:set package 'arm_servos_pubs_subs' build argument 'cmake_args' from command line to 'None'
+[0.330s] Level 5:colcon.colcon_core.verb:set package 'arm_servos_pubs_subs' build argument 'cmake_target' from command line to 'None'
+[0.330s] Level 5:colcon.colcon_core.verb:set package 'arm_servos_pubs_subs' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.330s] Level 5:colcon.colcon_core.verb:set package 'arm_servos_pubs_subs' build argument 'cmake_clean_cache' from command line to 'False'
+[0.330s] Level 5:colcon.colcon_core.verb:set package 'arm_servos_pubs_subs' build argument 'cmake_clean_first' from command line to 'False'
+[0.330s] Level 5:colcon.colcon_core.verb:set package 'arm_servos_pubs_subs' build argument 'cmake_force_configure' from command line to 'False'
+[0.330s] Level 5:colcon.colcon_core.verb:set package 'arm_servos_pubs_subs' build argument 'ament_cmake_args' from command line to 'None'
+[0.330s] Level 5:colcon.colcon_core.verb:set package 'arm_servos_pubs_subs' build argument 'catkin_cmake_args' from command line to 'None'
+[0.330s] Level 5:colcon.colcon_core.verb:set package 'arm_servos_pubs_subs' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.330s] DEBUG:colcon.colcon_core.verb:Building package 'arm_servos_pubs_subs' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/arm_servos_pubs_subs', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/arm_servos_pubs_subs', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/robp_robot/robp_arm/arm_servos_pubs_subs', 'symlink_install': True, 'test_result_base': None}
+[0.330s] Level 5:colcon.colcon_core.verb:set package 'controller' build argument 'cmake_args' from command line to 'None'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'controller' build argument 'cmake_target' from command line to 'None'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'controller' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'controller' build argument 'cmake_clean_cache' from command line to 'False'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'controller' build argument 'cmake_clean_first' from command line to 'False'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'controller' build argument 'cmake_force_configure' from command line to 'False'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'controller' build argument 'ament_cmake_args' from command line to 'None'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'controller' build argument 'catkin_cmake_args' from command line to 'None'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'controller' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.331s] DEBUG:colcon.colcon_core.verb:Building package 'controller' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/controller', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/controller', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/controller', 'symlink_install': True, 'test_result_base': None}
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'detection' build argument 'cmake_args' from command line to 'None'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'detection' build argument 'cmake_target' from command line to 'None'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'detection' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'detection' build argument 'cmake_clean_cache' from command line to 'False'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'detection' build argument 'cmake_clean_first' from command line to 'False'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'detection' build argument 'cmake_force_configure' from command line to 'False'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'detection' build argument 'ament_cmake_args' from command line to 'None'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'detection' build argument 'catkin_cmake_args' from command line to 'None'
+[0.331s] Level 5:colcon.colcon_core.verb:set package 'detection' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.331s] DEBUG:colcon.colcon_core.verb:Building package 'detection' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/detection', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/detection', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/detection', 'symlink_install': True, 'test_result_base': None}
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'display' build argument 'cmake_args' from command line to 'None'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'display' build argument 'cmake_target' from command line to 'None'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'display' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'display' build argument 'cmake_clean_cache' from command line to 'False'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'display' build argument 'cmake_clean_first' from command line to 'False'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'display' build argument 'cmake_force_configure' from command line to 'False'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'display' build argument 'ament_cmake_args' from command line to 'None'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'display' build argument 'catkin_cmake_args' from command line to 'None'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'display' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.332s] DEBUG:colcon.colcon_core.verb:Building package 'display' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/display', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/display', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/display', 'symlink_install': True, 'test_result_base': None}
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'lidar' build argument 'cmake_args' from command line to 'None'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'lidar' build argument 'cmake_target' from command line to 'None'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'lidar' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'lidar' build argument 'cmake_clean_cache' from command line to 'False'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'lidar' build argument 'cmake_clean_first' from command line to 'False'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'lidar' build argument 'cmake_force_configure' from command line to 'False'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'lidar' build argument 'ament_cmake_args' from command line to 'None'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'lidar' build argument 'catkin_cmake_args' from command line to 'None'
+[0.332s] Level 5:colcon.colcon_core.verb:set package 'lidar' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.332s] DEBUG:colcon.colcon_core.verb:Building package 'lidar' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/lidar', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/lidar', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/lidar', 'symlink_install': True, 'test_result_base': None}
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'odometry' build argument 'cmake_args' from command line to 'None'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'odometry' build argument 'cmake_target' from command line to 'None'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'odometry' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'odometry' build argument 'cmake_clean_cache' from command line to 'False'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'odometry' build argument 'cmake_clean_first' from command line to 'False'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'odometry' build argument 'cmake_force_configure' from command line to 'False'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'odometry' build argument 'ament_cmake_args' from command line to 'None'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'odometry' build argument 'catkin_cmake_args' from command line to 'None'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'odometry' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.333s] DEBUG:colcon.colcon_core.verb:Building package 'odometry' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/odometry', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/odometry', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/odometry', 'symlink_install': True, 'test_result_base': None}
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'pickup' build argument 'cmake_args' from command line to 'None'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'pickup' build argument 'cmake_target' from command line to 'None'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'pickup' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'pickup' build argument 'cmake_clean_cache' from command line to 'False'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'pickup' build argument 'cmake_clean_first' from command line to 'False'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'pickup' build argument 'cmake_force_configure' from command line to 'False'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'pickup' build argument 'ament_cmake_args' from command line to 'None'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'pickup' build argument 'catkin_cmake_args' from command line to 'None'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'pickup' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.333s] DEBUG:colcon.colcon_core.verb:Building package 'pickup' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/pickup', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/pickup', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/pickup', 'symlink_install': True, 'test_result_base': None}
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'robot_odometry' build argument 'cmake_args' from command line to 'None'
+[0.333s] Level 5:colcon.colcon_core.verb:set package 'robot_odometry' build argument 'cmake_target' from command line to 'None'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robot_odometry' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robot_odometry' build argument 'cmake_clean_cache' from command line to 'False'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robot_odometry' build argument 'cmake_clean_first' from command line to 'False'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robot_odometry' build argument 'cmake_force_configure' from command line to 'False'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robot_odometry' build argument 'ament_cmake_args' from command line to 'None'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robot_odometry' build argument 'catkin_cmake_args' from command line to 'None'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robot_odometry' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.334s] DEBUG:colcon.colcon_core.verb:Building package 'robot_odometry' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/robot_odometry', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/robot_odometry', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/robot_odometry', 'symlink_install': True, 'test_result_base': None}
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_interfaces' build argument 'cmake_args' from command line to 'None'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_interfaces' build argument 'cmake_target' from command line to 'None'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_interfaces' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_interfaces' build argument 'cmake_clean_cache' from command line to 'False'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_interfaces' build argument 'cmake_clean_first' from command line to 'False'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_interfaces' build argument 'cmake_force_configure' from command line to 'False'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_interfaces' build argument 'ament_cmake_args' from command line to 'None'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_interfaces' build argument 'catkin_cmake_args' from command line to 'None'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_interfaces' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.334s] DEBUG:colcon.colcon_core.verb:Building package 'robp_interfaces' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/robp_interfaces', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/robp_interfaces', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/robp_robot/robp_interfaces', 'symlink_install': True, 'test_result_base': None}
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_temperature' build argument 'cmake_args' from command line to 'None'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_temperature' build argument 'cmake_target' from command line to 'None'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_temperature' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.334s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_temperature' build argument 'cmake_clean_cache' from command line to 'False'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_temperature' build argument 'cmake_clean_first' from command line to 'False'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_temperature' build argument 'cmake_force_configure' from command line to 'False'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_temperature' build argument 'ament_cmake_args' from command line to 'None'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_temperature' build argument 'catkin_cmake_args' from command line to 'None'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_temperature' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.335s] DEBUG:colcon.colcon_core.verb:Building package 'robp_phidgets_temperature' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/robp_phidgets_temperature', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/robp_phidgets_temperature', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_temperature', 'symlink_install': True, 'test_result_base': None}
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'sllidar_ros2' build argument 'cmake_args' from command line to 'None'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'sllidar_ros2' build argument 'cmake_target' from command line to 'None'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'sllidar_ros2' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'sllidar_ros2' build argument 'cmake_clean_cache' from command line to 'False'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'sllidar_ros2' build argument 'cmake_clean_first' from command line to 'False'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'sllidar_ros2' build argument 'cmake_force_configure' from command line to 'False'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'sllidar_ros2' build argument 'ament_cmake_args' from command line to 'None'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'sllidar_ros2' build argument 'catkin_cmake_args' from command line to 'None'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'sllidar_ros2' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.335s] DEBUG:colcon.colcon_core.verb:Building package 'sllidar_ros2' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/sllidar_ros2', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/sllidar_ros2', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/robp_robot/sllidar_ros2', 'symlink_install': True, 'test_result_base': None}
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'stearing' build argument 'cmake_args' from command line to 'None'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'stearing' build argument 'cmake_target' from command line to 'None'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'stearing' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'stearing' build argument 'cmake_clean_cache' from command line to 'False'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'stearing' build argument 'cmake_clean_first' from command line to 'False'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'stearing' build argument 'cmake_force_configure' from command line to 'False'
+[0.335s] Level 5:colcon.colcon_core.verb:set package 'stearing' build argument 'ament_cmake_args' from command line to 'None'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'stearing' build argument 'catkin_cmake_args' from command line to 'None'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'stearing' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.336s] DEBUG:colcon.colcon_core.verb:Building package 'stearing' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/stearing', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/stearing', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/stearing', 'symlink_install': True, 'test_result_base': None}
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'steering' build argument 'cmake_args' from command line to 'None'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'steering' build argument 'cmake_target' from command line to 'None'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'steering' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'steering' build argument 'cmake_clean_cache' from command line to 'False'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'steering' build argument 'cmake_clean_first' from command line to 'False'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'steering' build argument 'cmake_force_configure' from command line to 'False'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'steering' build argument 'ament_cmake_args' from command line to 'None'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'steering' build argument 'catkin_cmake_args' from command line to 'None'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'steering' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.336s] DEBUG:colcon.colcon_core.verb:Building package 'steering' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/steering', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/steering', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/steering', 'symlink_install': True, 'test_result_base': None}
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'usb_cam' build argument 'cmake_args' from command line to 'None'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'usb_cam' build argument 'cmake_target' from command line to 'None'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'usb_cam' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'usb_cam' build argument 'cmake_clean_cache' from command line to 'False'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'usb_cam' build argument 'cmake_clean_first' from command line to 'False'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'usb_cam' build argument 'cmake_force_configure' from command line to 'False'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'usb_cam' build argument 'ament_cmake_args' from command line to 'None'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'usb_cam' build argument 'catkin_cmake_args' from command line to 'None'
+[0.336s] Level 5:colcon.colcon_core.verb:set package 'usb_cam' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.336s] DEBUG:colcon.colcon_core.verb:Building package 'usb_cam' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/usb_cam', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/usb_cam', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/robp_robot/usb_cam', 'symlink_install': True, 'test_result_base': None}
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_encoders' build argument 'cmake_args' from command line to 'None'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_encoders' build argument 'cmake_target' from command line to 'None'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_encoders' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_encoders' build argument 'cmake_clean_cache' from command line to 'False'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_encoders' build argument 'cmake_clean_first' from command line to 'False'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_encoders' build argument 'cmake_force_configure' from command line to 'False'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_encoders' build argument 'ament_cmake_args' from command line to 'None'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_encoders' build argument 'catkin_cmake_args' from command line to 'None'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_encoders' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.337s] DEBUG:colcon.colcon_core.verb:Building package 'robp_phidgets_encoders' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/robp_phidgets_encoders', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/robp_phidgets_encoders', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders', 'symlink_install': True, 'test_result_base': None}
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_motors' build argument 'cmake_args' from command line to 'None'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_motors' build argument 'cmake_target' from command line to 'None'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_motors' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_motors' build argument 'cmake_clean_cache' from command line to 'False'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_motors' build argument 'cmake_clean_first' from command line to 'False'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_motors' build argument 'cmake_force_configure' from command line to 'False'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_motors' build argument 'ament_cmake_args' from command line to 'None'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_motors' build argument 'catkin_cmake_args' from command line to 'None'
+[0.337s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_motors' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.337s] DEBUG:colcon.colcon_core.verb:Building package 'robp_phidgets_motors' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/robp_phidgets_motors', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/robp_phidgets_motors', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors', 'symlink_install': True, 'test_result_base': None}
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_spatial' build argument 'cmake_args' from command line to 'None'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_spatial' build argument 'cmake_target' from command line to 'None'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_spatial' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_spatial' build argument 'cmake_clean_cache' from command line to 'False'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_spatial' build argument 'cmake_clean_first' from command line to 'False'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_spatial' build argument 'cmake_force_configure' from command line to 'False'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_spatial' build argument 'ament_cmake_args' from command line to 'None'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_spatial' build argument 'catkin_cmake_args' from command line to 'None'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_phidgets_spatial' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.338s] DEBUG:colcon.colcon_core.verb:Building package 'robp_phidgets_spatial' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/robp_phidgets_spatial', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/robp_phidgets_spatial', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial', 'symlink_install': True, 'test_result_base': None}
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_launch' build argument 'cmake_args' from command line to 'None'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_launch' build argument 'cmake_target' from command line to 'None'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_launch' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_launch' build argument 'cmake_clean_cache' from command line to 'False'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_launch' build argument 'cmake_clean_first' from command line to 'False'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_launch' build argument 'cmake_force_configure' from command line to 'False'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_launch' build argument 'ament_cmake_args' from command line to 'None'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_launch' build argument 'catkin_cmake_args' from command line to 'None'
+[0.338s] Level 5:colcon.colcon_core.verb:set package 'robp_launch' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.338s] DEBUG:colcon.colcon_core.verb:Building package 'robp_launch' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/group1/dd2419_ws/build/robp_launch', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/group1/dd2419_ws/install/robp_launch', 'merge_install': False, 'path': '/home/group1/dd2419_ws/src/robp_robot/robp_launch', 'symlink_install': True, 'test_result_base': None}
+[0.338s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.339s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.340s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/group1/dd2419_ws/src/robp_robot/robp_interfaces' with build type 'ament_cmake'
+[0.340s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/group1/dd2419_ws/src/robp_robot/robp_interfaces'
+[0.343s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.343s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.343s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.349s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_temperature' with build type 'ament_cmake'
+[0.349s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_temperature'
+[0.349s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.349s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.354s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/group1/dd2419_ws/src/robp_robot/robp_arm/arm_servos_pubs_subs' with build type 'ament_python'
+[0.354s] Level 1:colcon.colcon_core.shell:create_environment_hook('arm_servos_pubs_subs', 'ament_prefix_path')
+[0.354s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/arm_servos_pubs_subs/share/arm_servos_pubs_subs/hook/ament_prefix_path.ps1'
+[0.355s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/arm_servos_pubs_subs/share/arm_servos_pubs_subs/hook/ament_prefix_path.dsv'
+[0.356s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/arm_servos_pubs_subs/share/arm_servos_pubs_subs/hook/ament_prefix_path.sh'
+[0.357s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.357s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.362s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/group1/dd2419_ws/src/controller' with build type 'ament_python'
+[0.362s] Level 1:colcon.colcon_core.shell:create_environment_hook('controller', 'ament_prefix_path')
+[0.362s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/controller/share/controller/hook/ament_prefix_path.ps1'
+[0.363s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/controller/share/controller/hook/ament_prefix_path.dsv'
+[0.363s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/controller/share/controller/hook/ament_prefix_path.sh'
+[0.364s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.364s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.368s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/group1/dd2419_ws/src/detection' with build type 'ament_python'
+[0.368s] Level 1:colcon.colcon_core.shell:create_environment_hook('detection', 'ament_prefix_path')
+[0.369s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/detection/share/detection/hook/ament_prefix_path.ps1'
+[0.369s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/detection/share/detection/hook/ament_prefix_path.dsv'
+[0.369s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/detection/share/detection/hook/ament_prefix_path.sh'
+[0.370s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.370s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.374s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/group1/dd2419_ws/src/display' with build type 'ament_python'
+[0.375s] Level 1:colcon.colcon_core.shell:create_environment_hook('display', 'ament_prefix_path')
+[0.375s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/display/share/display/hook/ament_prefix_path.ps1'
+[0.375s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/display/share/display/hook/ament_prefix_path.dsv'
+[0.376s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/display/share/display/hook/ament_prefix_path.sh'
+[0.377s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.377s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.382s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/group1/dd2419_ws/src/lidar' with build type 'ament_python'
+[0.382s] Level 1:colcon.colcon_core.shell:create_environment_hook('lidar', 'ament_prefix_path')
+[0.382s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/lidar/share/lidar/hook/ament_prefix_path.ps1'
+[0.383s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/lidar/share/lidar/hook/ament_prefix_path.dsv'
+[0.383s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/lidar/share/lidar/hook/ament_prefix_path.sh'
+[0.384s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.384s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.388s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/group1/dd2419_ws/src/odometry' with build type 'ament_python'
+[0.388s] Level 1:colcon.colcon_core.shell:create_environment_hook('odometry', 'ament_prefix_path')
+[0.389s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/odometry/share/odometry/hook/ament_prefix_path.ps1'
+[0.389s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/odometry/share/odometry/hook/ament_prefix_path.dsv'
+[0.390s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/odometry/share/odometry/hook/ament_prefix_path.sh'
+[0.390s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.390s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.401s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/robp_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/stearing:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/robp_interfaces -- -j8 -l8
+[0.407s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/robp_phidgets_temperature': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/stearing:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/robp_phidgets_temperature -- -j8 -l8
+[0.711s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/group1/dd2419_ws/src/robp_robot/robp_arm/arm_servos_pubs_subs'
+[0.711s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.711s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.019s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/group1/dd2419_ws/src/controller'
+[1.019s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.019s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.345s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/group1/dd2419_ws/src/detection'
+[1.345s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.345s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.691s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/group1/dd2419_ws/src/display'
+[1.691s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.691s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.980s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/group1/dd2419_ws/src/lidar'
+[1.980s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.981s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[2.283s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/group1/dd2419_ws/src/odometry'
+[2.284s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[2.284s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[2.290s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/group1/dd2419_ws/build/robp_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/stearing:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/robp_interfaces -- -j8 -l8
+[2.301s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/robp_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/stearing:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/group1/dd2419_ws/build/robp_interfaces
+[2.302s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/group1/dd2419_ws/build/robp_phidgets_temperature' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/stearing:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/robp_phidgets_temperature -- -j8 -l8
+[2.304s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/robp_phidgets_temperature': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/stearing:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/group1/dd2419_ws/build/robp_phidgets_temperature
+[2.673s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(robp_phidgets_temperature)
+[2.677s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/group1/dd2419_ws/build/robp_phidgets_temperature' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/stearing:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/group1/dd2419_ws/build/robp_phidgets_temperature
+[2.679s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature' for CMake module files
+[2.680s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature' for CMake config files
+[2.681s] Level 1:colcon.colcon_core.shell:create_environment_hook('robp_phidgets_temperature', 'cmake_prefix_path')
+[2.681s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/cmake_prefix_path.ps1'
+[2.683s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/cmake_prefix_path.dsv'
+[2.684s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/cmake_prefix_path.sh'
+[2.686s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature/lib'
+[2.687s] Level 1:colcon.colcon_core.shell:create_environment_hook('robp_phidgets_temperature', 'ld_library_path_lib')
+[2.687s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/ld_library_path_lib.ps1'
+[2.689s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/ld_library_path_lib.dsv'
+[2.689s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/ld_library_path_lib.sh'
+[2.690s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature/bin'
+[2.690s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature/lib/pkgconfig/robp_phidgets_temperature.pc'
+[2.692s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature/lib/python3.12/site-packages'
+[2.692s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature/bin'
+[2.693s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.ps1'
+[2.701s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.dsv'
+[2.702s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.sh'
+[2.708s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.bash'
+[2.710s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.zsh'
+[2.713s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/colcon-core/packages/robp_phidgets_temperature)
+[2.718s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(robp_phidgets_temperature)
+[2.719s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature' for CMake module files
+[2.720s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature' for CMake config files
+[2.721s] Level 1:colcon.colcon_core.shell:create_environment_hook('robp_phidgets_temperature', 'cmake_prefix_path')
+[2.723s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/cmake_prefix_path.ps1'
+[2.725s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/cmake_prefix_path.dsv'
+[2.729s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/cmake_prefix_path.sh'
+[2.731s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature/lib'
+[2.732s] Level 1:colcon.colcon_core.shell:create_environment_hook('robp_phidgets_temperature', 'ld_library_path_lib')
+[2.732s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/ld_library_path_lib.ps1'
+[2.734s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/ld_library_path_lib.dsv'
+[2.736s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/hook/ld_library_path_lib.sh'
+[2.737s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature/bin'
+[2.738s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature/lib/pkgconfig/robp_phidgets_temperature.pc'
+[2.738s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature/lib/python3.12/site-packages'
+[2.739s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_phidgets_temperature/bin'
+[2.739s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.ps1'
+[2.741s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.dsv'
+[2.743s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.sh'
+[2.744s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.bash'
+[2.745s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.zsh'
+[2.747s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/group1/dd2419_ws/install/robp_phidgets_temperature/share/colcon-core/packages/robp_phidgets_temperature)
+[2.752s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/group1/dd2419_ws/src/pickup' with build type 'ament_python'
+[2.752s] Level 1:colcon.colcon_core.shell:create_environment_hook('pickup', 'ament_prefix_path')
+[2.753s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/pickup/share/pickup/hook/ament_prefix_path.ps1'
+[2.754s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/pickup/share/pickup/hook/ament_prefix_path.dsv'
+[2.755s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/pickup/share/pickup/hook/ament_prefix_path.sh'
+[2.756s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[2.757s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.536s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/group1/dd2419_ws/src/pickup'
+[3.536s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[3.537s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.712s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/arm_servos_pubs_subs': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/arm_servos_pubs_subs/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/arm_servos_pubs_subs/build --no-deps symlink_data
+[3.769s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/display': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/display/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/display/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/display/build --no-deps symlink_data
+[3.879s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/controller': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/controller/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/controller/build --no-deps symlink_data
+[4.029s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/detection': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/detection/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/detection/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/detection/build --no-deps symlink_data
+[4.043s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/odometry': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/odometry/build --no-deps symlink_data
+[4.141s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/lidar': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/lidar/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/lidar/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/lidar/build --no-deps symlink_data
+[4.673s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(robp_interfaces)
+[4.674s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces' for CMake module files
+[4.675s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces' for CMake config files
+[4.676s] Level 1:colcon.colcon_core.shell:create_environment_hook('robp_interfaces', 'cmake_prefix_path')
+[4.676s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/cmake_prefix_path.ps1'
+[4.683s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/cmake_prefix_path.dsv'
+[4.684s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/cmake_prefix_path.sh'
+[4.685s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces/lib'
+[4.685s] Level 1:colcon.colcon_core.shell:create_environment_hook('robp_interfaces', 'ld_library_path_lib')
+[4.686s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/ld_library_path_lib.ps1'
+[4.679s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/group1/dd2419_ws/build/robp_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/stearing:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/group1/dd2419_ws/build/robp_interfaces
+[4.691s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/ld_library_path_lib.dsv'
+[4.692s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/ld_library_path_lib.sh'
+[4.693s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces/bin'
+[4.693s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces/lib/pkgconfig/robp_interfaces.pc'
+[4.693s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages'
+[4.694s] Level 1:colcon.colcon_core.shell:create_environment_hook('robp_interfaces', 'pythonpath')
+[4.694s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/pythonpath.ps1'
+[4.695s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/pythonpath.dsv'
+[4.696s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/pythonpath.sh'
+[4.697s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces/bin'
+[4.697s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.ps1'
+[4.698s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.dsv'
+[4.704s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.sh'
+[4.706s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.bash'
+[4.710s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.zsh'
+[4.710s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/group1/dd2419_ws/install/robp_interfaces/share/colcon-core/packages/robp_interfaces)
+[4.715s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(robp_interfaces)
+[4.715s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces' for CMake module files
+[4.719s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces' for CMake config files
+[4.720s] Level 1:colcon.colcon_core.shell:create_environment_hook('robp_interfaces', 'cmake_prefix_path')
+[4.720s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/cmake_prefix_path.ps1'
+[4.721s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/cmake_prefix_path.dsv'
+[4.725s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/cmake_prefix_path.sh'
+[4.727s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces/lib'
+[4.727s] Level 1:colcon.colcon_core.shell:create_environment_hook('robp_interfaces', 'ld_library_path_lib')
+[4.727s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/ld_library_path_lib.ps1'
+[4.728s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/ld_library_path_lib.dsv'
+[4.729s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/ld_library_path_lib.sh'
+[4.730s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces/bin'
+[4.730s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces/lib/pkgconfig/robp_interfaces.pc'
+[4.730s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages'
+[4.731s] Level 1:colcon.colcon_core.shell:create_environment_hook('robp_interfaces', 'pythonpath')
+[4.734s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/pythonpath.ps1'
+[4.735s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/pythonpath.dsv'
+[4.741s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/hook/pythonpath.sh'
+[4.742s] Level 1:colcon.colcon_core.environment:checking '/home/group1/dd2419_ws/install/robp_interfaces/bin'
+[4.742s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.ps1'
+[4.743s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.dsv'
+[4.744s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.sh'
+[4.751s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.bash'
+[4.756s] INFO:colcon.colcon_core.shell:Creating package script '/home/group1/dd2419_ws/install/robp_interfaces/share/robp_interfaces/package.zsh'
+[4.756s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/group1/dd2419_ws/install/robp_interfaces/share/colcon-core/packages/robp_interfaces)
+[4.757s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders' with build type 'ament_cmake'
+[4.757s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders'
+[4.757s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[4.757s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[4.809s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/robp_phidgets_encoders': CMAKE_PREFIX_PATH=/home/group1/dd2419_ws/install/robp_interfaces:/home/group1/dd2419_ws/install/usb_cam:/home/group1/dd2419_ws/install/sllidar_ros2:/home/group1/dd2419_ws/install/robp_phidgets_temperature:/home/group1/dd2419_ws/install/robp_phidgets_spatial:/home/group1/dd2419_ws/install/robp_phidgets_motors:/home/group1/dd2419_ws/install/robp_phidgets_encoders:/home/group1/esp32_microros_ws/install/micro_ros_setup:/home/group1/esp32_microros_ws/install/micro_ros_agent:/home/group1/esp32_microros_ws/install/micro_ros_msgs:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/stearing:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/group1/dd2419_ws/install/robp_interfaces/lib:/home/group1/dd2419_ws/install/usb_cam/lib:/home/group1/dd2419_ws/install/robp_phidgets_temperature/lib:/home/group1/dd2419_ws/install/robp_phidgets_spatial/lib:/home/group1/dd2419_ws/install/robp_phidgets_motors/lib:/home/group1/dd2419_ws/install/robp_phidgets_encoders/lib:/home/group1/esp32_microros_ws/install/micro_ros_agent/lib:/home/group1/esp32_microros_ws/install/micro_ros_msgs/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/libphidget22/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib PYTHONPATH=/home/group1/dd2419_ws/install/robp_interfaces/lib/python3.12/site-packages:/home/group1/dd2419_ws/build/steering:/home/group1/dd2419_ws/install/steering/lib/python3.12/site-packages:/home/group1/dd2419_ws/build/stearing:/home/group1/dd2419_ws/install/stearing/lib/python3.12/site-packages:/home/group1/dd2419_ws/build/robp_launch:/home/group1/dd2419_ws/install/robp_launch/lib/python3.12/site-packages:/home/group1/dd2419_ws/build/robot_odometry:/home/group1/dd2419_ws/install/robot_odometry/lib/python3.12/site-packages:/home/group1/dd2419_ws/build/pickup:/home/group1/dd2419_ws/install/pickup/lib/python3.12/site-packages:/home/group1/dd2419_ws/build/odometry:/home/group1/dd2419_ws/install/odometry/lib/python3.12/site-packages:/home/group1/dd2419_ws/build/lidar:/home/group1/dd2419_ws/install/lidar/lib/python3.12/site-packages:/home/group1/dd2419_ws/build/display:/home/group1/dd2419_ws/install/display/lib/python3.12/site-packages:/home/group1/dd2419_ws/build/detection:/home/group1/dd2419_ws/install/detection/lib/python3.12/site-packages:/home/group1/dd2419_ws/build/controller:/home/group1/dd2419_ws/install/controller/lib/python3.12/site-packages:/home/group1/dd2419_ws/build/arm_servos_pubs_subs:/home/group1/dd2419_ws/install/arm_servos_pubs_subs/lib/python3.12/site-packages:/home/group1/esp32_microros_ws/install/micro_ros_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/cmake --build /home/group1/dd2419_ws/build/robp_phidgets_encoders -- -j8 -l8
+[5.205s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/group1/dd2419_ws/build/pickup': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/pickup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/pickup/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/pickup/build --no-deps symlink_data
+[5.418s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/group1/dd2419_ws/build/controller' returned '1': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/controller/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/controller/build --no-deps symlink_data
+[6.280s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[6.280s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[6.280s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '1'
+[6.281s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[6.288s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[6.288s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[6.288s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[6.302s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[6.303s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/group1/dd2419_ws/install/local_setup.ps1'
+[6.304s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/group1/dd2419_ws/install/_local_setup_util_ps1.py'
+[6.305s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/group1/dd2419_ws/install/setup.ps1'
+[6.307s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/group1/dd2419_ws/install/local_setup.sh'
+[6.307s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/group1/dd2419_ws/install/_local_setup_util_sh.py'
+[6.308s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/group1/dd2419_ws/install/setup.sh'
+[6.309s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/group1/dd2419_ws/install/local_setup.bash'
+[6.310s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/group1/dd2419_ws/install/setup.bash'
+[6.311s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/group1/dd2419_ws/install/local_setup.zsh'
+[6.312s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/group1/dd2419_ws/install/setup.zsh'

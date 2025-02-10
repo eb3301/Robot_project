@@ -1,0 +1,18 @@
+[2.993s] Invoking command in '/home/group1/dd2419_ws/build/odometry': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/odometry/build --no-deps symlink_data
+[3.708s] running develop
+[4.130s] running egg_info
+[4.154s] writing odometry.egg-info/PKG-INFO
+[4.155s] writing dependency_links to odometry.egg-info/dependency_links.txt
+[4.155s] writing entry points to odometry.egg-info/entry_points.txt
+[4.155s] writing requirements to odometry.egg-info/requires.txt
+[4.156s] writing top-level names to odometry.egg-info/top_level.txt
+[4.207s] reading manifest file 'odometry.egg-info/SOURCES.txt'
+[4.209s] writing manifest file 'odometry.egg-info/SOURCES.txt'
+[4.239s] running build_ext
+[4.239s] Creating /home/group1/dd2419_ws/install/odometry/lib/python3.12/site-packages/odometry.egg-link (link to .)
+[4.240s] Installing odometry script to /home/group1/dd2419_ws/install/odometry/lib/odometry
+[4.240s] 
+[4.240s] Installed /home/group1/dd2419_ws/build/odometry
+[4.240s] running symlink_data
+[4.241s] symbolically linking /home/group1/dd2419_ws/build/odometry/resource/odometry -> /home/group1/dd2419_ws/install/odometry/share/ament_index/resource_index/packages
+[4.241s] error: [Errno 17] File exists: '/home/group1/dd2419_ws/build/odometry/resource/odometry' -> '/home/group1/dd2419_ws/install/odometry/share/ament_index/resource_index/packages/odometry'

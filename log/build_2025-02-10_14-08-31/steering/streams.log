@@ -1,0 +1,25 @@
+[1.214s] Invoking command in '/home/group1/dd2419_ws/build/steering': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/steering/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/steering/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/steering/build --no-deps symlink_data
+[1.631s] running develop
+[1.883s] running egg_info
+[1.883s] creating steering.egg-info
+[1.906s] writing steering.egg-info/PKG-INFO
+[1.906s] writing dependency_links to steering.egg-info/dependency_links.txt
+[1.906s] writing entry points to steering.egg-info/entry_points.txt
+[1.906s] writing requirements to steering.egg-info/requires.txt
+[1.906s] writing top-level names to steering.egg-info/top_level.txt
+[1.906s] writing manifest file 'steering.egg-info/SOURCES.txt'
+[1.953s] reading manifest file 'steering.egg-info/SOURCES.txt'
+[1.954s] writing manifest file 'steering.egg-info/SOURCES.txt'
+[1.978s] running build_ext
+[1.979s] Creating /home/group1/dd2419_ws/install/steering/lib/python3.12/site-packages/steering.egg-link (link to .)
+[1.979s] Installing auto_control script to /home/group1/dd2419_ws/install/steering/lib/steering
+[1.979s] Installing wheel_control script to /home/group1/dd2419_ws/install/steering/lib/steering
+[1.980s] 
+[1.980s] Installed /home/group1/dd2419_ws/build/steering
+[1.980s] running symlink_data
+[1.980s] creating /home/group1/dd2419_ws/install/steering/share/ament_index
+[1.980s] creating /home/group1/dd2419_ws/install/steering/share/ament_index/resource_index
+[1.980s] creating /home/group1/dd2419_ws/install/steering/share/ament_index/resource_index/packages
+[1.980s] symbolically linking /home/group1/dd2419_ws/build/steering/resource/steering -> /home/group1/dd2419_ws/install/steering/share/ament_index/resource_index/packages
+[1.980s] symbolically linking /home/group1/dd2419_ws/build/steering/package.xml -> /home/group1/dd2419_ws/install/steering/share/steering
+[2.015s] Invoked command in '/home/group1/dd2419_ws/build/steering' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/steering/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/steering/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/steering/build --no-deps symlink_data
