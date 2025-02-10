@@ -1,0 +1,17 @@
+[1.774s] Invoking command in '/home/robot/dd2419_ws/build/display': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/display/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/display/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/display/build --no-deps symlink_data
+[2.107s] running develop
+[2.291s] running egg_info
+[2.301s] writing display.egg-info/PKG-INFO
+[2.301s] writing dependency_links to display.egg-info/dependency_links.txt
+[2.301s] writing entry points to display.egg-info/entry_points.txt
+[2.301s] writing requirements to display.egg-info/requires.txt
+[2.302s] writing top-level names to display.egg-info/top_level.txt
+[2.324s] reading manifest file 'display.egg-info/SOURCES.txt'
+[2.324s] writing manifest file 'display.egg-info/SOURCES.txt'
+[2.337s] running build_ext
+[2.337s] Creating /home/robot/dd2419_ws/install/display/lib/python3.12/site-packages/display.egg-link (link to .)
+[2.337s] Installing display script to /home/robot/dd2419_ws/install/display/lib/display
+[2.338s] 
+[2.338s] Installed /home/robot/dd2419_ws/build/display
+[2.338s] running symlink_data
+[2.369s] Invoked command in '/home/robot/dd2419_ws/build/display' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/display/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/display/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/display/build --no-deps symlink_data

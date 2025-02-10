@@ -23,7 +23,7 @@ function(ament_cmake_symlink_install_directory cmake_current_source_dir)
 
   # make destination absolute path and ensure that it exists
   if(NOT IS_ABSOLUTE "${ARG_DESTINATION}")
-    set(ARG_DESTINATION "/home/group1/dd2419_ws/install/usb_cam/${ARG_DESTINATION}")
+    set(ARG_DESTINATION "/home/robot/dd2419_ws/install/usb_cam/${ARG_DESTINATION}")
   endif()
   if(NOT EXISTS "${ARG_DESTINATION}")
     file(MAKE_DIRECTORY "${ARG_DESTINATION}")
@@ -123,7 +123,7 @@ function(ament_cmake_symlink_install_files cmake_current_source_dir)
 
   # make destination an absolute path and ensure that it exists
   if(NOT IS_ABSOLUTE "${ARG_DESTINATION}")
-    set(ARG_DESTINATION "/home/group1/dd2419_ws/install/usb_cam/${ARG_DESTINATION}")
+    set(ARG_DESTINATION "/home/robot/dd2419_ws/install/usb_cam/${ARG_DESTINATION}")
   endif()
   if(NOT EXISTS "${ARG_DESTINATION}")
     file(MAKE_DIRECTORY "${ARG_DESTINATION}")
@@ -181,7 +181,7 @@ function(ament_cmake_symlink_install_programs cmake_current_source_dir)
 
   # make destination an absolute path and ensure that it exists
   if(NOT IS_ABSOLUTE "${ARG_DESTINATION}")
-    set(ARG_DESTINATION "/home/group1/dd2419_ws/install/usb_cam/${ARG_DESTINATION}")
+    set(ARG_DESTINATION "/home/robot/dd2419_ws/install/usb_cam/${ARG_DESTINATION}")
   endif()
   if(NOT EXISTS "${ARG_DESTINATION}")
     file(MAKE_DIRECTORY "${ARG_DESTINATION}")
@@ -251,7 +251,7 @@ function(ament_cmake_symlink_install_targets)
 
     # make destination an absolute path and ensure that it exists
     if(NOT IS_ABSOLUTE "${destination}")
-      set(destination "/home/group1/dd2419_ws/install/usb_cam/${destination}")
+      set(destination "/home/robot/dd2419_ws/install/usb_cam/${destination}")
     endif()
     if(NOT EXISTS "${destination}")
       file(MAKE_DIRECTORY "${destination}")
@@ -311,85 +311,85 @@ message(STATUS "Execute custom install script")
 # begin of custom install code
 
 # install(FILES "/opt/ros/jazzy/lib/python3.12/site-packages/ament_package/template/environment_hook/library_path.sh" "DESTINATION" "share/usb_cam/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/opt/ros/jazzy/lib/python3.12/site-packages/ament_package/template/environment_hook/library_path.sh" "DESTINATION" "share/usb_cam/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/opt/ros/jazzy/lib/python3.12/site-packages/ament_package/template/environment_hook/library_path.sh" "DESTINATION" "share/usb_cam/environment")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/library_path.dsv" "DESTINATION" "share/usb_cam/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/library_path.dsv" "DESTINATION" "share/usb_cam/environment")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/library_path.dsv" "DESTINATION" "share/usb_cam/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/library_path.dsv" "DESTINATION" "share/usb_cam/environment")
 
 # install("TARGETS" "usb_cam_node_exe" "DESTINATION" "lib/usb_cam")
-include("/home/group1/dd2419_ws/build/usb_cam/ament_cmake_symlink_install_targets_0_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
+include("/home/robot/dd2419_ws/build/usb_cam/ament_cmake_symlink_install_targets_0_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
 
 # install(PROGRAMS "scripts/show_image.py" "DESTINATION" "lib/usb_cam")
-ament_cmake_symlink_install_programs("/home/group1/dd2419_ws/src/robp_robot/usb_cam" PROGRAMS "scripts/show_image.py" "DESTINATION" "lib/usb_cam")
+ament_cmake_symlink_install_programs("/home/robot/dd2419_ws/src/robp_robot/usb_cam" PROGRAMS "scripts/show_image.py" "DESTINATION" "lib/usb_cam")
 
 # install("TARGETS" "usb_cam" "usb_cam_node" "ARCHIVE_DESTINATION" "lib" "LIBRARY_DESTINATION" "lib" "RUNTIME_DESTINATION" "lib")
-include("/home/group1/dd2419_ws/build/usb_cam/ament_cmake_symlink_install_targets_1_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
+include("/home/robot/dd2419_ws/build/usb_cam/ament_cmake_symlink_install_targets_1_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
 
 # install(DIRECTORY "include/" "DESTINATION" "include")
-ament_cmake_symlink_install_directory("/home/group1/dd2419_ws/src/robp_robot/usb_cam" DIRECTORY "include/" "DESTINATION" "include")
+ament_cmake_symlink_install_directory("/home/robot/dd2419_ws/src/robp_robot/usb_cam" DIRECTORY "include/" "DESTINATION" "include")
 
 # install("TARGETS" "usb_cam_node" "ARCHIVE_DESTINATION" "lib" "LIBRARY_DESTINATION" "lib" "RUNTIME_DESTINATION" "bin")
-include("/home/group1/dd2419_ws/build/usb_cam/ament_cmake_symlink_install_targets_2_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
+include("/home/robot/dd2419_ws/build/usb_cam/ament_cmake_symlink_install_targets_2_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
 
 # install("TARGETS" "DESTINATION" "lib/usb_cam")
-include("/home/group1/dd2419_ws/build/usb_cam/ament_cmake_symlink_install_targets_3_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
+include("/home/robot/dd2419_ws/build/usb_cam/ament_cmake_symlink_install_targets_3_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
 
 # install(DIRECTORY "launch" "DESTINATION" "share/usb_cam")
-ament_cmake_symlink_install_directory("/home/group1/dd2419_ws/src/robp_robot/usb_cam" DIRECTORY "launch" "DESTINATION" "share/usb_cam")
+ament_cmake_symlink_install_directory("/home/robot/dd2419_ws/src/robp_robot/usb_cam" DIRECTORY "launch" "DESTINATION" "share/usb_cam")
 
 # install(DIRECTORY "config" "DESTINATION" "share/usb_cam")
-ament_cmake_symlink_install_directory("/home/group1/dd2419_ws/src/robp_robot/usb_cam" DIRECTORY "config" "DESTINATION" "share/usb_cam")
+ament_cmake_symlink_install_directory("/home/robot/dd2419_ws/src/robp_robot/usb_cam" DIRECTORY "config" "DESTINATION" "share/usb_cam")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/usb_cam" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/usb_cam" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/usb_cam" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/usb_cam" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/usb_cam" "DESTINATION" "share/ament_index/resource_index/parent_prefix_path")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/usb_cam" "DESTINATION" "share/ament_index/resource_index/parent_prefix_path")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/usb_cam" "DESTINATION" "share/ament_index/resource_index/parent_prefix_path")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/usb_cam" "DESTINATION" "share/ament_index/resource_index/parent_prefix_path")
 
 # install(FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/ament_prefix_path.sh" "DESTINATION" "share/usb_cam/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/ament_prefix_path.sh" "DESTINATION" "share/usb_cam/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/ament_prefix_path.sh" "DESTINATION" "share/usb_cam/environment")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/ament_prefix_path.dsv" "DESTINATION" "share/usb_cam/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/ament_prefix_path.dsv" "DESTINATION" "share/usb_cam/environment")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/ament_prefix_path.dsv" "DESTINATION" "share/usb_cam/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/ament_prefix_path.dsv" "DESTINATION" "share/usb_cam/environment")
 
 # install(FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/path.sh" "DESTINATION" "share/usb_cam/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/path.sh" "DESTINATION" "share/usb_cam/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/path.sh" "DESTINATION" "share/usb_cam/environment")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/path.dsv" "DESTINATION" "share/usb_cam/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/path.dsv" "DESTINATION" "share/usb_cam/environment")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/path.dsv" "DESTINATION" "share/usb_cam/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/path.dsv" "DESTINATION" "share/usb_cam/environment")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.bash" "DESTINATION" "share/usb_cam")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.bash" "DESTINATION" "share/usb_cam")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.bash" "DESTINATION" "share/usb_cam")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.bash" "DESTINATION" "share/usb_cam")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.sh" "DESTINATION" "share/usb_cam")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.sh" "DESTINATION" "share/usb_cam")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.sh" "DESTINATION" "share/usb_cam")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.sh" "DESTINATION" "share/usb_cam")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.zsh" "DESTINATION" "share/usb_cam")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.zsh" "DESTINATION" "share/usb_cam")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.zsh" "DESTINATION" "share/usb_cam")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.zsh" "DESTINATION" "share/usb_cam")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.dsv" "DESTINATION" "share/usb_cam")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.dsv" "DESTINATION" "share/usb_cam")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.dsv" "DESTINATION" "share/usb_cam")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/local_setup.dsv" "DESTINATION" "share/usb_cam")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/package.dsv" "DESTINATION" "share/usb_cam")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/package.dsv" "DESTINATION" "share/usb_cam")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/package.dsv" "DESTINATION" "share/usb_cam")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_environment_hooks/package.dsv" "DESTINATION" "share/usb_cam")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/packages/usb_cam" "DESTINATION" "share/ament_index/resource_index/packages")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/packages/usb_cam" "DESTINATION" "share/ament_index/resource_index/packages")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/packages/usb_cam" "DESTINATION" "share/ament_index/resource_index/packages")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/packages/usb_cam" "DESTINATION" "share/ament_index/resource_index/packages")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/rclcpp_components/usb_cam" "DESTINATION" "share/ament_index/resource_index/rclcpp_components")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/rclcpp_components/usb_cam" "DESTINATION" "share/ament_index/resource_index/rclcpp_components")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/rclcpp_components/usb_cam" "DESTINATION" "share/ament_index/resource_index/rclcpp_components")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_index/share/ament_index/resource_index/rclcpp_components/usb_cam" "DESTINATION" "share/ament_index/resource_index/rclcpp_components")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_export_libraries/ament_cmake_export_libraries-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_export_libraries/ament_cmake_export_libraries-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_export_libraries/ament_cmake_export_libraries-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_export_libraries/ament_cmake_export_libraries-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_export_dependencies/ament_cmake_export_dependencies-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_export_dependencies/ament_cmake_export_dependencies-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_export_dependencies/ament_cmake_export_dependencies-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_export_dependencies/ament_cmake_export_dependencies-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_export_include_directories/ament_cmake_export_include_directories-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_export_include_directories/ament_cmake_export_include_directories-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_export_include_directories/ament_cmake_export_include_directories-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_export_include_directories/ament_cmake_export_include_directories-extras.cmake" "DESTINATION" "share/usb_cam/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig.cmake" "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig-version.cmake" "DESTINATION" "share/usb_cam/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig.cmake" "/home/group1/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig-version.cmake" "DESTINATION" "share/usb_cam/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig.cmake" "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig-version.cmake" "DESTINATION" "share/usb_cam/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig.cmake" "/home/robot/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig-version.cmake" "DESTINATION" "share/usb_cam/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/src/robp_robot/usb_cam/package.xml" "DESTINATION" "share/usb_cam")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/group1/dd2419_ws/src/robp_robot/usb_cam/package.xml" "DESTINATION" "share/usb_cam")
+# install(FILES "/home/robot/dd2419_ws/src/robp_robot/usb_cam/package.xml" "DESTINATION" "share/usb_cam")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/usb_cam" FILES "/home/robot/dd2419_ws/src/robp_robot/usb_cam/package.xml" "DESTINATION" "share/usb_cam")

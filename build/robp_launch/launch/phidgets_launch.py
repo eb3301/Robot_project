@@ -1,1 +1,1 @@
-/home/group1/dd2419_ws/src/robp_robot/robp_launch/launch/phidgets_launch.py
+/home/robot/dd2419_ws/src/robp_robot/robp_launch/launch/phidgets_launch.py

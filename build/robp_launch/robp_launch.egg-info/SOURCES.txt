@@ -1,7 +1,6 @@
 package.xml
 setup.cfg
 setup.py
-launch/all_nodes_launch.py
 launch/arm_camera_launch.yaml
 launch/frames_launch.xml
 launch/lidar_launch.yaml

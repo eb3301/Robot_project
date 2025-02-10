@@ -1,14 +1,14 @@
 {
   "package_name": "robp_interfaces",
-  "output_dir": "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_c/robp_interfaces",
+  "output_dir": "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_c/robp_interfaces",
   "template_dir": "/opt/ros/jazzy/share/rosidl_generator_c/cmake/../resource",
   "idl_tuples": [
-    "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/DutyCycles.idl",
-    "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/Encoders.idl"
+    "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/DutyCycles.idl",
+    "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/Encoders.idl"
   ],
   "ros_interface_files": [
-    "/home/group1/dd2419_ws/src/robp_robot/robp_interfaces/msg/DutyCycles.msg",
-    "/home/group1/dd2419_ws/src/robp_robot/robp_interfaces/msg/Encoders.msg"
+    "/home/robot/dd2419_ws/src/robp_robot/robp_interfaces/msg/DutyCycles.msg",
+    "/home/robot/dd2419_ws/src/robp_robot/robp_interfaces/msg/Encoders.msg"
   ],
   "ros_interface_dependencies": [
     "std_msgs:/opt/ros/jazzy/share/std_msgs/msg/Bool.idl",
@@ -64,8 +64,8 @@
     "/opt/ros/jazzy/share/rosidl_generator_c/cmake/../resource/msg__type_support.h.em",
     "/opt/ros/jazzy/share/rosidl_generator_c/cmake/../resource/srv__type_support.c.em",
     "/opt/ros/jazzy/share/rosidl_generator_c/cmake/../resource/srv__type_support.h.em",
-    "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/DutyCycles.idl",
-    "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/Encoders.idl",
+    "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/DutyCycles.idl",
+    "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/Encoders.idl",
     "/opt/ros/jazzy/share/std_msgs/msg/Bool.idl",
     "/opt/ros/jazzy/share/std_msgs/msg/Byte.idl",
     "/opt/ros/jazzy/share/std_msgs/msg/ByteMultiArray.idl",
@@ -100,7 +100,7 @@
     "/opt/ros/jazzy/share/builtin_interfaces/msg/Time.idl"
   ],
   "type_description_tuples": [
-    "msg/DutyCycles.idl:/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/DutyCycles.json",
-    "msg/Encoders.idl:/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/Encoders.json"
+    "msg/DutyCycles.idl:/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/DutyCycles.json",
+    "msg/Encoders.idl:/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/Encoders.json"
   ]
 }

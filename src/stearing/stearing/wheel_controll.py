@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+import rclpy
+from rclpy.node import Node
+from geometry_msgs.msg import Twist
+from robp_interfaces.msg import DutyCycles
+import numpy as np
+
+class WheelController(Node):
+
+    def __init__(self):
+        super().__init__("Wheel Controller")   
+
+        self.cmd_vel_sub = self.create_subscription(Twist, '/cmd_vel', self.twist_callback())
+        
+        self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
+
+    def twist_callback(self, msg : Twist):
+        max_vel = 1 #m/s --- (made it up)
+
+        #Velocity and rotation
+        vel = msg.linear.x #m/s
+        stearing = msg.angular.z #rad
+
+        vel_factor = vel / max_vel
+
+        #GPT -- Duty Cycle Turning Factor
+        rot_factor_L = (np.tan(stearing) - 0.5) / np.tan(stearing)
+        rot_factor_R = (np.tan(stearing) + 0.5) / np.tan(stearing)
+
+
+        duty_cycles_msg = DutyCycles()
+
+        duty_cycles_msg.duty_cycle_left = vel_factor * rot_factor_L
+        duty_cycles_msg.duty_cycle_right = vel_factor *rot_factor_R
+
+        self.duty_pub.publish(duty_cycles_msg)
+
+def main():
+    rclpy.init()
+    node = WheelController()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()

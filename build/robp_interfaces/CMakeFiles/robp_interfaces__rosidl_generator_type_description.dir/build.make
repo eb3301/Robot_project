@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group1/dd2419_ws/src/robp_robot/robp_interfaces
+CMAKE_SOURCE_DIR = /home/robot/dd2419_ws/src/robp_robot/robp_interfaces
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group1/dd2419_ws/build/robp_interfaces
+CMAKE_BINARY_DIR = /home/robot/dd2419_ws/build/robp_interfaces
 
 # Utility rule file for robp_interfaces__rosidl_generator_type_description.
 
@@ -73,8 +73,8 @@ rosidl_generator_type_description/robp_interfaces/msg/DutyCycles.json: /opt/ros/
 rosidl_generator_type_description/robp_interfaces/msg/DutyCycles.json: /opt/ros/jazzy/lib/python3.12/site-packages/rosidl_generator_type_description/__init__.py
 rosidl_generator_type_description/robp_interfaces/msg/DutyCycles.json: rosidl_adapter/robp_interfaces/msg/DutyCycles.idl
 rosidl_generator_type_description/robp_interfaces/msg/DutyCycles.json: rosidl_adapter/robp_interfaces/msg/Encoders.idl
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/group1/dd2419_ws/build/robp_interfaces/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating type hashes for ROS interfaces"
-	/usr/bin/python3 /opt/ros/jazzy/lib/rosidl_generator_type_description/rosidl_generator_type_description --generator-arguments-file /home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description__arguments.json
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/robot/dd2419_ws/build/robp_interfaces/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating type hashes for ROS interfaces"
+	/usr/bin/python3 /opt/ros/jazzy/lib/rosidl_generator_type_description/rosidl_generator_type_description --generator-arguments-file /home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description__arguments.json
 
 rosidl_generator_type_description/robp_interfaces/msg/Encoders.json: rosidl_generator_type_description/robp_interfaces/msg/DutyCycles.json
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_type_description/robp_interfaces/msg/Encoders.json
@@ -94,6 +94,6 @@ CMakeFiles/robp_interfaces__rosidl_generator_type_description.dir/clean:
 .PHONY : CMakeFiles/robp_interfaces__rosidl_generator_type_description.dir/clean
 
 CMakeFiles/robp_interfaces__rosidl_generator_type_description.dir/depend:
-	cd /home/group1/dd2419_ws/build/robp_interfaces && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/group1/dd2419_ws/src/robp_robot/robp_interfaces /home/group1/dd2419_ws/src/robp_robot/robp_interfaces /home/group1/dd2419_ws/build/robp_interfaces /home/group1/dd2419_ws/build/robp_interfaces /home/group1/dd2419_ws/build/robp_interfaces/CMakeFiles/robp_interfaces__rosidl_generator_type_description.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/robot/dd2419_ws/build/robp_interfaces && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robot/dd2419_ws/src/robp_robot/robp_interfaces /home/robot/dd2419_ws/src/robp_robot/robp_interfaces /home/robot/dd2419_ws/build/robp_interfaces /home/robot/dd2419_ws/build/robp_interfaces /home/robot/dd2419_ws/build/robp_interfaces/CMakeFiles/robp_interfaces__rosidl_generator_type_description.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/robp_interfaces__rosidl_generator_type_description.dir/depend
 

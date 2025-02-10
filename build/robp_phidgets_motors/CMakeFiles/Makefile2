@@ -54,10 +54,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors
+CMAKE_SOURCE_DIR = /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group1/dd2419_ws/build/robp_phidgets_motors
+CMAKE_BINARY_DIR = /home/robot/dd2419_ws/build/robp_phidgets_motors
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -83,14 +83,14 @@ clean: CMakeFiles/robp_phidgets_motors.dir/clean
 CMakeFiles/uninstall.dir/all: CMakeFiles/robp_phidgets_motors_uninstall.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/uninstall.dir/build.make CMakeFiles/uninstall.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/uninstall.dir/build.make CMakeFiles/uninstall.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets_motors/CMakeFiles --progress-num= "Built target uninstall"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/robot/dd2419_ws/build/robp_phidgets_motors/CMakeFiles --progress-num= "Built target uninstall"
 .PHONY : CMakeFiles/uninstall.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/uninstall.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/group1/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/robot/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/uninstall.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/group1/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/robot/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 0
 .PHONY : CMakeFiles/uninstall.dir/rule
 
 # Convenience name for target.
@@ -109,14 +109,14 @@ CMakeFiles/uninstall.dir/clean:
 CMakeFiles/robp_phidgets_motors_uninstall.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/robp_phidgets_motors_uninstall.dir/build.make CMakeFiles/robp_phidgets_motors_uninstall.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/robp_phidgets_motors_uninstall.dir/build.make CMakeFiles/robp_phidgets_motors_uninstall.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets_motors/CMakeFiles --progress-num= "Built target robp_phidgets_motors_uninstall"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/robot/dd2419_ws/build/robp_phidgets_motors/CMakeFiles --progress-num= "Built target robp_phidgets_motors_uninstall"
 .PHONY : CMakeFiles/robp_phidgets_motors_uninstall.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/robp_phidgets_motors_uninstall.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/group1/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/robot/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/robp_phidgets_motors_uninstall.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/group1/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/robot/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 0
 .PHONY : CMakeFiles/robp_phidgets_motors_uninstall.dir/rule
 
 # Convenience name for target.
@@ -135,14 +135,14 @@ CMakeFiles/robp_phidgets_motors_uninstall.dir/clean:
 CMakeFiles/robp_phidgets_motors.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/robp_phidgets_motors.dir/build.make CMakeFiles/robp_phidgets_motors.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/robp_phidgets_motors.dir/build.make CMakeFiles/robp_phidgets_motors.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets_motors/CMakeFiles --progress-num=1,2,3 "Built target robp_phidgets_motors"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/robot/dd2419_ws/build/robp_phidgets_motors/CMakeFiles --progress-num=1,2,3 "Built target robp_phidgets_motors"
 .PHONY : CMakeFiles/robp_phidgets_motors.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/robp_phidgets_motors.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/group1/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/robot/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/robp_phidgets_motors.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/group1/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/robot/dd2419_ws/build/robp_phidgets_motors/CMakeFiles 0
 .PHONY : CMakeFiles/robp_phidgets_motors.dir/rule
 
 # Convenience name for target.

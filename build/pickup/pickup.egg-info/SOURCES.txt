@@ -1,13 +1,6 @@
 package.xml
 setup.cfg
 setup.py
-../../build/pickup/pickup.egg-info/PKG-INFO
-../../build/pickup/pickup.egg-info/SOURCES.txt
-../../build/pickup/pickup.egg-info/dependency_links.txt
-../../build/pickup/pickup.egg-info/entry_points.txt
-../../build/pickup/pickup.egg-info/requires.txt
-../../build/pickup/pickup.egg-info/top_level.txt
-../../build/pickup/pickup.egg-info/zip-safe
 pickup/__init__.py
 pickup/pickup (Copy)-feb4-11am.py
 pickup/pickup.py

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>robp_phidgets_motors</name>
+  <version>1.0.0</version>
+  <description>robp_phidgets_motors</description>
+
+  <maintainer email="dduberg@kth.se">Daniel Duberg</maintainer>
+
+  <license>MIT</license>
+
+  <author>Daniel Duberg</author>
+
+  <buildtool_depend>ament_cmake_ros</buildtool_depend>
+
+  <depend>phidgets_api</depend>
+  <depend>phidgets_msgs</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>robp_interfaces</depend>
+  <depend>std_srvs</depend>
+
+  <exec_depend>launch</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -2,7 +2,7 @@
 
 # since this file is sourced use either the provided AMENT_CURRENT_PREFIX
 # or fall back to the destination set at configure time
-: ${AMENT_CURRENT_PREFIX:="/home/group1/dd2419_ws/install/robp_phidgets_temperature"}
+: ${AMENT_CURRENT_PREFIX:="/home/robot/dd2419_ws/install/robp_phidgets_temperature"}
 if [ ! -d "$AMENT_CURRENT_PREFIX" ]; then
   if [ -z "$COLCON_CURRENT_PREFIX" ]; then
     echo "The compile time prefix path '$AMENT_CURRENT_PREFIX' doesn't " \

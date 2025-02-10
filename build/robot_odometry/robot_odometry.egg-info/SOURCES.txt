@@ -1,13 +1,6 @@
 package.xml
 setup.cfg
 setup.py
-../../build/robot_odometry/robot_odometry.egg-info/PKG-INFO
-../../build/robot_odometry/robot_odometry.egg-info/SOURCES.txt
-../../build/robot_odometry/robot_odometry.egg-info/dependency_links.txt
-../../build/robot_odometry/robot_odometry.egg-info/entry_points.txt
-../../build/robot_odometry/robot_odometry.egg-info/requires.txt
-../../build/robot_odometry/robot_odometry.egg-info/top_level.txt
-../../build/robot_odometry/robot_odometry.egg-info/zip-safe
 resource/robot_odometry
 robot_odometry/__init__.py
 robot_odometry/robot_odometry.py

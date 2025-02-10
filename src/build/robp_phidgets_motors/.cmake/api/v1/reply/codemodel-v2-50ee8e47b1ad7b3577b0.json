@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-73484645e6302d579d90.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.15"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "robp_phidgets_motors",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "robp_phidgets_motors::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-robp_phidgets_motors-Release-ff7960f43e337a711eec.json",
+					"name" : "robp_phidgets_motors",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "robp_phidgets_motors_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-robp_phidgets_motors_uninstall-Release-063e8c26e617db2855b7.json",
+					"name" : "robp_phidgets_motors_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-Release-3e6f824743111fc766c3.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/robot/dd2419_ws/src/build/robp_phidgets_motors",
+		"source" : "/home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

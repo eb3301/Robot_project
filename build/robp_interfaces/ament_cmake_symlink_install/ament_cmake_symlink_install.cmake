@@ -23,7 +23,7 @@ function(ament_cmake_symlink_install_directory cmake_current_source_dir)
 
   # make destination absolute path and ensure that it exists
   if(NOT IS_ABSOLUTE "${ARG_DESTINATION}")
-    set(ARG_DESTINATION "/home/group1/dd2419_ws/install/robp_interfaces/${ARG_DESTINATION}")
+    set(ARG_DESTINATION "/home/robot/dd2419_ws/install/robp_interfaces/${ARG_DESTINATION}")
   endif()
   if(NOT EXISTS "${ARG_DESTINATION}")
     file(MAKE_DIRECTORY "${ARG_DESTINATION}")
@@ -123,7 +123,7 @@ function(ament_cmake_symlink_install_files cmake_current_source_dir)
 
   # make destination an absolute path and ensure that it exists
   if(NOT IS_ABSOLUTE "${ARG_DESTINATION}")
-    set(ARG_DESTINATION "/home/group1/dd2419_ws/install/robp_interfaces/${ARG_DESTINATION}")
+    set(ARG_DESTINATION "/home/robot/dd2419_ws/install/robp_interfaces/${ARG_DESTINATION}")
   endif()
   if(NOT EXISTS "${ARG_DESTINATION}")
     file(MAKE_DIRECTORY "${ARG_DESTINATION}")
@@ -181,7 +181,7 @@ function(ament_cmake_symlink_install_programs cmake_current_source_dir)
 
   # make destination an absolute path and ensure that it exists
   if(NOT IS_ABSOLUTE "${ARG_DESTINATION}")
-    set(ARG_DESTINATION "/home/group1/dd2419_ws/install/robp_interfaces/${ARG_DESTINATION}")
+    set(ARG_DESTINATION "/home/robot/dd2419_ws/install/robp_interfaces/${ARG_DESTINATION}")
   endif()
   if(NOT EXISTS "${ARG_DESTINATION}")
     file(MAKE_DIRECTORY "${ARG_DESTINATION}")
@@ -251,7 +251,7 @@ function(ament_cmake_symlink_install_targets)
 
     # make destination an absolute path and ensure that it exists
     if(NOT IS_ABSOLUTE "${destination}")
-      set(destination "/home/group1/dd2419_ws/install/robp_interfaces/${destination}")
+      set(destination "/home/robot/dd2419_ws/install/robp_interfaces/${destination}")
     endif()
     if(NOT EXISTS "${destination}")
       file(MAKE_DIRECTORY "${destination}")
@@ -310,131 +310,131 @@ message(STATUS "Execute custom install script")
 
 # begin of custom install code
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/rosidl_interfaces/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/rosidl_interfaces")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/rosidl_interfaces/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/rosidl_interfaces")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/rosidl_interfaces/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/rosidl_interfaces")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/rosidl_interfaces/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/rosidl_interfaces")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/DutyCycles.json" "DESTINATION" "share/robp_interfaces/msg")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/DutyCycles.json" "DESTINATION" "share/robp_interfaces/msg")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/DutyCycles.json" "DESTINATION" "share/robp_interfaces/msg")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/DutyCycles.json" "DESTINATION" "share/robp_interfaces/msg")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/Encoders.json" "DESTINATION" "share/robp_interfaces/msg")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/Encoders.json" "DESTINATION" "share/robp_interfaces/msg")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/Encoders.json" "DESTINATION" "share/robp_interfaces/msg")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces/msg/Encoders.json" "DESTINATION" "share/robp_interfaces/msg")
 
-# install(DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.h")
-ament_cmake_symlink_install_directory("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.h")
+# install(DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.h")
+ament_cmake_symlink_install_directory("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.h")
 
 # install(FILES "/opt/ros/jazzy/lib/python3.12/site-packages/ament_package/template/environment_hook/library_path.sh" "DESTINATION" "share/robp_interfaces/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/opt/ros/jazzy/lib/python3.12/site-packages/ament_package/template/environment_hook/library_path.sh" "DESTINATION" "share/robp_interfaces/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/opt/ros/jazzy/lib/python3.12/site-packages/ament_package/template/environment_hook/library_path.sh" "DESTINATION" "share/robp_interfaces/environment")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/library_path.dsv" "DESTINATION" "share/robp_interfaces/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/library_path.dsv" "DESTINATION" "share/robp_interfaces/environment")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/library_path.dsv" "DESTINATION" "share/robp_interfaces/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/library_path.dsv" "DESTINATION" "share/robp_interfaces/environment")
 
-# install(DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_typesupport_fastrtps_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN_EXCLUDE" "*.cpp")
-ament_cmake_symlink_install_directory("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_typesupport_fastrtps_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN_EXCLUDE" "*.cpp")
+# install(DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_typesupport_fastrtps_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN_EXCLUDE" "*.cpp")
+ament_cmake_symlink_install_directory("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_typesupport_fastrtps_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN_EXCLUDE" "*.cpp")
 
-# install(DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_typesupport_introspection_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.h")
-ament_cmake_symlink_install_directory("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_typesupport_introspection_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.h")
+# install(DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_typesupport_introspection_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.h")
+ament_cmake_symlink_install_directory("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_typesupport_introspection_c/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.h")
 
-# install(DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.hpp")
-ament_cmake_symlink_install_directory("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.hpp")
+# install(DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.hpp")
+ament_cmake_symlink_install_directory("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.hpp")
 
-# install(DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_typesupport_fastrtps_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN_EXCLUDE" "*.cpp")
-ament_cmake_symlink_install_directory("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_typesupport_fastrtps_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN_EXCLUDE" "*.cpp")
+# install(DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_typesupport_fastrtps_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN_EXCLUDE" "*.cpp")
+ament_cmake_symlink_install_directory("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_typesupport_fastrtps_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN_EXCLUDE" "*.cpp")
 
-# install(DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_typesupport_introspection_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.hpp")
-ament_cmake_symlink_install_directory("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_typesupport_introspection_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.hpp")
+# install(DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_typesupport_introspection_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.hpp")
+ament_cmake_symlink_install_directory("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_typesupport_introspection_cpp/robp_interfaces/" "DESTINATION" "include/robp_interfaces/robp_interfaces" "PATTERN" "*.hpp")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/pythonpath.sh" "DESTINATION" "share/robp_interfaces/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/pythonpath.sh" "DESTINATION" "share/robp_interfaces/environment")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/pythonpath.sh" "DESTINATION" "share/robp_interfaces/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/pythonpath.sh" "DESTINATION" "share/robp_interfaces/environment")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/pythonpath.dsv" "DESTINATION" "share/robp_interfaces/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/pythonpath.dsv" "DESTINATION" "share/robp_interfaces/environment")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/pythonpath.dsv" "DESTINATION" "share/robp_interfaces/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/pythonpath.dsv" "DESTINATION" "share/robp_interfaces/environment")
 
-# install(DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_python/robp_interfaces/robp_interfaces.egg-info/" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces-1.0.0-py3.12.egg-info")
-ament_cmake_symlink_install_directory("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_python/robp_interfaces/robp_interfaces.egg-info/" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces-1.0.0-py3.12.egg-info")
+# install(DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_python/robp_interfaces/robp_interfaces.egg-info/" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces-1.0.0-py3.12.egg-info")
+ament_cmake_symlink_install_directory("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_python/robp_interfaces/robp_interfaces.egg-info/" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces-1.0.0-py3.12.egg-info")
 
-# install(DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_py/robp_interfaces/" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces" "PATTERN_EXCLUDE" "*.pyc" "PATTERN_EXCLUDE" "__pycache__")
-ament_cmake_symlink_install_directory("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_py/robp_interfaces/" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces" "PATTERN_EXCLUDE" "*.pyc" "PATTERN_EXCLUDE" "__pycache__")
+# install(DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_py/robp_interfaces/" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces" "PATTERN_EXCLUDE" "*.pyc" "PATTERN_EXCLUDE" "__pycache__")
+ament_cmake_symlink_install_directory("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" DIRECTORY "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_generator_py/robp_interfaces/" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces" "PATTERN_EXCLUDE" "*.pyc" "PATTERN_EXCLUDE" "__pycache__")
 
 # install("TARGETS" "robp_interfaces_s__rosidl_typesupport_fastrtps_c" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces")
-include("/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_symlink_install_targets_0_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
+include("/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_symlink_install_targets_0_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
 
 # install("TARGETS" "robp_interfaces_s__rosidl_typesupport_introspection_c" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces")
-include("/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_symlink_install_targets_1_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
+include("/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_symlink_install_targets_1_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
 
 # install("TARGETS" "robp_interfaces_s__rosidl_typesupport_c" "DESTINATION" "lib/python3.12/site-packages/robp_interfaces")
-include("/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_symlink_install_targets_2_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
+include("/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_symlink_install_targets_2_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/DutyCycles.idl" "DESTINATION" "share/robp_interfaces/msg")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/DutyCycles.idl" "DESTINATION" "share/robp_interfaces/msg")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/DutyCycles.idl" "DESTINATION" "share/robp_interfaces/msg")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/DutyCycles.idl" "DESTINATION" "share/robp_interfaces/msg")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/Encoders.idl" "DESTINATION" "share/robp_interfaces/msg")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/Encoders.idl" "DESTINATION" "share/robp_interfaces/msg")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/Encoders.idl" "DESTINATION" "share/robp_interfaces/msg")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/Encoders.idl" "DESTINATION" "share/robp_interfaces/msg")
 
-# install(FILES "/home/group1/dd2419_ws/src/robp_robot/robp_interfaces/msg/DutyCycles.msg" "DESTINATION" "share/robp_interfaces/msg")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/src/robp_robot/robp_interfaces/msg/DutyCycles.msg" "DESTINATION" "share/robp_interfaces/msg")
+# install(FILES "/home/robot/dd2419_ws/src/robp_robot/robp_interfaces/msg/DutyCycles.msg" "DESTINATION" "share/robp_interfaces/msg")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/src/robp_robot/robp_interfaces/msg/DutyCycles.msg" "DESTINATION" "share/robp_interfaces/msg")
 
-# install(FILES "/home/group1/dd2419_ws/src/robp_robot/robp_interfaces/msg/Encoders.msg" "DESTINATION" "share/robp_interfaces/msg")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/src/robp_robot/robp_interfaces/msg/Encoders.msg" "DESTINATION" "share/robp_interfaces/msg")
+# install(FILES "/home/robot/dd2419_ws/src/robp_robot/robp_interfaces/msg/Encoders.msg" "DESTINATION" "share/robp_interfaces/msg")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/src/robp_robot/robp_interfaces/msg/Encoders.msg" "DESTINATION" "share/robp_interfaces/msg")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/parent_prefix_path")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/parent_prefix_path")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/parent_prefix_path")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/parent_prefix_path")
 
 # install(FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/ament_prefix_path.sh" "DESTINATION" "share/robp_interfaces/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/ament_prefix_path.sh" "DESTINATION" "share/robp_interfaces/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/ament_prefix_path.sh" "DESTINATION" "share/robp_interfaces/environment")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/ament_prefix_path.dsv" "DESTINATION" "share/robp_interfaces/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/ament_prefix_path.dsv" "DESTINATION" "share/robp_interfaces/environment")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/ament_prefix_path.dsv" "DESTINATION" "share/robp_interfaces/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/ament_prefix_path.dsv" "DESTINATION" "share/robp_interfaces/environment")
 
 # install(FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/path.sh" "DESTINATION" "share/robp_interfaces/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/path.sh" "DESTINATION" "share/robp_interfaces/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/opt/ros/jazzy/share/ament_cmake_core/cmake/environment_hooks/environment/path.sh" "DESTINATION" "share/robp_interfaces/environment")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/path.dsv" "DESTINATION" "share/robp_interfaces/environment")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/path.dsv" "DESTINATION" "share/robp_interfaces/environment")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/path.dsv" "DESTINATION" "share/robp_interfaces/environment")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/path.dsv" "DESTINATION" "share/robp_interfaces/environment")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.bash" "DESTINATION" "share/robp_interfaces")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.bash" "DESTINATION" "share/robp_interfaces")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.bash" "DESTINATION" "share/robp_interfaces")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.bash" "DESTINATION" "share/robp_interfaces")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.sh" "DESTINATION" "share/robp_interfaces")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.sh" "DESTINATION" "share/robp_interfaces")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.sh" "DESTINATION" "share/robp_interfaces")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.sh" "DESTINATION" "share/robp_interfaces")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.zsh" "DESTINATION" "share/robp_interfaces")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.zsh" "DESTINATION" "share/robp_interfaces")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.zsh" "DESTINATION" "share/robp_interfaces")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.zsh" "DESTINATION" "share/robp_interfaces")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.dsv" "DESTINATION" "share/robp_interfaces")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.dsv" "DESTINATION" "share/robp_interfaces")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.dsv" "DESTINATION" "share/robp_interfaces")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/local_setup.dsv" "DESTINATION" "share/robp_interfaces")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/package.dsv" "DESTINATION" "share/robp_interfaces")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/package.dsv" "DESTINATION" "share/robp_interfaces")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/package.dsv" "DESTINATION" "share/robp_interfaces")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_environment_hooks/package.dsv" "DESTINATION" "share/robp_interfaces")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/packages/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/packages")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/packages/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/packages")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/packages/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/packages")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_index/share/ament_index/resource_index/packages/robp_interfaces" "DESTINATION" "share/ament_index/resource_index/packages")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_export_dependencies/ament_cmake_export_dependencies-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_export_dependencies/ament_cmake_export_dependencies-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_export_dependencies/ament_cmake_export_dependencies-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_export_dependencies/ament_cmake_export_dependencies-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_export_include_directories/ament_cmake_export_include_directories-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_export_include_directories/ament_cmake_export_include_directories-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_export_include_directories/ament_cmake_export_include_directories-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_export_include_directories/ament_cmake_export_include_directories-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_export_libraries/ament_cmake_export_libraries-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_export_libraries/ament_cmake_export_libraries-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_export_libraries/ament_cmake_export_libraries-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_export_libraries/ament_cmake_export_libraries-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_export_targets/ament_cmake_export_targets-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_export_targets/ament_cmake_export_targets-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_export_targets/ament_cmake_export_targets-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_export_targets/ament_cmake_export_targets-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake_export_typesupport_targets-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake_export_typesupport_targets-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake_export_typesupport_targets-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake_export_typesupport_targets-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake" "DESTINATION" "share/robp_interfaces/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_core/robp_interfacesConfig.cmake" "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_core/robp_interfacesConfig-version.cmake" "DESTINATION" "share/robp_interfaces/cmake")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_core/robp_interfacesConfig.cmake" "/home/group1/dd2419_ws/build/robp_interfaces/ament_cmake_core/robp_interfacesConfig-version.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+# install(FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_core/robp_interfacesConfig.cmake" "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_core/robp_interfacesConfig-version.cmake" "DESTINATION" "share/robp_interfaces/cmake")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_core/robp_interfacesConfig.cmake" "/home/robot/dd2419_ws/build/robp_interfaces/ament_cmake_core/robp_interfacesConfig-version.cmake" "DESTINATION" "share/robp_interfaces/cmake")
 
-# install(FILES "/home/group1/dd2419_ws/src/robp_robot/robp_interfaces/package.xml" "DESTINATION" "share/robp_interfaces")
-ament_cmake_symlink_install_files("/home/group1/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/group1/dd2419_ws/src/robp_robot/robp_interfaces/package.xml" "DESTINATION" "share/robp_interfaces")
+# install(FILES "/home/robot/dd2419_ws/src/robp_robot/robp_interfaces/package.xml" "DESTINATION" "share/robp_interfaces")
+ament_cmake_symlink_install_files("/home/robot/dd2419_ws/src/robp_robot/robp_interfaces" FILES "/home/robot/dd2419_ws/src/robp_robot/robp_interfaces/package.xml" "DESTINATION" "share/robp_interfaces")

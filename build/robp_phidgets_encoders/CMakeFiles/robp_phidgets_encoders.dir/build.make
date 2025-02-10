@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders
+CMAKE_SOURCE_DIR = /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group1/dd2419_ws/build/robp_phidgets_encoders
+CMAKE_BINARY_DIR = /home/robot/dd2419_ws/build/robp_phidgets_encoders
 
 # Include any dependencies generated for this target.
 include CMakeFiles/robp_phidgets_encoders.dir/depend.make
@@ -70,32 +70,32 @@ include CMakeFiles/robp_phidgets_encoders.dir/progress.make
 include CMakeFiles/robp_phidgets_encoders.dir/flags.make
 
 CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o: CMakeFiles/robp_phidgets_encoders.dir/flags.make
-CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o: /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoders.cpp
+CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o: /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoders.cpp
 CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o: CMakeFiles/robp_phidgets_encoders.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o -MF CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o.d -o CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o -c /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoders.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/robot/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o -MF CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o.d -o CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.o -c /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoders.cpp
 
 CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoders.cpp > CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoders.cpp > CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.i
 
 CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoders.cpp -o CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoders.cpp -o CMakeFiles/robp_phidgets_encoders.dir/src/encoders.cpp.s
 
 CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o: CMakeFiles/robp_phidgets_encoders.dir/flags.make
-CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o: /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoder.cpp
+CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o: /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoder.cpp
 CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o: CMakeFiles/robp_phidgets_encoders.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o -MF CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o.d -o CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o -c /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoder.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/robot/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o -MF CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o.d -o CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o -c /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoder.cpp
 
 CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoder.cpp > CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoder.cpp > CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.i
 
 CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoder.cpp -o CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders/src/encoder.cpp -o CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.s
 
 # Object files for target robp_phidgets_encoders
 robp_phidgets_encoders_OBJECTS = \
@@ -109,12 +109,12 @@ librobp_phidgets_encoders.so: CMakeFiles/robp_phidgets_encoders.dir/src/encoders
 librobp_phidgets_encoders.so: CMakeFiles/robp_phidgets_encoders.dir/src/encoder.cpp.o
 librobp_phidgets_encoders.so: CMakeFiles/robp_phidgets_encoders.dir/build.make
 librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/libcomponent_manager.so
-librobp_phidgets_encoders.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_c.so
-librobp_phidgets_encoders.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_c.so
-librobp_phidgets_encoders.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_cpp.so
-librobp_phidgets_encoders.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_cpp.so
-librobp_phidgets_encoders.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_cpp.so
-librobp_phidgets_encoders.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_py.so
+librobp_phidgets_encoders.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_c.so
+librobp_phidgets_encoders.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_c.so
+librobp_phidgets_encoders.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_cpp.so
+librobp_phidgets_encoders.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_cpp.so
+librobp_phidgets_encoders.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_cpp.so
+librobp_phidgets_encoders.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_py.so
 librobp_phidgets_encoders.so: /opt/ros/jazzy/share/libphidget22/cmake/../../../opt/libphidget22/lib/libphidget22.so
 librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/libphidgets_api.so
 librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/librclcpp.so
@@ -173,8 +173,8 @@ librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesup
 librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_cpp.so
 librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_c.so
 librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_generator_c.so
-librobp_phidgets_encoders.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_c.so
-librobp_phidgets_encoders.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_c.so
+librobp_phidgets_encoders.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_c.so
+librobp_phidgets_encoders.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_c.so
 librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_typesupport_fastrtps_c.so
 librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_typesupport_introspection_c.so
 librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_typesupport_fastrtps_cpp.so
@@ -203,7 +203,7 @@ librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/librcpputils.so
 librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/librosidl_runtime_c.so
 librobp_phidgets_encoders.so: /opt/ros/jazzy/lib/librcutils.so
 librobp_phidgets_encoders.so: CMakeFiles/robp_phidgets_encoders.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX shared library librobp_phidgets_encoders.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/robot/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX shared library librobp_phidgets_encoders.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/robp_phidgets_encoders.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -215,6 +215,6 @@ CMakeFiles/robp_phidgets_encoders.dir/clean:
 .PHONY : CMakeFiles/robp_phidgets_encoders.dir/clean
 
 CMakeFiles/robp_phidgets_encoders.dir/depend:
-	cd /home/group1/dd2419_ws/build/robp_phidgets_encoders && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders /home/group1/dd2419_ws/build/robp_phidgets_encoders /home/group1/dd2419_ws/build/robp_phidgets_encoders /home/group1/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles/robp_phidgets_encoders.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/robot/dd2419_ws/build/robp_phidgets_encoders && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders /home/robot/dd2419_ws/build/robp_phidgets_encoders /home/robot/dd2419_ws/build/robp_phidgets_encoders /home/robot/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles/robp_phidgets_encoders.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/robp_phidgets_encoders.dir/depend
 

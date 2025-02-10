@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial
+CMAKE_SOURCE_DIR = /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group1/dd2419_ws/build/robp_phidgets_spatial
+CMAKE_BINARY_DIR = /home/robot/dd2419_ws/build/robp_phidgets_spatial
 
 # Utility rule file for robp_phidgets_spatial_uninstall.
 
@@ -67,7 +67,7 @@ include CMakeFiles/robp_phidgets_spatial_uninstall.dir/compiler_depend.make
 include CMakeFiles/robp_phidgets_spatial_uninstall.dir/progress.make
 
 CMakeFiles/robp_phidgets_spatial_uninstall:
-	/usr/bin/cmake -P /home/group1/dd2419_ws/build/robp_phidgets_spatial/ament_cmake_uninstall_target/ament_cmake_uninstall_target.cmake
+	/usr/bin/cmake -P /home/robot/dd2419_ws/build/robp_phidgets_spatial/ament_cmake_uninstall_target/ament_cmake_uninstall_target.cmake
 
 robp_phidgets_spatial_uninstall: CMakeFiles/robp_phidgets_spatial_uninstall
 robp_phidgets_spatial_uninstall: CMakeFiles/robp_phidgets_spatial_uninstall.dir/build.make
@@ -82,6 +82,6 @@ CMakeFiles/robp_phidgets_spatial_uninstall.dir/clean:
 .PHONY : CMakeFiles/robp_phidgets_spatial_uninstall.dir/clean
 
 CMakeFiles/robp_phidgets_spatial_uninstall.dir/depend:
-	cd /home/group1/dd2419_ws/build/robp_phidgets_spatial && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/group1/dd2419_ws/build/robp_phidgets_spatial /home/group1/dd2419_ws/build/robp_phidgets_spatial /home/group1/dd2419_ws/build/robp_phidgets_spatial/CMakeFiles/robp_phidgets_spatial_uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/robot/dd2419_ws/build/robp_phidgets_spatial && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/robot/dd2419_ws/build/robp_phidgets_spatial /home/robot/dd2419_ws/build/robp_phidgets_spatial /home/robot/dd2419_ws/build/robp_phidgets_spatial/CMakeFiles/robp_phidgets_spatial_uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/robp_phidgets_spatial_uninstall.dir/depend
 

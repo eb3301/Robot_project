@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors
+CMAKE_SOURCE_DIR = /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group1/dd2419_ws/build/robp_phidgets_motors
+CMAKE_BINARY_DIR = /home/robot/dd2419_ws/build/robp_phidgets_motors
 
 # Utility rule file for uninstall.
 
@@ -78,6 +78,6 @@ CMakeFiles/uninstall.dir/clean:
 .PHONY : CMakeFiles/uninstall.dir/clean
 
 CMakeFiles/uninstall.dir/depend:
-	cd /home/group1/dd2419_ws/build/robp_phidgets_motors && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors /home/group1/dd2419_ws/build/robp_phidgets_motors /home/group1/dd2419_ws/build/robp_phidgets_motors /home/group1/dd2419_ws/build/robp_phidgets_motors/CMakeFiles/uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/robot/dd2419_ws/build/robp_phidgets_motors && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_motors /home/robot/dd2419_ws/build/robp_phidgets_motors /home/robot/dd2419_ws/build/robp_phidgets_motors /home/robot/dd2419_ws/build/robp_phidgets_motors/CMakeFiles/uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/uninstall.dir/depend
 

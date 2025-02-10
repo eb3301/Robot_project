@@ -1,0 +1,37 @@
+[2.164s] Invoking command in '/home/robot/dd2419_ws/src/detection': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/src/build/detection/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/src/install/detection/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/detection build --build-base /home/robot/dd2419_ws/src/build/detection/build install --record /home/robot/dd2419_ws/src/build/detection/install.log --single-version-externally-managed install_data
+[2.458s] running egg_info
+[2.459s] creating ../build/detection/detection.egg-info
+[2.484s] writing ../build/detection/detection.egg-info/PKG-INFO
+[2.484s] writing dependency_links to ../build/detection/detection.egg-info/dependency_links.txt
+[2.484s] writing entry points to ../build/detection/detection.egg-info/entry_points.txt
+[2.484s] writing requirements to ../build/detection/detection.egg-info/requires.txt
+[2.484s] writing top-level names to ../build/detection/detection.egg-info/top_level.txt
+[2.486s] writing manifest file '../build/detection/detection.egg-info/SOURCES.txt'
+[2.547s] reading manifest file '../build/detection/detection.egg-info/SOURCES.txt'
+[2.548s] writing manifest file '../build/detection/detection.egg-info/SOURCES.txt'
+[2.548s] running build
+[2.548s] running build_py
+[2.549s] creating /home/robot/dd2419_ws/src/build/detection/build
+[2.549s] creating /home/robot/dd2419_ws/src/build/detection/build/lib
+[2.549s] creating /home/robot/dd2419_ws/src/build/detection/build/lib/detection
+[2.549s] copying detection/detection.py -> /home/robot/dd2419_ws/src/build/detection/build/lib/detection
+[2.553s] copying detection/__init__.py -> /home/robot/dd2419_ws/src/build/detection/build/lib/detection
+[2.553s] running install
+[2.569s] running install_lib
+[2.614s] creating /home/robot/dd2419_ws/src/install/detection/lib/python3.12/site-packages/detection
+[2.614s] copying /home/robot/dd2419_ws/src/build/detection/build/lib/detection/detection.py -> /home/robot/dd2419_ws/src/install/detection/lib/python3.12/site-packages/detection
+[2.614s] copying /home/robot/dd2419_ws/src/build/detection/build/lib/detection/__init__.py -> /home/robot/dd2419_ws/src/install/detection/lib/python3.12/site-packages/detection
+[2.615s] byte-compiling /home/robot/dd2419_ws/src/install/detection/lib/python3.12/site-packages/detection/detection.py to detection.cpython-312.pyc
+[2.616s] byte-compiling /home/robot/dd2419_ws/src/install/detection/lib/python3.12/site-packages/detection/__init__.py to __init__.cpython-312.pyc
+[2.616s] running install_data
+[2.616s] creating /home/robot/dd2419_ws/src/install/detection/share/ament_index
+[2.616s] creating /home/robot/dd2419_ws/src/install/detection/share/ament_index/resource_index
+[2.616s] creating /home/robot/dd2419_ws/src/install/detection/share/ament_index/resource_index/packages
+[2.617s] copying resource/detection -> /home/robot/dd2419_ws/src/install/detection/share/ament_index/resource_index/packages
+[2.617s] copying package.xml -> /home/robot/dd2419_ws/src/install/detection/share/detection
+[2.617s] running install_egg_info
+[2.642s] Copying ../build/detection/detection.egg-info to /home/robot/dd2419_ws/src/install/detection/lib/python3.12/site-packages/detection-0.0.0-py3.12.egg-info
+[2.643s] running install_scripts
+[2.785s] Installing detection script to /home/robot/dd2419_ws/src/install/detection/lib/detection
+[2.786s] writing list of installed files to '/home/robot/dd2419_ws/src/build/detection/install.log'
+[2.899s] Invoked command in '/home/robot/dd2419_ws/src/detection' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/src/build/detection/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/src/install/detection/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/detection build --build-base /home/robot/dd2419_ws/src/build/detection/build install --record /home/robot/dd2419_ws/src/build/detection/install.log --single-version-externally-managed install_data

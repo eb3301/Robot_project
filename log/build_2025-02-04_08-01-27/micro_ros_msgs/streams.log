@@ -1,8 +1,0 @@
-[0.043s] Invoking command in '/home/group1/dd2419_ws/build/micro_ros_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/micro_ros_msgs -- -j8 -l8
-[0.613s] [  1%] Built target micro_ros_msgs__rosidl_generator_type_description
-[0.616s] failed to create symbolic link '/home/group1/dd2419_ws/build/micro_ros_msgs/ament_cmake_python/micro_ros_msgs/micro_ros_msgs' because existing path cannot be removed: Is a directory
-[0.616s] gmake[2]: *** [CMakeFiles/ament_cmake_python_symlink_micro_ros_msgs.dir/build.make:70: CMakeFiles/ament_cmake_python_symlink_micro_ros_msgs] Error 1
-[0.616s] gmake[1]: *** [CMakeFiles/Makefile2:452: CMakeFiles/ament_cmake_python_symlink_micro_ros_msgs.dir/all] Error 2
-[0.616s] gmake[1]: *** Waiting for unfinished jobs....
-[0.616s] gmake: *** [Makefile:146: all] Error 2
-[0.886s] Invoked command in '/home/group1/dd2419_ws/build/micro_ros_msgs' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/micro_ros_msgs -- -j8 -l8

@@ -1,10 +1,10 @@
 {
   "package_name": "robp_interfaces",
-  "output_dir": "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_typesupport_introspection_cpp/robp_interfaces",
+  "output_dir": "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_typesupport_introspection_cpp/robp_interfaces",
   "template_dir": "/opt/ros/jazzy/share/rosidl_typesupport_introspection_cpp/resource",
   "idl_tuples": [
-    "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/DutyCycles.idl",
-    "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/Encoders.idl"
+    "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/DutyCycles.idl",
+    "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/Encoders.idl"
   ],
   "ros_interface_dependencies": [
     "std_msgs:/opt/ros/jazzy/share/std_msgs/msg/Bool.idl",
@@ -49,8 +49,8 @@
     "/opt/ros/jazzy/share/rosidl_typesupport_introspection_cpp/resource/msg__type_support.cpp.em",
     "/opt/ros/jazzy/share/rosidl_typesupport_introspection_cpp/resource/srv__rosidl_typesupport_introspection_cpp.hpp.em",
     "/opt/ros/jazzy/share/rosidl_typesupport_introspection_cpp/resource/srv__type_support.cpp.em",
-    "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/DutyCycles.idl",
-    "/home/group1/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/Encoders.idl",
+    "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/DutyCycles.idl",
+    "/home/robot/dd2419_ws/build/robp_interfaces/rosidl_adapter/robp_interfaces/msg/Encoders.idl",
     "/opt/ros/jazzy/share/std_msgs/msg/Bool.idl",
     "/opt/ros/jazzy/share/std_msgs/msg/Byte.idl",
     "/opt/ros/jazzy/share/std_msgs/msg/ByteMultiArray.idl",

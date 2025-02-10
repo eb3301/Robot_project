@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders
+CMAKE_SOURCE_DIR = /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_encoders
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group1/dd2419_ws/build/robp_phidgets_encoders
+CMAKE_BINARY_DIR = /home/robot/dd2419_ws/build/robp_phidgets_encoders
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -142,9 +142,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/group1/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles /home/group1/dd2419_ws/build/robp_phidgets_encoders//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/robot/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles /home/robot/dd2419_ws/build/robp_phidgets_encoders//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/group1/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/robot/dd2419_ws/build/robp_phidgets_encoders/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

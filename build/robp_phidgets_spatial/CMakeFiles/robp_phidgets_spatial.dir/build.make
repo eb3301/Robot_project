@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial
+CMAKE_SOURCE_DIR = /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group1/dd2419_ws/build/robp_phidgets_spatial
+CMAKE_BINARY_DIR = /home/robot/dd2419_ws/build/robp_phidgets_spatial
 
 # Include any dependencies generated for this target.
 include CMakeFiles/robp_phidgets_spatial.dir/depend.make
@@ -70,18 +70,18 @@ include CMakeFiles/robp_phidgets_spatial.dir/progress.make
 include CMakeFiles/robp_phidgets_spatial.dir/flags.make
 
 CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o: CMakeFiles/robp_phidgets_spatial.dir/flags.make
-CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o: /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial/src/spatial.cpp
+CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o: /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial/src/spatial.cpp
 CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o: CMakeFiles/robp_phidgets_spatial.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets_spatial/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o -MF CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o.d -o CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o -c /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial/src/spatial.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/robot/dd2419_ws/build/robp_phidgets_spatial/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o -MF CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o.d -o CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o -c /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial/src/spatial.cpp
 
 CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial/src/spatial.cpp > CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial/src/spatial.cpp > CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.i
 
 CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial/src/spatial.cpp -o CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial/src/spatial.cpp -o CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.s
 
 # Object files for target robp_phidgets_spatial
 robp_phidgets_spatial_OBJECTS = \
@@ -93,12 +93,12 @@ robp_phidgets_spatial_EXTERNAL_OBJECTS =
 librobp_phidgets_spatial.so: CMakeFiles/robp_phidgets_spatial.dir/src/spatial.cpp.o
 librobp_phidgets_spatial.so: CMakeFiles/robp_phidgets_spatial.dir/build.make
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libcomponent_manager.so
-librobp_phidgets_spatial.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_c.so
-librobp_phidgets_spatial.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_c.so
-librobp_phidgets_spatial.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_cpp.so
-librobp_phidgets_spatial.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_cpp.so
-librobp_phidgets_spatial.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_cpp.so
-librobp_phidgets_spatial.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_py.so
+librobp_phidgets_spatial.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_c.so
+librobp_phidgets_spatial.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_c.so
+librobp_phidgets_spatial.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_cpp.so
+librobp_phidgets_spatial.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_cpp.so
+librobp_phidgets_spatial.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_cpp.so
+librobp_phidgets_spatial.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_py.so
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_fastrtps_c.so
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_fastrtps_cpp.so
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_introspection_c.so
@@ -122,8 +122,8 @@ librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libcomposition_interfaces__rosid
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libcomposition_interfaces__rosidl_generator_py.so
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libcomposition_interfaces__rosidl_typesupport_c.so
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libcomposition_interfaces__rosidl_generator_c.so
-librobp_phidgets_spatial.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_c.so
-librobp_phidgets_spatial.so: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_c.so
+librobp_phidgets_spatial.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_c.so
+librobp_phidgets_spatial.so: /home/robot/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_c.so
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_c.so
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_cpp.so
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_generator_c.so
@@ -241,7 +241,7 @@ librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/libunique_identifier_msgs__rosid
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/librosidl_runtime_c.so
 librobp_phidgets_spatial.so: /opt/ros/jazzy/lib/librcutils.so
 librobp_phidgets_spatial.so: CMakeFiles/robp_phidgets_spatial.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets_spatial/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX shared library librobp_phidgets_spatial.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/robot/dd2419_ws/build/robp_phidgets_spatial/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX shared library librobp_phidgets_spatial.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/robp_phidgets_spatial.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -253,6 +253,6 @@ CMakeFiles/robp_phidgets_spatial.dir/clean:
 .PHONY : CMakeFiles/robp_phidgets_spatial.dir/clean
 
 CMakeFiles/robp_phidgets_spatial.dir/depend:
-	cd /home/group1/dd2419_ws/build/robp_phidgets_spatial && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/group1/dd2419_ws/build/robp_phidgets_spatial /home/group1/dd2419_ws/build/robp_phidgets_spatial /home/group1/dd2419_ws/build/robp_phidgets_spatial/CMakeFiles/robp_phidgets_spatial.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/robot/dd2419_ws/build/robp_phidgets_spatial && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial /home/robot/dd2419_ws/build/robp_phidgets_spatial /home/robot/dd2419_ws/build/robp_phidgets_spatial /home/robot/dd2419_ws/build/robp_phidgets_spatial/CMakeFiles/robp_phidgets_spatial.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/robp_phidgets_spatial.dir/depend
 
