@@ -47,10 +47,10 @@ class AutoControll(Node):
         #2D stearing twist msg
         twist_msg = Twist()
         #All 0 for 2D stearing
-        twist_msg.linear.y = 0
-        twist_msg.linear.z = 0
-        twist_msg.angular.x = 0
-        twist_msg.angular.y = 0
+        twist_msg.linear.y = 0.0
+        twist_msg.linear.z = 0.0
+        twist_msg.angular.x = 0.0
+        twist_msg.angular.y = 0.0
 
         #check if robot arrived at goal posititon
         min_error = 0.01
@@ -58,8 +58,8 @@ class AutoControll(Node):
                        (goal_y - curr_y)**2)
         if dist < min_error:
             self.arrived = True
-            twist_msg.linear.x = 0
-            twist_msg.angular.z = 0
+            twist_msg.linear.x = 0.0
+            twist_msg.angular.z = 0.0
             return 
         
         #Compute path to destination
@@ -75,9 +75,7 @@ class AutoControll(Node):
         twist_msg.angular.z = stearing 
 
         self.get_logger().info("Publishing new Twist msg")
-        print('innan')
         self.cmd_vel_pub.publish(twist_msg)
-        print('hej')
 
     def compute_heading(self, orientation):
         x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
@@ -85,7 +83,7 @@ class AutoControll(Node):
         return yaw
     
     def generate_point(self):
-        x,y = (random.uniform(0, 2), random.uniform(0, 2))
+        x, y = (random.uniform(0, 200), random.uniform(0, 200))
         # y = (random.uniform(0, 2), random.uniform(0, 2))
         return x, y
 
