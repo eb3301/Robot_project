@@ -1,1 +1,1 @@
-/home/robot/dd2419_ws/build/robp_phidgets_encoders/ament_cmake_environment_hooks/local_setup.zsh
+/home/group1/dd2419_ws/build/robp_phidgets_encoders/ament_cmake_environment_hooks/local_setup.zsh

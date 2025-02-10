@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+	<node name="base_to_imu" pkg="tf2_ros" exec="static_transform_publisher" args="--x 0.00107 --y 0 --z 0.02361  --frame-id base_link --child-frame-id imu_link" />
+	<node name="base_to_rs_d435i" pkg="tf2_ros" exec="static_transform_publisher" args="--x 0.08987 --y 0.0175 --z 0.10456  --frame-id base_link --child-frame-id camera_link" />
+</launch>
