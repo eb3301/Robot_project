@@ -1,1 +1,0 @@
-/home/robot/dd2419_ws/src/pickup/setup.py

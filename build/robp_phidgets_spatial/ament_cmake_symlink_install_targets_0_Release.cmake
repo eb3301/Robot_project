@@ -1,1 +1,0 @@
-ament_cmake_symlink_install_targets("TARGET_FILES" "/home/robot/dd2419_ws/build/robp_phidgets_spatial/librobp_phidgets_spatial.so" "TARGETS" "robp_phidgets_spatial" "ARCHIVE_DESTINATION" "lib" "LIBRARY_DESTINATION" "lib" "RUNTIME_DESTINATION" "bin")

@@ -1,1 +1,0 @@
-ament_cmake_symlink_install_targets("TARGET_FILES" "/home/robot/dd2419_ws/build/robp_phidgets_encoders/librobp_phidgets_encoders.so" "TARGETS" "robp_phidgets_encoders" "ARCHIVE_DESTINATION" "lib" "LIBRARY_DESTINATION" "lib" "RUNTIME_DESTINATION" "bin")

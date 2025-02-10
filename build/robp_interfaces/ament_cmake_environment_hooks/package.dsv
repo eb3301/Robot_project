@@ -1,4 +1,0 @@
-source;share/robp_interfaces/local_setup.bash
-source;share/robp_interfaces/local_setup.dsv
-source;share/robp_interfaces/local_setup.sh
-source;share/robp_interfaces/local_setup.zsh
