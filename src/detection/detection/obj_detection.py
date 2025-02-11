@@ -6,16 +6,30 @@ from rclpy.node import Node
 from sensor_msgs.msg import PointCloud2, PointField
 import sensor_msgs_py.point_cloud2 as pc2
 from sklearn.cluster import DBSCAN
+<<<<<<< HEAD
 # from tf2_ros import TransformBroadcaster
 # from tf_transformations import quaternion_from_euler, euler_from_quaternion
 # from geometry_msgs.msg import TransformStamped
 # from geometry_msgs.msg import Header, Transform, Quaternion, Vector3, Pose
 # import tf2_geometry_msgs
+=======
+from tf2_ros import TransformBroadcaster
+from tf_transformations import quaternion_from_euler, euler_from_quaternion
+from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import Header, Transform, Quaternion, Vector3, Pose
+import tf2_geometry_msgs
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
+>>>>>>> af3c9a6f27ff41b19087f51b15ed36280e4be58d
 
 
 class Detection(Node):
     def __init__(self):
         super().__init__('detection')
+
+        # Initialize the transform listener and assign it a buffer
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self, spin_thread=True)
 
         self._pub = self.create_publisher(PointCloud2, '/detected_objects', 10)
         
@@ -71,8 +85,10 @@ class Detection(Node):
     def cloud_callback(self, msg: PointCloud2):
         """Detects objects using DBSCAN clustering from scikit-learn."""
         # self.get_logger().info(f"start callback")
+        header=msg.header
         gen = pc2.read_points_numpy(msg, skip_nans=True)
         points = gen[:, :3]  # Extract XYZ
+<<<<<<< HEAD
         #self.get_logger().info(f"points {points[:,:3]}")
 
         # **Filter points based on distance**
@@ -80,6 +96,14 @@ class Detection(Node):
         # filter points below the ground above 30 cm and beyond 1.5 m
         offset=0.09 # camera offset in y direction (i.e. in the vertical one)
         mask = (distances <= 1.5) & (points[:, 1] < offset) & (points[:, 1] > offset-0.3) 
+=======
+        points[:,:2]=self.static_transform_camera_to_base_link(points[:,:2],header)
+
+        self.get_logger().info(f"points {points}")
+        # **Filter points based on distance**
+        distances = np.linalg.norm(points[:, :3], axis=1)  # XY distance
+        mask = (distances <= 0.10) #& (points[:, 2] > 0)  # Within 1m and above ground
+>>>>>>> af3c9a6f27ff41b19087f51b15ed36280e4be58d
         filtered_points = points[mask]
         # self.get_logger().info(f"mask applied")
 
