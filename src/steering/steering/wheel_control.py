@@ -27,16 +27,13 @@ class WheelController(Node):
         vel_factor = vel / max_vel
 
         # GPT -- Duty Cycle Turning Factor
-        rot_factor_L = (np.tan(stearing) - 0.5) / np.tan(stearing)
-        rot_factor_R = (np.tan(stearing) + 0.5) / np.tan(stearing)
-        print(rot_factor_L)
-        print(rot_factor_R)
+        rot_factor = np.tan(stearing)
 
         # Message
         duty_cycles_msg = DutyCycles()
 
-        duty_cycles_msg.duty_cycle_left = vel_factor * rot_factor_L
-        duty_cycles_msg.duty_cycle_right = vel_factor *rot_factor_R
+        duty_cycles_msg.duty_cycle_left = vel + vel_factor * rot_factor
+        duty_cycles_msg.duty_cycle_right = vel + vel_factor * (1-rot_factor)
 
         self.duty_pub.publish(duty_cycles_msg)
 

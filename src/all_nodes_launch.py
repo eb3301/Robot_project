@@ -8,7 +8,7 @@ def generate_launch_description():
     return LaunchDescription([
         #Start Rviz (LiDAR also starts rviz so probably not needed....)
         ExecuteProcess(
-            cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/group1//dd2419_ws/src/robp_robot/robp_launch/rviz/default.rviz'],
+            cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/group1//dd2419_ws/src/default.rviz'],
             output='screen',
             name='rviz'
         ),
