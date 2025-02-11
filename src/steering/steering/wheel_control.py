@@ -36,6 +36,8 @@ class WheelController(Node):
                 rot_factor = -1
             else:
                 rot_factor = 1
+        print(vel_factor * (1 + rot_factor))
+        print(vel_factor * (1 - rot_factor))
 
         # Message
         duty_cycles_msg = DutyCycles()
