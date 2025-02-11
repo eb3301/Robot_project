@@ -32,6 +32,8 @@ class AutoControll(Node):
     def pose_callback(self, msg: PoseStamped):
         self.pose = msg.pose #Pose
 
+        self.pub_goal_pose()
+
         #Create twist msg
         twist_msg = Twist()
         #All 0 for 2D steering
@@ -47,32 +49,30 @@ class AutoControll(Node):
         goal_x, goal_y = self.goal_pose[0], self.goal_pose[1]
         dx, dy = goal_x - curr_x, goal_y - curr_y
         heading  = self.compute_heading(self.pose.orientation)
-        print(f"curr_x: {curr_x}" + "curr_y", curr_y)
-        print(f"goal_x: {goal_x}" + "goal_y", goal_y)
 
         angle = np.arctan2(dy, dx)
         steering = angle - heading
-        print(f"angle: {angle}")
-        print(f"Heading: {heading}")
-        print(f"Steering: {steering}")
 
-        if steering > 0.1 or  steering < -0.1: 
-            #Turn
-            twist_msg.angular.z = steering
+        #Check if we are at goal
+        if np.linalg.norm(np.array([dx,dy])) < 0.1:
+            print(f"Arrived at destination!")
+            twist_msg.angular.z = 1.0
             self.cmd_vel_pub.publish(twist_msg)
-            print("published turned")
-            time.sleep(1)
+            time.sleep(3)
+            self.generate_point()
+            return
+
+        print(f"Angle Difference: {np.abs(steering - heading)}")
+        if steering > 0.2 or steering < -0.2: 
+            #Turn
+            twist_msg.angular.z = 1.0
+            self.cmd_vel_pub.publish(twist_msg)
+            #time.sleep(0.1)
             return
         else: 
-            if np.linalg.norm(np.array([dx,dy])) > 0.1:
-                #We drive
-                twist_msg.angular.z = 0
-                self.cmd_vel_pub.publish(twist_msg)
-                print("published straight")
-                time.sleep(1)
-            else:
-                self.generate_point()
-                time.sleep(1)
+            #We drive
+            twist_msg.angular.z = 0.0
+            self.cmd_vel_pub.publish(twist_msg)
 
 
 
@@ -101,17 +101,27 @@ class AutoControll(Node):
     
     
     def generate_point(self):
-        x, y = (random.uniform(0, 2), random.uniform(0, 2))
-        goal_pose = PoseStamped()
-        goal_pose.pose.position.x = x
-        goal_pose.pose.position.y = y
-        self.goal_pose_pub.publish(goal_pose)
+        x, y = (random.uniform(0, 3), random.uniform(0, 3))
+        print(f"Moving to marker at:({x, y})")
         return x, y
+
+    def pub_goal_pose(self):
+        goal_pose = PoseStamped()
+        goal_pose.header.stamp = self.get_clock().now().to_msg()
+        goal_pose.header.frame_id = "odom"
+        goal_pose.pose.position.x = self.goal_pose[0]
+        goal_pose.pose.position.y = self.goal_pose[1]
+        goal_pose.pose.position.z = 0.0
+        goal_pose.pose.orientation.x = 0.0
+        goal_pose.pose.orientation.y = 0.0
+        goal_pose.pose.orientation.z = 0.0
+        self.goal_pose_pub.publish(goal_pose)
 
 def main():
     rclpy.init()
     node = AutoControll()
-    node.goal_pose = (5, 5)
+    x, y = node.generate_point()
+    node.goal_pose = (x, y)
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
