@@ -18,32 +18,22 @@ class WheelController(Node):
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
 
     def twist_callback(self, msg : Twist):
-        max_vel = 1 #m/s --- (made it up)
 
-        # Velocity and rotation
-        vel = msg.linear.x # m/s
-        steering = msg.angular.z # rad
+        linear_vel = 0.1
+        rot = msg.angular.z
 
-        vel_factor = vel / max_vel
-
-        # GPT -- Duty Cycle Turning Factor - must be between (0,1)
-        if steering <= np.pi/4 and steering >= 0:
-            rot_factor = np.tan(steering)
-        elif steering >= -np.pi/4 and steering <= 0:
-            rot_factor = np.tan(steering)
-        else:
-            if steering <= 0:
-                rot_factor = -1
-            else:
-                rot_factor = 1
-        print(vel_factor * (1 + rot_factor))
-        print(vel_factor * (1 - rot_factor))
-
-        # Message
         duty_cycles_msg = DutyCycles()
+        if rot == 0:
+            #drive straight
+            duty_cycles_msg.duty_cycle_left = linear_vel
+            duty_cycles_msg.duty_cycle_right = linear_vel
+        else: 
+            normalised_rot = rot / np.pi
+            custom_factor = 1 #decice empircally
+            turn_factor = normalised_rot * custom_factor
+            duty_cycles_msg.duty_cycle_left = normalised_rot * turn_factor
+            duty_cycles_msg.duty_cycle_right = -normalised_rot * turn_factor
 
-        duty_cycles_msg.duty_cycle_left = vel_factor * (1 + rot_factor)
-        duty_cycles_msg.duty_cycle_right = vel_factor * (1 - rot_factor)
 
         self.duty_pub.publish(duty_cycles_msg)
 
