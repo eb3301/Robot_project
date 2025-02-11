@@ -57,7 +57,7 @@ class Detection(Node):
         
         # **Step 1: DBSCAN Clustering**
         # self.get_logger().info(f"proceed with DBSCAN")
-        db = DBSCAN(eps=0.5, min_samples=2)  # eps defines the neighborhood size, min_samples defines minimum points per cluster
+        db = DBSCAN(eps=0.5, min_samples=10)  # eps defines the neighborhood size, min_samples defines minimum points per cluster
         labels = db.fit_predict(filtered_points)
         # self.get_logger().info(f"done")
 
