@@ -1,1 +1,0 @@
-/home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial/launch/spatial_launch.py
