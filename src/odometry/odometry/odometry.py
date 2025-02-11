@@ -24,6 +24,7 @@ class Odometry(Node):
 
         # Initialize the path publisher
         self._path_pub = self.create_publisher(Path, 'path', 10)
+        self.odom_pose_pub = self.create_publisher(PoseStamped, '/odom_pose', 10)
 
         # Store the path here
         self._path = Path()
@@ -135,9 +136,11 @@ class Odometry(Node):
         pose.pose.orientation.z = q[2]
         pose.pose.orientation.w = q[3]
 
-        self._path.poses.append(pose)
+        self.odom_pose_pub.publish(pose)
 
+        self._path.poses.append(pose)
         self._path_pub.publish(self._path)
+
 
 
 def main():
