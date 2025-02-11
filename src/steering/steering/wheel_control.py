@@ -11,24 +11,28 @@ class WheelController(Node):
     def __init__(self):
         super().__init__("Wheel_Controller")   
 
+        # Init publisher
         self.cmd_vel_sub = self.create_subscription(Twist, '/cmd_vel', self.twist_callback, 10)
         
+        # Init subscriber
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
 
     def twist_callback(self, msg : Twist):
         max_vel = 1 #m/s --- (made it up)
 
-        #Velocity and rotation
-        vel = msg.linear.x #m/s
-        stearing = msg.angular.z #rad
+        # Velocity and rotation
+        vel = msg.linear.x # m/s
+        stearing = msg.angular.z # rad
 
         vel_factor = vel / max_vel
 
-        #GPT -- Duty Cycle Turning Factor
+        # GPT -- Duty Cycle Turning Factor
         rot_factor_L = (np.tan(stearing) - 0.5) / np.tan(stearing)
         rot_factor_R = (np.tan(stearing) + 0.5) / np.tan(stearing)
+        print(rot_factor_L)
+        print(rot_factor_R)
 
-
+        # Message
         duty_cycles_msg = DutyCycles()
 
         duty_cycles_msg.duty_cycle_left = vel_factor * rot_factor_L
