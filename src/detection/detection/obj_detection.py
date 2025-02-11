@@ -19,6 +19,32 @@ class Detection(Node):
         
         self.get_logger().info(f"node started")
 
+    def get_static_transform(self):
+        transform_to_base_from_camera = TransformStamped(
+        header=Header(frame_id='base_link'),
+        child_frame_id='camera_depth_optical_frame',
+        transform=Transform(
+            translation=Vector3(x=0.08987, y=0.0175, z=0.10456),
+            rotation=Quaternion(x=-0.5, y=0.5, z=-0.5, w=0.5),
+        )
+        )
+        return transform_to_base_from_camera
+
+    def static_transform_camera_to_base_link(self, points, header):
+        t_base_cam = self.get_static_transform()
+        refactored_points = []
+        
+        for point in points:
+            x, y, z = point
+            pose = Pose()
+            pose.position.x = x
+            pose.position.y = y
+            pose.position.z = z
+            pose = tf2_geometry_msgs.do_transform_pose(pose, t_base_cam)  # t_base_cam is now static
+            refactored_points.append((pose.position.x, pose.position.y, pose.position.z))
+        
+        return refactored_points
+
     def voxel_grid_filter(self, points, leaf_size=0.05):
         """Downsamples the point cloud using a voxel grid filter."""
         # Create voxel grid by downsampling points to grid size
@@ -41,10 +67,10 @@ class Detection(Node):
         # self.get_logger().info(f"start callback")
         gen = pc2.read_points_numpy(msg, skip_nans=True)
         points = gen[:, :3]  # Extract XYZ
-
+        self.get_logger().info(f"points {points}")
         # **Filter points based on distance**
         distances = np.linalg.norm(points[:, :2], axis=1)  # XY distance
-        mask = (distances <= 1) & (points[:, 2] > 0)  # Within 1m and above ground
+        mask = (distances <= 0.10) #& (points[:, 2] > 0)  # Within 1m and above ground
         filtered_points = points[mask]
         # self.get_logger().info(f"mask applied")
 
