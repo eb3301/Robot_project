@@ -9,7 +9,7 @@ import numpy as np
 class WheelController(Node):
 
     def __init__(self):
-        super().__init__("Wheel Controller")   
+        super().__init__("Wheel_Controller")   
 
         self.cmd_vel_sub = self.create_subscription(Twist, '/cmd_vel', self.twist_callback())
         

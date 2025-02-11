@@ -21,7 +21,7 @@ import random
 class AutoControll(Node):
 
     def __init__(self):
-        super().__init__('Auto Controller')
+        super().__init__('Auto_Controller')
 
         self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
 
