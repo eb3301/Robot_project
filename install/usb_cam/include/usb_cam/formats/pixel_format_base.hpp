@@ -1,1 +1,0 @@
-/home/robot/dd2419_ws/src/robp_robot/usb_cam/include/usb_cam/formats/pixel_format_base.hpp
