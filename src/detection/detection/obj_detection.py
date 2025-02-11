@@ -6,11 +6,11 @@ from rclpy.node import Node
 from sensor_msgs.msg import PointCloud2, PointField
 import sensor_msgs_py.point_cloud2 as pc2
 from sklearn.cluster import DBSCAN
-from tf2_ros import TransformBroadcaster
-from tf_transformations import quaternion_from_euler, euler_from_quaternion
-from geometry_msgs.msg import TransformStamped
-from geometry_msgs.msg import Header, Transform, Quaternion, Vector3, Pose
-import tf2_geometry_msgs
+# from tf2_ros import TransformBroadcaster
+# from tf_transformations import quaternion_from_euler, euler_from_quaternion
+# from geometry_msgs.msg import TransformStamped
+# from geometry_msgs.msg import Header, Transform, Quaternion, Vector3, Pose
+# import tf2_geometry_msgs
 
 
 class Detection(Node):
@@ -25,33 +25,33 @@ class Detection(Node):
         self.get_logger().info(f"node started")
 
 
-    def get_static_transform(self):
-        transform_to_base_from_camera = TransformStamped(
-        header=Header(frame_id='base_link'),
-        child_frame_id='camera_depth_optical_frame',
-        transform=Transform(
-            translation=Vector3(x=0.08987, y=0.0175, z=0.10456),
-            rotation=Quaternion(x=-0.5, y=0.5, z=-0.5, w=0.5),
-        )
-        )
-        return transform_to_base_from_camera
+    # def get_static_transform(self):
+    #     transform_to_base_from_camera = TransformStamped(
+    #     header=Header(frame_id='base_link'),
+    #     child_frame_id='camera_depth_optical_frame',
+    #     transform=Transform(
+    #         translation=Vector3(x=0.08987, y=0.0175, z=0.10456),
+    #         rotation=Quaternion(x=-0.5, y=0.5, z=-0.5, w=0.5),
+    #     )
+    #     )
+    #     return transform_to_base_from_camera
 
-    def static_transform_camera_to_base_link(self, points, header):
-        t_base_cam = self.get_static_transform()
-        refactored_points = []
+    # def static_transform_camera_to_base_link(self, points, header):
+    #     t_base_cam = self.get_static_transform()
+    #     refactored_points = []
         
-        for point in points:
-            x, y, z = point
-            pose = Pose()
-            pose.position.x = x
-            pose.position.y = y
-            pose.position.z = z
-            pose = tf2_geometry_msgs.do_transform_pose(pose, t_base_cam)  # t_base_cam is now static
-            refactored_points.append((pose.position.x, pose.position.y, pose.position.z))
+    #     for point in points:
+    #         x, y, z = point
+    #         pose = Pose()
+    #         pose.position.x = x
+    #         pose.position.y = y
+    #         pose.position.z = z
+    #         pose = tf2_geometry_msgs.do_transform_pose(pose, t_base_cam)  # t_base_cam is now static
+    #         refactored_points.append((pose.position.x, pose.position.y, pose.position.z))
         
-        return refactored_points
+    #     return refactored_points
 
-    def voxel_grid_filter(self, points, leaf_size=0.05):
+    def voxel_grid_filter(self, points, leaf_size=0.01):
         """Downsamples the point cloud using a voxel grid filter."""
         # Create voxel grid by downsampling points to grid size
         # Points are binned by floor division on leaf size.
@@ -73,10 +73,13 @@ class Detection(Node):
         # self.get_logger().info(f"start callback")
         gen = pc2.read_points_numpy(msg, skip_nans=True)
         points = gen[:, :3]  # Extract XYZ
-        self.get_logger().info(f"points {points}")
+        #self.get_logger().info(f"points {points[:,:3]}")
+
         # **Filter points based on distance**
-        distances = np.linalg.norm(points[:, :2], axis=1)  # XY distance
-        mask = (distances <= 0.10) #& (points[:, 2] > 0)  # Within 1m and above ground
+        distances = np.linalg.norm(points[:, :3], axis=1)  # XY distance
+        # filter points below the ground above 30 cm and beyond 1.5 m
+        offset=0.09 # camera offset in y direction (i.e. in the vertical one)
+        mask = (distances <= 1.5) & (points[:, 1] < offset) & (points[:, 1] > offset-0.3) 
         filtered_points = points[mask]
         # self.get_logger().info(f"mask applied")
 
@@ -85,7 +88,7 @@ class Detection(Node):
             return
 
         # Downsample using voxel grid filter
-        filtered_points = self.voxel_grid_filter(filtered_points, leaf_size=0.1)  
+        #filtered_points = self.voxel_grid_filter(filtered_points, leaf_size=0.1)  
         
         # **Step 1: DBSCAN Clustering**
         # self.get_logger().info(f"proceed with DBSCAN")
