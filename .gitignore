@@ -7,3 +7,9 @@ install/
 # Ignore Python cache
 __pycache__/
 *.pyc
+
+# Ignore log files
+log/
+*.log
+out.log
+
