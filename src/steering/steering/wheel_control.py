@@ -22,24 +22,6 @@ class WheelController(Node):
 
         # Velocity and rotation
         vel = msg.linear.x # m/s
-<<<<<<< HEAD
-        steering = msg.angular.z # rad
-
-        vel_factor = vel / max_vel
-
-        # GPT -- Duty Cycle Turning Factor - must be between (0,1)
-        if steering <= np.pi/4 and steering >= 0:
-            rot_factor = np.tan(steering)
-        elif steering >= -np.pi/4 and steering <= 0:
-            rot_factor = np.tan(steering)
-        else:
-            if steering <= 0:
-                rot_factor = -1
-            else:
-                rot_factor = 1
-        print(vel_factor * (1 + rot_factor))
-        print(vel_factor * (1 - rot_factor))
-=======
         stearing = msg.angular.z # rad
 
         vel_factor = vel / max_vel
@@ -49,7 +31,6 @@ class WheelController(Node):
         rot_factor_R = (np.tan(stearing) + 0.5) / np.tan(stearing)
         print(rot_factor_L)
         print(rot_factor_R)
->>>>>>> 5221a43 (få main)
 
         # Message
         duty_cycles_msg = DutyCycles()
