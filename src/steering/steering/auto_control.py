@@ -69,7 +69,7 @@ class AutoControll(Node):
         heading  = self.compute_heading(self.pose.orientation)
         angle = np.arctan2(dy, dx)
         stearing = angle - heading
-        vel_x = 0.5 #m/s --- IDK, does not really matter I guess...
+        vel_x = 0.1 #m/s --- IDK, does not really matter I guess...
 
         #Set velocity and stearing for twist msg
         twist_msg.linear.x = vel_x
@@ -84,7 +84,7 @@ class AutoControll(Node):
         return yaw
     
     def generate_point(self):
-        x, y = (random.uniform(0, 20), random.uniform(0, 20))
+        x, y = (random.uniform(0, 2), random.uniform(0, 2))
         goal_pose = PoseStamped()
         goal_pose.pose.position.x = x
         goal_pose.pose.position.y = y
