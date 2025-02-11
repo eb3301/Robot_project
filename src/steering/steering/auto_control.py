@@ -27,6 +27,7 @@ class AutoControll(Node):
 
         self.pose_sub = self.create_subscription(PoseStamped, "/odom_pose",
                                                   self.pose_callback, 10)
+        self.goal_pose_pub = self.create_publisher(PoseStamped, "/goal_pose", 10)
 
         self.goal_pose = (0, 0)
         self.pose = Pose()
@@ -84,7 +85,10 @@ class AutoControll(Node):
     
     def generate_point(self):
         x, y = (random.uniform(0, 20), random.uniform(0, 20))
-        # y = (random.uniform(0, 2), random.uniform(0, 2))
+        goal_pose = PoseStamped()
+        goal_pose.pose.position.x = x
+        goal_pose.pose.position.y = y
+        self.goal_pose_pub.publish(goal_pose)
         return x, y
 
 
@@ -99,12 +103,13 @@ def main():
                 node.arrived = False
                 #sample random point within x:[0, 2], y:[0, 2]
                 x, y = node.generate_point()
+                
                 node.goal_pose = (x, y)
                 print(f"Sampled point: (x,y) = ({x,y})")
             else: 
                 rclpy.spin_once(node)
                 node.calculate_path()
-                time.sleep(3) #Waiting 3s before calculating new path
+                time.sleep(1) #Waiting 3s before calculating new path
                 
     except KeyboardInterrupt:
         pass
