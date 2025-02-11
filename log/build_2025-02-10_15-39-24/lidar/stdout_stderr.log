@@ -1,0 +1,17 @@
+running develop
+running egg_info
+creating lidar.egg-info
+writing lidar.egg-info/PKG-INFO
+writing dependency_links to lidar.egg-info/dependency_links.txt
+writing entry points to lidar.egg-info/entry_points.txt
+writing requirements to lidar.egg-info/requires.txt
+writing top-level names to lidar.egg-info/top_level.txt
+writing manifest file 'lidar.egg-info/SOURCES.txt'
+reading manifest file 'lidar.egg-info/SOURCES.txt'
+writing manifest file 'lidar.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/group1/dd2419_ws/install/lidar/lib/python3.12/site-packages/lidar.egg-link (link to .)
+Installing lidar script to /home/group1/dd2419_ws/install/lidar/lib/lidar
+
+Installed /home/group1/dd2419_ws/build/lidar
+running symlink_data

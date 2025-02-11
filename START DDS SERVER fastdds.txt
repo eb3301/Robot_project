@@ -1,0 +1,3 @@
+START DDS SERVER:
+	
+	fastdds discovery -i 0 -t 192.168.128.112 -q 42100

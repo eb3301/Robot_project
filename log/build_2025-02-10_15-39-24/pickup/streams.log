@@ -1,0 +1,19 @@
+[2.476s] Invoking command in '/home/group1/dd2419_ws/build/pickup': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/pickup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/pickup/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/pickup/build --no-deps symlink_data
+[3.720s] running develop
+[4.836s] running egg_info
+[4.836s] creating pickup.egg-info
+[5.000s] writing pickup.egg-info/PKG-INFO
+[5.001s] writing dependency_links to pickup.egg-info/dependency_links.txt
+[5.006s] writing entry points to pickup.egg-info/entry_points.txt
+[5.013s] writing requirements to pickup.egg-info/requires.txt
+[5.014s] writing top-level names to pickup.egg-info/top_level.txt
+[5.014s] writing manifest file 'pickup.egg-info/SOURCES.txt'
+[5.349s] reading manifest file 'pickup.egg-info/SOURCES.txt'
+[5.353s] writing manifest file 'pickup.egg-info/SOURCES.txt'
+[5.518s] running build_ext
+[5.518s] Creating /home/group1/dd2419_ws/install/pickup/lib/python3.12/site-packages/pickup.egg-link (link to .)
+[5.518s] Installing pickup script to /home/group1/dd2419_ws/install/pickup/lib/pickup
+[5.526s] 
+[5.528s] Installed /home/group1/dd2419_ws/build/pickup
+[5.528s] running symlink_data
+[5.769s] Invoked command in '/home/group1/dd2419_ws/build/pickup' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/group1/dd2419_ws/build/pickup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/group1/dd2419_ws/install/pickup/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/group1/dd2419_ws/build/pickup/build --no-deps symlink_data
