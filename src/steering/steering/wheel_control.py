@@ -27,9 +27,9 @@ class WheelController(Node):
         vel_factor = vel / max_vel
 
         # GPT -- Duty Cycle Turning Factor - must be between (0,1)
-        if steering <= np.pi/4:
+        if steering <= np.pi/4 and steering >= 0:
             rot_factor = np.tan(steering)
-        elif steering >= -np.pi/4:
+        elif steering >= -np.pi/4 and steering <= 0:
             rot_factor = np.tan(steering)
         else:
             if steering <= 0:
