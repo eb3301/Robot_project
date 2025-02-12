@@ -93,11 +93,11 @@ class Detection(Node):
             return
 
         # Downsample using voxel grid filter
-        filtered_points = self.voxel_grid_filter(filtered_points, leaf_size=0.1)  
+        # filtered_points = self.voxel_grid_filter(filtered_points, leaf_size=0.1)  
         
         # **Step 1: DBSCAN Clustering**
         # self.get_logger().info(f"proceed with DBSCAN")
-        db = DBSCAN(eps=0.5, min_samples=10)  # eps defines the neighborhood size, min_samples defines minimum points per cluster
+        db = DBSCAN(eps=0.35, min_samples=10)  # eps defines the neighborhood size, min_samples defines minimum points per cluster
         labels = db.fit_predict(filtered_points)
         # self.get_logger().info(f"done")
 
@@ -126,7 +126,7 @@ class Detection(Node):
                 volume = np.prod(bbox_size)
 
                 # **Step 3: Classify Objects**
-                if volume < 0.004:  # Small object (Cube/Sphere)
+                if volume < 0.002:  # Small object (Cube/Sphere)
                     self.get_logger().info(f'Detected Cube or Sphere at {np.mean(cluster_points, axis=0)}')
                     classified_labels.append(1)  # 1 for small objects
                 elif volume < 0.01:  # Larger object (Box)
