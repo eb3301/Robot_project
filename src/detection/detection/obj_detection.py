@@ -84,7 +84,7 @@ class Detection(Node):
         distances = np.linalg.norm(points[:, :3], axis=1)  # XY distance
         # filter points below the ground above 30 cm and beyond 1.5 m
         offset=0.09 # camera offset in y direction (i.e. in the vertical one)
-        mask = (distances <= 1.5) & (points[:, 1] < offset) & (points[:, 1] > offset-0.3) 
+        mask = (distances <= 1) & (points[:, 1] < offset) & (points[:, 1] > offset-0.3) 
         filtered_points = points[mask]
         # self.get_logger().info(f"mask applied")
 
@@ -93,7 +93,7 @@ class Detection(Node):
             return
 
         # Downsample using voxel grid filter
-        #filtered_points = self.voxel_grid_filter(filtered_points, leaf_size=0.1)  
+        filtered_points = self.voxel_grid_filter(filtered_points, leaf_size=0.1)  
         
         # **Step 1: DBSCAN Clustering**
         # self.get_logger().info(f"proceed with DBSCAN")
@@ -129,9 +129,10 @@ class Detection(Node):
                 if volume < 0.004:  # Small object (Cube/Sphere)
                     self.get_logger().info(f'Detected Cube or Sphere at {np.mean(cluster_points, axis=0)}')
                     classified_labels.append(1)  # 1 for small objects
-                else:  # Larger object (Box)
+                elif volume < 0.01:  # Larger object (Box)
                     self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
                     classified_labels.append(2)  # 2 for large objects
+
 
                 detected_objects.append(cluster_points)
         else:
@@ -148,7 +149,10 @@ class Detection(Node):
         for i, cluster in enumerate(clusters):
             for point in cluster:
                 detected_points.append(point)
-                colors.append([255, 0, 0] if labels[i] == 1 else [0, 255, 0])  # Red = Cube/Sphere, Green = Box
+                if i < len(labels):  # Ensure that the index is within bounds of the classified_labels list
+                    colors.append([255, 0, 0] if labels[i] == 1 else [0, 255, 0])  # Red = Cube/Sphere, Green = Box
+                else:
+                    colors.append([0, 0, 0])  # Default color for any mismatched cases (optional)
 
         if not detected_points:
             return
