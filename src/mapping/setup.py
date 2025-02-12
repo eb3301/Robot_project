@@ -19,7 +19,7 @@ setup(
     license='MIT',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': ['mapping = mapping.mapping.py:main'
+        'console_scripts': ['mapping = mapping.mapping:main'
         ],
     },
 )
