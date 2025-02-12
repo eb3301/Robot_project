@@ -21,8 +21,8 @@ class WheelController(Node):
         self.timer = self.create_timer(0.4, self.publish_duty_cycles)  # 10Hz frequency
 
         # Initialize some variables for the robot's movement
-        self.linear_vel = 0.05  # Default linear velocity
-        self.rot = 1.0  # Default rotation velocity
+        self.linear_vel = 0.0 # Default linear velocity
+        self.rot = 0.0  # Default rotation velocity
 
     def twist_callback(self, msg: Twist):
         # Update linear and rotational velocities based on cmd_vel message
@@ -37,12 +37,13 @@ class WheelController(Node):
         
         
         if binary_rot == 0.0:
-            print("Driving straight")
             # Move straight
             duty_cycles_msg.duty_cycle_left = self.linear_vel
             duty_cycles_msg.duty_cycle_right = self.linear_vel
-        else:
-            print("Turning")
+        elif binary_rot == -1:
+            duty_cycles_msg.duty_cycle_left = rot_speed
+            duty_cycles_msg.duty_cycle_right = -rot_speed
+        elif binary_rot == 1:
             duty_cycles_msg.duty_cycle_left = -rot_speed
             duty_cycles_msg.duty_cycle_right = rot_speed
 

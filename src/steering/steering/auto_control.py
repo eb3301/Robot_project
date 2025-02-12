@@ -9,7 +9,8 @@ from geometry_msgs.msg import PoseStamped, Twist, Pose
 from tf_transformations import euler_from_quaternion
 import time
 import random
-
+from visualization_msgs.msg import Marker
+from std_msgs.msg import Header
 
 class AutoControll(Node):
 
@@ -21,7 +22,8 @@ class AutoControll(Node):
         self.pose_sub = self.create_subscription(PoseStamped, "/odom_pose",
                                                    self.pose_callback, 10)
         
-        self.goal_pose_pub = self.create_publisher(PoseStamped, "/goal_pose", 10)
+        # self.goal_pose_pub = self.create_publisher(PoseStamped, "/goal_pose", 10)
+        self.goal_marker_pub = self.create_publisher(Marker, "/goal_marker", 10)  # Publisher for marker
 
         self.goal_pose = (0, 0)
         self.pose = Pose()
@@ -32,8 +34,8 @@ class AutoControll(Node):
     def pose_callback(self, msg: PoseStamped):
         self.pose = msg.pose #Pose
 
-        self.pub_goal_pose()
-
+        # self.pub_goal_pose()
+        self.pub_goal_marker()
         #Create twist msg
         twist_msg = Twist()
         #All 0 for 2D steering
@@ -42,7 +44,7 @@ class AutoControll(Node):
         twist_msg.angular.x = 0.0
         twist_msg.angular.y = 0.0
         #Arbitrary velocity
-        twist_msg.linear.x = 0.1
+        twist_msg.linear.x = 0.20
 
         #Calculate correct desired steering
         curr_x, curr_y = self.pose.position.x, self.pose.position.y
@@ -58,15 +60,19 @@ class AutoControll(Node):
             print(f"Arrived at destination!")
             twist_msg.angular.z = 1.0
             self.cmd_vel_pub.publish(twist_msg)
+            x, y = self.generate_point()
+            self.goal_pose = (x, y)
             time.sleep(3)
-            self.generate_point()
             return
 
-        print(f"Angle Difference: {np.abs(steering - heading)}")
         if steering > 0.2 or steering < -0.2: 
             #Turn
-            twist_msg.angular.z = 1.0
-            self.cmd_vel_pub.publish(twist_msg)
+            if steering <= 0:
+                twist_msg.angular.z = -1.0
+                self.cmd_vel_pub.publish(twist_msg)
+            if steering > 0:
+                twist_msg.angular.z = 1.0
+                self.cmd_vel_pub.publish(twist_msg)
             #time.sleep(0.1)
             return
         else: 
@@ -101,27 +107,53 @@ class AutoControll(Node):
     
     
     def generate_point(self):
-        x, y = (random.uniform(0, 3), random.uniform(0, 3))
+        x, y = (random.uniform(0, 2), random.uniform(0, 2))
         print(f"Moving to marker at:({x, y})")
         return x, y
 
-    def pub_goal_pose(self):
-        goal_pose = PoseStamped()
-        goal_pose.header.stamp = self.get_clock().now().to_msg()
-        goal_pose.header.frame_id = "odom"
-        goal_pose.pose.position.x = self.goal_pose[0]
-        goal_pose.pose.position.y = self.goal_pose[1]
-        goal_pose.pose.position.z = 0.0
-        goal_pose.pose.orientation.x = 0.0
-        goal_pose.pose.orientation.y = 0.0
-        goal_pose.pose.orientation.z = 0.0
-        self.goal_pose_pub.publish(goal_pose)
+    # def pub_goal_pose(self):
+    #     goal_pose = PoseStamped()
+    #     goal_pose.header.stamp = self.get_clock().now().to_msg()
+    #     goal_pose.header.frame_id = "odom"
+    #     goal_pose.pose.position.x = self.goal_pose[0]
+    #     goal_pose.pose.position.y = self.goal_pose[1]
+    #     goal_pose.pose.position.z = 0.0
+    #     goal_pose.pose.orientation.x = 0.0
+    #     goal_pose.pose.orientation.y = 0.0
+    #     goal_pose.pose.orientation.z = 0.0
+    #     self.goal_pose_pub.publish(goal_pose)
+
+    def pub_goal_marker(self):
+        marker = Marker()
+        marker.header = Header()
+        marker.header.stamp = self.get_clock().now().to_msg()
+        marker.header.frame_id = "odom"
+        marker.ns = "goal_marker"
+        marker.id = 0
+        marker.type = Marker.SPHERE  # Use sphere to represent the goal
+        marker.action = Marker.ADD
+        marker.pose.position.x = self.goal_pose[0]
+        marker.pose.position.y = self.goal_pose[1]
+        marker.pose.position.z = 0.0
+        marker.pose.orientation.x = 0.0
+        marker.pose.orientation.y = 0.0
+        marker.pose.orientation.z = 0.0
+        marker.pose.orientation.w = 1.0
+        marker.scale.x = 0.2  # Radius of the sphere
+        marker.scale.y = 0.2
+        marker.scale.z = 0.2
+        marker.color.a = 1.0  # Alpha
+        marker.color.r = 1.0  # Red
+        marker.color.g = 0.0
+        marker.color.b = 0.0
+        self.goal_marker_pub.publish(marker)
 
 def main():
     rclpy.init()
     node = AutoControll()
     x, y = node.generate_point()
     node.goal_pose = (x, y)
+    _ = input("Press enter to start moving!")
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
