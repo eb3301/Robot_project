@@ -1,0 +1,52 @@
+[3.491s] Invoking command in '/home/robot/dd2419_ws/build/sllidar_ros2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/stearing:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/robot/dd2419_ws/build/sllidar_ros2 -- -j12 -l12
+[3.622s] [ 10%] Built target sllidar_client
+[3.649s] [100%] Built target sllidar_node
+[3.976s] Invoked command in '/home/robot/dd2419_ws/build/sllidar_ros2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/stearing:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/robot/dd2419_ws/build/sllidar_ros2 -- -j12 -l12
+[3.979s] Invoking command in '/home/robot/dd2419_ws/build/sllidar_ros2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/stearing:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/robot/dd2419_ws/build/sllidar_ros2
+[4.087s] -- Install configuration: ""
+[4.088s] -- Execute custom install script
+[4.088s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_a1_launch.py
+[4.088s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_a2m12_launch .py
+[4.088s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_a2m7_launch.py
+[4.088s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_a2m8_launch.py
+[4.089s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_a3_launch.py
+[4.089s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_c1_launch.py
+[4.090s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_s1_launch.py
+[4.090s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_s1_tcp_launch.py
+[4.090s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_s2_launch.py
+[4.091s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_s2e_launch.py
+[4.091s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_s3_launch.py
+[4.091s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_t1_launch.py
+[4.091s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_a1_launch.py
+[4.091s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_a2m12_launch.py
+[4.092s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_a2m7_launch.py
+[4.092s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_a2m8_launch.py
+[4.092s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_a3_launch.py
+[4.092s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_c1_launch.py
+[4.093s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_s1_launch.py
+[4.093s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_s1_tcp_launch.py
+[4.093s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_s2_launch.py
+[4.093s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_s2e_launch.py
+[4.093s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_s3_launch.py
+[4.094s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_t1_launch.py
+[4.094s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/rviz/sllidar_ros2.rviz
+[4.094s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/lib/sllidar_ros2/sllidar_node
+[4.094s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/lib/sllidar_ros2/sllidar_client
+[4.094s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/ament_index/resource_index/package_run_dependencies/sllidar_ros2
+[4.094s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/ament_index/resource_index/parent_prefix_path/sllidar_ros2
+[4.095s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/environment/ament_prefix_path.sh
+[4.095s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/environment/ament_prefix_path.dsv
+[4.095s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/environment/path.sh
+[4.095s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/environment/path.dsv
+[4.096s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/local_setup.bash
+[4.096s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/local_setup.sh
+[4.096s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/local_setup.zsh
+[4.097s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/local_setup.dsv
+[4.097s] -- Symlinking: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/package.dsv
+[4.097s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/ament_index/resource_index/packages/sllidar_ros2
+[4.097s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/cmake/ament_cmake_export_dependencies-extras.cmake
+[4.097s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/cmake/ament_cmake_export_include_directories-extras.cmake
+[4.098s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/cmake/sllidar_ros2Config.cmake
+[4.098s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/cmake/sllidar_ros2Config-version.cmake
+[4.098s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/sllidar_ros2/share/sllidar_ros2/package.xml
+[4.139s] Invoked command in '/home/robot/dd2419_ws/build/sllidar_ros2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/stearing:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/robot/dd2419_ws/build/sllidar_ros2

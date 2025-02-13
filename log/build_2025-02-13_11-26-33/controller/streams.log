@@ -1,0 +1,17 @@
+[2.291s] Invoking command in '/home/robot/dd2419_ws/build/controller': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/controller/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/controller/build --no-deps symlink_data
+[2.636s] running develop
+[2.847s] running egg_info
+[2.866s] writing controller.egg-info/PKG-INFO
+[2.867s] writing dependency_links to controller.egg-info/dependency_links.txt
+[2.867s] writing entry points to controller.egg-info/entry_points.txt
+[2.867s] writing requirements to controller.egg-info/requires.txt
+[2.867s] writing top-level names to controller.egg-info/top_level.txt
+[2.908s] reading manifest file 'controller.egg-info/SOURCES.txt'
+[2.909s] writing manifest file 'controller.egg-info/SOURCES.txt'
+[2.931s] running build_ext
+[2.931s] Creating /home/robot/dd2419_ws/install/controller/lib/python3.12/site-packages/controller.egg-link (link to .)
+[2.931s] Installing controller script to /home/robot/dd2419_ws/install/controller/lib/controller
+[2.932s] 
+[2.932s] Installed /home/robot/dd2419_ws/build/controller
+[2.932s] running symlink_data
+[2.966s] Invoked command in '/home/robot/dd2419_ws/build/controller' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/controller/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/controller/build --no-deps symlink_data

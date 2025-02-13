@@ -1,0 +1,22 @@
+[3.412s] Invoking command in '/home/robot/dd2419_ws/build/robot_odometry': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/robot_odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/robot_odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/robot_odometry/build --no-deps symlink_data
+[4.093s] running develop
+[4.354s] running egg_info
+[4.377s] writing robot_odometry.egg-info/PKG-INFO
+[4.377s] writing dependency_links to robot_odometry.egg-info/dependency_links.txt
+[4.378s] writing entry points to robot_odometry.egg-info/entry_points.txt
+[4.378s] writing requirements to robot_odometry.egg-info/requires.txt
+[4.378s] writing top-level names to robot_odometry.egg-info/top_level.txt
+[4.426s] reading manifest file 'robot_odometry.egg-info/SOURCES.txt'
+[4.428s] writing manifest file 'robot_odometry.egg-info/SOURCES.txt'
+[4.453s] running build_ext
+[4.453s] Creating /home/robot/dd2419_ws/install/robot_odometry/lib/python3.12/site-packages/robot-odometry.egg-link (link to .)
+[4.454s] Installing robot_odometry script to /home/robot/dd2419_ws/install/robot_odometry/lib/robot_odometry
+[4.454s] 
+[4.454s] Installed /home/robot/dd2419_ws/build/robot_odometry
+[4.455s] running symlink_data
+[4.455s] creating /home/robot/dd2419_ws/install/robot_odometry/share/ament_index
+[4.455s] creating /home/robot/dd2419_ws/install/robot_odometry/share/ament_index/resource_index
+[4.455s] creating /home/robot/dd2419_ws/install/robot_odometry/share/ament_index/resource_index/packages
+[4.455s] symbolically linking /home/robot/dd2419_ws/build/robot_odometry/resource/robot_odometry -> /home/robot/dd2419_ws/install/robot_odometry/share/ament_index/resource_index/packages
+[4.455s] symbolically linking /home/robot/dd2419_ws/build/robot_odometry/package.xml -> /home/robot/dd2419_ws/install/robot_odometry/share/robot_odometry
+[4.529s] Invoked command in '/home/robot/dd2419_ws/build/robot_odometry' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/robot_odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/robot_odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/robot_odometry/build --no-deps symlink_data

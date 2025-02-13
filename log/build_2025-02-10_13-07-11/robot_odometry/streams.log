@@ -1,0 +1,17 @@
+[6.478s] Invoking command in '/home/robot/dd2419_ws/build/robot_odometry': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/robot_odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/robot_odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/robot_odometry/build --no-deps symlink_data
+[7.430s] running develop
+[7.865s] running egg_info
+[7.903s] writing robot_odometry.egg-info/PKG-INFO
+[7.903s] writing dependency_links to robot_odometry.egg-info/dependency_links.txt
+[7.908s] writing entry points to robot_odometry.egg-info/entry_points.txt
+[7.908s] writing requirements to robot_odometry.egg-info/requires.txt
+[7.908s] writing top-level names to robot_odometry.egg-info/top_level.txt
+[7.973s] reading manifest file 'robot_odometry.egg-info/SOURCES.txt'
+[7.974s] writing manifest file 'robot_odometry.egg-info/SOURCES.txt'
+[8.100s] running build_ext
+[8.100s] Creating /home/robot/dd2419_ws/install/robot_odometry/lib/python3.12/site-packages/robot-odometry.egg-link (link to .)
+[8.100s] Installing robot_odometry script to /home/robot/dd2419_ws/install/robot_odometry/lib/robot_odometry
+[8.100s] 
+[8.100s] Installed /home/robot/dd2419_ws/build/robot_odometry
+[8.100s] running symlink_data
+[8.249s] Invoked command in '/home/robot/dd2419_ws/build/robot_odometry' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/robot_odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/robot_odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/robot_odometry/build --no-deps symlink_data

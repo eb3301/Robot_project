@@ -1,0 +1,17 @@
+[2.291s] Invoking command in '/home/robot/dd2419_ws/build/lidar': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/lidar/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/lidar/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/lidar/build --no-deps symlink_data
+[2.634s] running develop
+[2.841s] running egg_info
+[2.860s] writing lidar.egg-info/PKG-INFO
+[2.860s] writing dependency_links to lidar.egg-info/dependency_links.txt
+[2.860s] writing entry points to lidar.egg-info/entry_points.txt
+[2.861s] writing requirements to lidar.egg-info/requires.txt
+[2.861s] writing top-level names to lidar.egg-info/top_level.txt
+[2.901s] reading manifest file 'lidar.egg-info/SOURCES.txt'
+[2.902s] writing manifest file 'lidar.egg-info/SOURCES.txt'
+[2.923s] running build_ext
+[2.923s] Creating /home/robot/dd2419_ws/install/lidar/lib/python3.12/site-packages/lidar.egg-link (link to .)
+[2.924s] Installing lidar script to /home/robot/dd2419_ws/install/lidar/lib/lidar
+[2.924s] 
+[2.924s] Installed /home/robot/dd2419_ws/build/lidar
+[2.924s] running symlink_data
+[2.961s] Invoked command in '/home/robot/dd2419_ws/build/lidar' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/lidar/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/lidar/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/lidar/build --no-deps symlink_data

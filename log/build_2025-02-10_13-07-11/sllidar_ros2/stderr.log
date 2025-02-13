@@ -1,0 +1,132 @@
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h:41[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_crc.h:36[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/sl_crc.cpp:33[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_protocol.h:66:16:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kdata[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+   66 |     sl_u8 data[[01;35m[K0[m[K];
+      |                [01;35m[K^[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h:324:20:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kpayload[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+  324 |     sl_u8  payload[[01;35m[K0[m[K];
+      |                    [01;35m[K^[m[K
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h:41[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_driver.h:54[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/sl_serial_channel.cpp:33[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_protocol.h:66:16:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kdata[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+   66 |     sl_u8 data[[01;35m[K0[m[K];
+      |                [01;35m[K^[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h:324:20:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kpayload[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+  324 |     sl_u8  payload[[01;35m[K0[m[K];
+      |                    [01;35m[K^[m[K
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h:41[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_driver.h:54[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/sl_udp_channel.cpp:33[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_protocol.h:66:16:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kdata[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+   66 |     sl_u8 data[[01;35m[K0[m[K];
+      |                [01;35m[K^[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h:324:20:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kpayload[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+  324 |     sl_u8  payload[[01;35m[K0[m[K];
+      |                    [01;35m[K^[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/sl_udp_channel.cpp:[m[K In member function ‘[01m[Kvoid sl::UdpChannel::[01;32m[KsetStatus[m[K(_u32)[m[K’:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/sl_udp_channel.cpp:112:29:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kflag[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  112 |         void setStatus([01;35m[K_u32 flag[m[K){}
+      |                        [01;35m[K~~~~~^~~~[m[K
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h:41[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_driver.h:54[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/sl_tcp_channel.cpp:33[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_protocol.h:66:16:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kdata[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+   66 |     sl_u8 data[[01;35m[K0[m[K];
+      |                [01;35m[K^[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h:324:20:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kpayload[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+  324 |     sl_u8  payload[[01;35m[K0[m[K];
+      |                    [01;35m[K^[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/sl_tcp_channel.cpp:[m[K In member function ‘[01m[Kvoid sl::TcpChannel::[01;32m[KsetStatus[m[K(_u32)[m[K’:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/sl_tcp_channel.cpp:109:29:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kflag[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  109 |         void setStatus([01;35m[K_u32 flag[m[K){}
+      |                        [01;35m[K~~~~~^~~~[m[K
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_protocol.h:36[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar.h:39[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/sdkcommon.h:49[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/rplidar_driver.cpp:33[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_protocol.h:66:16:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kdata[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+   66 |     sl_u8 data[[01;35m[K0[m[K];
+      |                [01;35m[K^[m[K
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_cmd.h:36[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar.h:40[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h:324:20:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kpayload[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+  324 |     sl_u8  payload[[01;35m[K0[m[K];
+      |                    [01;35m[K^[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/rplidar_driver.cpp:[m[K In member function ‘[01m[Ku_result rp::standalone::rplidar::RPlidarDriver::[01;32m[Kconnect[m[K(const char*, _u32, _u32)[m[K’:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/rplidar_driver.cpp:67:77:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kflag[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   67 |     u_result RPlidarDriver::connect(const char *path, _u32 portOrBaud, [01;35m[K_u32 flag[m[K)
+      |                                                                        [01;35m[K~~~~~^~~~[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/rplidar_driver.cpp:[m[K In member function ‘[01m[Ku_result rp::standalone::rplidar::RPlidarDriver::[01;32m[Kreset[m[K(_u32)[m[K’:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/rplidar_driver.cpp:101:40:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Ktimeout[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  101 |     u_result RPlidarDriver::reset([01;35m[K_u32 timeout[m[K)
+      |                                   [01;35m[K~~~~~^~~~~~~[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/rplidar_driver.cpp:[m[K In member function ‘[01m[Ku_result rp::standalone::rplidar::RPlidarDriver::[01;32m[KgetScanDataWithInterval[m[K(rplidar_response_measurement_node_t*, size_t&)[m[K’:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/rplidar_driver.cpp:180:91:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Knodebuffer[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  180 |     u_result RPlidarDriver::getScanDataWithInterval([01;35m[Krplidar_response_measurement_node_t * nodebuffer[m[K, size_t & count)
+      |                                                     [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/rplidar_driver.cpp:180:112:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kcount[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  180 |     u_result RPlidarDriver::getScanDataWithInterval(rplidar_response_measurement_node_t * nodebuffer, [01;35m[Ksize_t & count[m[K)
+      |                                                                                                       [01;35m[K~~~~~~~~~^~~~~[m[K
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_protocol.h:36[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar.h:39[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/sdkcommon.h:49[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/hal/thread.cpp:35[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_protocol.h:66:16:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kdata[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+   66 |     sl_u8 data[[01;35m[K0[m[K];
+      |                [01;35m[K^[m[K
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_cmd.h:36[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar.h:40[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h:324:20:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kpayload[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+  324 |     sl_u8  payload[[01;35m[K0[m[K];
+      |                    [01;35m[K^[m[K
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/hal/thread.cpp:43[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/arch/linux/thread.hpp:[m[K In static member function ‘[01m[Kstatic rp::hal::Thread rp::hal::Thread::[01;32m[Kcreate[m[K(thread_proc_t, void*)[m[K’:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/arch/linux/thread.hpp:52:57:[m[K [01;35m[Kwarning: [m[Kcast between incompatible function types from ‘[01m[Kthread_proc_t[m[K’ {aka ‘[01m[Klong unsigned int (*)(void*)[m[K’} to ‘[01m[Kvoid* (*)(void*)[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wcast-function-type-Wcast-function-type]8;;[m[K]
+   52 |     pthread_create((pthread_t *)&newborn._handle, NULL, [01;35m[K(void * (*)(void *))proc[m[K, data);
+      |                                                         [01;35m[K^~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/arch/linux/thread.hpp:[m[K In member function ‘[01m[Ku_result rp::hal::Thread::[01;32m[Kjoin[m[K(long unsigned int)[m[K’:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/arch/linux/thread.hpp:176:37:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Ktimeout[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  176 | u_result Thread::join([01;35m[Kunsigned long timeout[m[K)
+      |                       [01;35m[K~~~~~~~~~~~~~~^~~~~~~[m[K
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_protocol.h:36[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar.h:39[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/sdkcommon.h:49[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunnpacker_commondef.h:41[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.cpp:39[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_protocol.h:66:16:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kdata[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+   66 |     sl_u8 data[[01;35m[K0[m[K];
+      |                [01;35m[K^[m[K
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_cmd.h:36[m[K,
+                 from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar.h:40[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h:324:20:[m[K [01;35m[Kwarning: [m[KISO C++ forbids zero-size array ‘[01m[Kpayload[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wpedantic-Wpedantic]8;;[m[K]
+  324 |     sl_u8  payload[[01;35m[K0[m[K];
+      |                    [01;35m[K^[m[K
+In file included from [01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.cpp:40[m[K:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.h:[m[K In member function ‘[01m[Kvirtual void sl::internal::LIDARSampleDataListener::[01;32m[KonCustomSampleDataDecoded[m[K(_u8, _u32, const void*, size_t)[m[K’:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.h:54:52:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[KansType[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   54 |         virtual void onCustomSampleDataDecoded([01;35m[K_u8 ansType[m[K, _u32 customCode, const void* data, size_t size) {}
+      |                                                [01;35m[K~~~~^~~~~~~[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.h:54:66:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[KcustomCode[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   54 |         virtual void onCustomSampleDataDecoded(_u8 ansType, [01;35m[K_u32 customCode[m[K, const void* data, size_t size) {}
+      |                                                             [01;35m[K~~~~~^~~~~~~~~~[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.h:54:90:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kdata[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   54 |         virtual void onCustomSampleDataDecoded(_u8 ansType, _u32 customCode, [01;35m[Kconst void* data[m[K, size_t size) {}
+      |                                                                              [01;35m[K~~~~~~~~~~~~^~~~[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.h:54:103:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Ksize[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   54 |         virtual void onCustomSampleDataDecoded(_u8 ansType, _u32 customCode, const void* data, [01;35m[Ksize_t size[m[K) {}
+      |                                                                                                [01;35m[K~~~~~~~^~~~[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.h:[m[K In member function ‘[01m[Kvirtual void sl::internal::LIDARSampleDataListener::[01;32m[KonDecodingError[m[K(int, _u8, const void*, size_t)[m[K’:
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.h:56:42:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[KerrMsg[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   56 |         virtual void onDecodingError([01;35m[Kint errMsg[m[K, _u8 ansType, const void* payload, size_t size) {}
+      |                                      [01;35m[K~~~~^~~~~~[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.h:56:54:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[KansType[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   56 |         virtual void onDecodingError(int errMsg, [01;35m[K_u8 ansType[m[K, const void* payload, size_t size) {}
+      |                                                  [01;35m[K~~~~^~~~~~~[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.h:56:75:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kpayload[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   56 |         virtual void onDecodingError(int errMsg, _u8 ansType, [01;35m[Kconst void* payload[m[K, size_t size) {}
+      |                                                               [01;35m[K~~~~~~~~~~~~^~~~~~~[m[K
+[01m[K/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/dataunpacker.h:56:91:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Ksize[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   56 |         virtual void onDecodingError(int errMsg, _u8 ansType, const void* payload, [01;35m[Ksize_t size[m[K) {}
+      |                                                                                    [01;35m[K~~~~~~~^~~~[m[K

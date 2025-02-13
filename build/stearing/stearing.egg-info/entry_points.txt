@@ -1,0 +1,3 @@
+[console_scripts]
+auto_controll = stearing.auto_controll:main
+wheel_controll = wheel_controll.auto_controll:main

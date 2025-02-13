@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-a5637527455935e5920e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.15"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "robp_phidgets_spatial",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "robp_phidgets_spatial::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-robp_phidgets_spatial-Release-9a9441afbc2ab66e0b8e.json",
+					"name" : "robp_phidgets_spatial",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "robp_phidgets_spatial_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-robp_phidgets_spatial_uninstall-Release-fb44dda719b7f25275ad.json",
+					"name" : "robp_phidgets_spatial_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-Release-a99654367ab5328ad692.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/robot/dd2419_ws/build/robp_phidgets_spatial",
+		"source" : "/home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_spatial"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

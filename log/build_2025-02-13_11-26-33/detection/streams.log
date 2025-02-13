@@ -1,0 +1,18 @@
+[2.187s] Invoking command in '/home/robot/dd2419_ws/build/detection': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/detection/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/detection/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/detection/build --no-deps symlink_data
+[2.415s] running develop
+[2.537s] running egg_info
+[2.547s] writing detection.egg-info/PKG-INFO
+[2.548s] writing dependency_links to detection.egg-info/dependency_links.txt
+[2.548s] writing entry points to detection.egg-info/entry_points.txt
+[2.548s] writing requirements to detection.egg-info/requires.txt
+[2.548s] writing top-level names to detection.egg-info/top_level.txt
+[2.571s] reading manifest file 'detection.egg-info/SOURCES.txt'
+[2.572s] writing manifest file 'detection.egg-info/SOURCES.txt'
+[2.584s] running build_ext
+[2.584s] Creating /home/robot/dd2419_ws/install/detection/lib/python3.12/site-packages/detection.egg-link (link to .)
+[2.585s] Installing detection script to /home/robot/dd2419_ws/install/detection/lib/detection
+[2.585s] Installing obj_detection script to /home/robot/dd2419_ws/install/detection/lib/detection
+[2.586s] 
+[2.586s] Installed /home/robot/dd2419_ws/build/detection
+[2.586s] running symlink_data
+[2.618s] Invoked command in '/home/robot/dd2419_ws/build/detection' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/detection/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/detection/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/detection/build --no-deps symlink_data

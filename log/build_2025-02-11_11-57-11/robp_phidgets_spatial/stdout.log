@@ -1,0 +1,22 @@
+[100%] Built target robp_phidgets_spatial
+-- Install configuration: "Release"
+-- Execute custom install script
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/lib/librobp_phidgets_spatial.so
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/include/robp_phidgets_spatial/spatial.hpp
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/launch/spatial_launch.py
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/ament_index/resource_index/package_run_dependencies/robp_phidgets_spatial
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/ament_index/resource_index/parent_prefix_path/robp_phidgets_spatial
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/environment/ament_prefix_path.sh
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/environment/ament_prefix_path.dsv
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/environment/path.sh
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/environment/path.dsv
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/local_setup.bash
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/local_setup.sh
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/local_setup.zsh
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/local_setup.dsv
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/package.dsv
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/ament_index/resource_index/packages/robp_phidgets_spatial
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/ament_index/resource_index/rclcpp_components/robp_phidgets_spatial
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/cmake/robp_phidgets_spatialConfig.cmake
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/cmake/robp_phidgets_spatialConfig-version.cmake
+-- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_spatial/share/robp_phidgets_spatial/package.xml

@@ -1,0 +1,20 @@
+running develop
+running egg_info
+writing lidar.egg-info/PKG-INFO
+writing dependency_links to lidar.egg-info/dependency_links.txt
+writing entry points to lidar.egg-info/entry_points.txt
+writing requirements to lidar.egg-info/requires.txt
+writing top-level names to lidar.egg-info/top_level.txt
+reading manifest file 'lidar.egg-info/SOURCES.txt'
+writing manifest file 'lidar.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/robot/dd2419_ws/install/lidar/lib/python3.12/site-packages/lidar.egg-link (link to .)
+Installing lidar script to /home/robot/dd2419_ws/install/lidar/lib/lidar
+
+Installed /home/robot/dd2419_ws/build/lidar
+running symlink_data
+creating /home/robot/dd2419_ws/install/lidar/share/ament_index
+creating /home/robot/dd2419_ws/install/lidar/share/ament_index/resource_index
+creating /home/robot/dd2419_ws/install/lidar/share/ament_index/resource_index/packages
+symbolically linking /home/robot/dd2419_ws/build/lidar/resource/lidar -> /home/robot/dd2419_ws/install/lidar/share/ament_index/resource_index/packages
+symbolically linking /home/robot/dd2419_ws/build/lidar/package.xml -> /home/robot/dd2419_ws/install/lidar/share/lidar

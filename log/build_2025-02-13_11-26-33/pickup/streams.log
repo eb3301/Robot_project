@@ -1,0 +1,17 @@
+[2.283s] Invoking command in '/home/robot/dd2419_ws/build/pickup': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/pickup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/pickup/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/pickup/build --no-deps symlink_data
+[2.626s] running develop
+[2.832s] running egg_info
+[2.851s] writing pickup.egg-info/PKG-INFO
+[2.851s] writing dependency_links to pickup.egg-info/dependency_links.txt
+[2.851s] writing entry points to pickup.egg-info/entry_points.txt
+[2.852s] writing requirements to pickup.egg-info/requires.txt
+[2.852s] writing top-level names to pickup.egg-info/top_level.txt
+[2.881s] reading manifest file 'pickup.egg-info/SOURCES.txt'
+[2.882s] writing manifest file 'pickup.egg-info/SOURCES.txt'
+[2.894s] running build_ext
+[2.894s] Creating /home/robot/dd2419_ws/install/pickup/lib/python3.12/site-packages/pickup.egg-link (link to .)
+[2.894s] Installing pickup script to /home/robot/dd2419_ws/install/pickup/lib/pickup
+[2.895s] 
+[2.895s] Installed /home/robot/dd2419_ws/build/pickup
+[2.895s] running symlink_data
+[2.922s] Invoked command in '/home/robot/dd2419_ws/build/pickup' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/pickup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/pickup/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/pickup/build --no-deps symlink_data

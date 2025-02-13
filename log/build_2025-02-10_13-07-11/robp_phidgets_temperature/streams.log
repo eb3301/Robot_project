@@ -1,0 +1,45 @@
+[0.140s] Invoking command in '/home/robot/dd2419_ws/build/robp_phidgets_temperature': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_temperature -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/robot/dd2419_ws/install/robp_phidgets_temperature
+[3.443s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[3.443s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[3.443s] -- Found libphidget22: 2.3.3 (/opt/ros/jazzy/share/libphidget22/cmake)
+[3.444s] -- Found phidgets_api: 2.3.3 (/opt/ros/jazzy/share/phidgets_api/cmake)
+[3.444s] -- Found rclcpp: 28.1.6 (/opt/ros/jazzy/share/rclcpp/cmake)
+[3.444s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[3.444s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[3.444s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[3.444s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[3.444s] -- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[3.445s] -- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[3.445s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[3.445s] -- Found rclcpp_components: 28.1.6 (/opt/ros/jazzy/share/rclcpp_components/cmake)
+[3.445s] -- Found sensor_msgs: 5.3.5 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+[3.445s] -- Configuring done (1.6s)
+[3.445s] -- Generating done (0.0s)
+[3.445s] -- Build files have been written to: /home/robot/dd2419_ws/build/robp_phidgets_temperature
+[3.449s] Invoked command in '/home/robot/dd2419_ws/build/robp_phidgets_temperature' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_temperature -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/robot/dd2419_ws/install/robp_phidgets_temperature
+[3.451s] Invoking command in '/home/robot/dd2419_ws/build/robp_phidgets_temperature': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/robot/dd2419_ws/build/robp_phidgets_temperature -- -j12 -l12
+[3.889s] [100%] Built target robp_phidgets_temperature
+[3.948s] Invoked command in '/home/robot/dd2419_ws/build/robp_phidgets_temperature' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/robot/dd2419_ws/build/robp_phidgets_temperature -- -j12 -l12
+[3.968s] Invoking command in '/home/robot/dd2419_ws/build/robp_phidgets_temperature': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/robot/dd2419_ws/build/robp_phidgets_temperature
+[3.983s] -- Install configuration: "Release"
+[3.984s] -- Execute custom install script
+[3.985s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/lib/librobp_phidgets_temperature.so
+[3.985s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/include/robp_phidgets_temperature/temperature.hpp
+[3.986s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/launch/temperature_launch.py
+[3.986s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/ament_index/resource_index/package_run_dependencies/robp_phidgets_temperature
+[3.986s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/ament_index/resource_index/parent_prefix_path/robp_phidgets_temperature
+[3.987s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/environment/ament_prefix_path.sh
+[3.987s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/environment/ament_prefix_path.dsv
+[3.987s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/environment/path.sh
+[3.988s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/environment/path.dsv
+[3.988s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/local_setup.bash
+[3.988s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/local_setup.sh
+[3.989s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/local_setup.zsh
+[3.989s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/local_setup.dsv
+[3.989s] -- Symlinking: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.dsv
+[4.020s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/ament_index/resource_index/packages/robp_phidgets_temperature
+[4.020s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/ament_index/resource_index/rclcpp_components/robp_phidgets_temperature
+[4.020s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/cmake/robp_phidgets_temperatureConfig.cmake
+[4.020s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/cmake/robp_phidgets_temperatureConfig-version.cmake
+[4.020s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/robp_phidgets_temperature/share/robp_phidgets_temperature/package.xml
+[4.038s] Invoked command in '/home/robot/dd2419_ws/build/robp_phidgets_temperature' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/robot/dd2419_ws/build/robp_phidgets_temperature

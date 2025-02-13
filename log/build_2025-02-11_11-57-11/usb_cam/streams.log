@@ -1,0 +1,59 @@
+[0.028s] Invoking command in '/home/robot/dd2419_ws/build/usb_cam': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/stearing:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/robot/dd2419_ws/build/usb_cam -- -j12 -l12
+[0.214s] [ 14%] Built target usb_cam_node_exe
+[0.220s] [ 28%] Built target gtest_main
+[0.222s] [ 42%] Built target gtest
+[0.249s] [ 57%] Built target usb_cam
+[0.336s] [ 71%] Built target test_pixel_formats
+[0.343s] [ 85%] Built target test_usb_cam_utils
+[0.360s] [100%] Built target usb_cam_node
+[0.381s] Invoked command in '/home/robot/dd2419_ws/build/usb_cam' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/stearing:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/robot/dd2419_ws/build/usb_cam -- -j12 -l12
+[0.384s] Invoking command in '/home/robot/dd2419_ws/build/usb_cam': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/stearing:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/robot/dd2419_ws/build/usb_cam
+[0.395s] -- Install configuration: ""
+[0.396s] -- Execute custom install script
+[0.396s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/environment/library_path.sh
+[0.410s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/environment/library_path.dsv
+[0.422s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/lib/usb_cam/usb_cam_node_exe
+[0.435s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/lib/usb_cam/show_image.py
+[0.447s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/lib/libusb_cam.so
+[0.459s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/lib/libusb_cam_node.so
+[0.472s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/constants.hpp
+[0.484s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/conversions.hpp
+[0.500s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/formats/av_pixel_format_helper.hpp
+[0.518s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/formats/m420.hpp
+[0.537s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/formats/mjpeg.hpp
+[0.552s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/formats/mono.hpp
+[0.568s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/formats/pixel_format_base.hpp
+[0.588s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/formats/rgb.hpp
+[0.601s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/formats/utils.hpp
+[0.616s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/formats/uyvy.hpp
+[0.630s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/formats/yuyv.hpp
+[0.644s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/usb_cam.hpp
+[0.657s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/usb_cam_node.hpp
+[0.672s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/include/usb_cam/utils.hpp
+[0.688s] -- Up-to-date symlink: /home/robot/dd2419_ws/install/usb_cam/lib/libusb_cam_node.so
+[0.689s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/launch/__init__.py
+[0.703s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/launch/camera.launch.py
+[0.718s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/launch/camera_config.py
+[0.735s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/config/camera_info.yaml
+[0.752s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/config/params_1.yaml
+[0.770s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/config/params_2.yaml
+[0.797s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/ament_index/resource_index/package_run_dependencies/usb_cam
+[0.821s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/ament_index/resource_index/parent_prefix_path/usb_cam
+[0.840s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/environment/ament_prefix_path.sh
+[0.861s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/environment/ament_prefix_path.dsv
+[0.881s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/environment/path.sh
+[0.903s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/environment/path.dsv
+[0.925s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/local_setup.bash
+[0.946s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/local_setup.sh
+[0.966s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/local_setup.zsh
+[0.989s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/local_setup.dsv
+[1.008s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/package.dsv
+[1.030s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/ament_index/resource_index/packages/usb_cam
+[1.051s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/ament_index/resource_index/rclcpp_components/usb_cam
+[1.070s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/cmake/ament_cmake_export_libraries-extras.cmake
+[1.091s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/cmake/ament_cmake_export_dependencies-extras.cmake
+[1.110s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/cmake/ament_cmake_export_include_directories-extras.cmake
+[1.129s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/cmake/usb_camConfig.cmake
+[1.148s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/cmake/usb_camConfig-version.cmake
+[1.171s] -- Symlinking: /home/robot/dd2419_ws/install/usb_cam/share/usb_cam/package.xml
+[1.249s] Invoked command in '/home/robot/dd2419_ws/build/usb_cam' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/robot/dd2419_ws/install/stearing:/home/robot/dd2419_ws/install/robp_launch:/home/robot/dd2419_ws/install/robot_odometry:/home/robot/dd2419_ws/install/pickup:/home/robot/dd2419_ws/install/odometry:/home/robot/dd2419_ws/install/lidar:/home/robot/dd2419_ws/install/display:/home/robot/dd2419_ws/install/detection:/home/robot/dd2419_ws/install/controller:/home/robot/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/robot/dd2419_ws/build/usb_cam
