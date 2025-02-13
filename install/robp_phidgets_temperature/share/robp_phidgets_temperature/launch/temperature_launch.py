@@ -1,1 +1,1 @@
-/home/group1/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_temperature/launch/temperature_launch.py
+/home/robot/dd2419_ws/src/robp_robot/robp_phidgets/robp_phidgets_temperature/launch/temperature_launch.py
