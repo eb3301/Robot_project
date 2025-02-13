@@ -33,7 +33,7 @@ Authenticate your github:
 	ssh-add ~/.ssh/{YOURNAME}
 	
 Check github connection:
-	group1@group1:~$ ssh -i ~/.ssh/id_loke -T git@github.com
+	ssh -i ~/.ssh/{YOUR USERNAME} -T git@github.com
 
 
 -------------------- FIRST TIME DOWNLOAD FROM GITHUB -------------------

@@ -38,3 +38,6 @@ USE THIS TO RUN EVERYTHING:
 Rosbag:
 	ros2 bag record -o Test1 --all
 	ros2 bag play --read-ahead-queue-size 100 -r 1.0 --start-paused "bag name"
+
+Start DDS: 
+	fastdds discovery -i 0 -t 192.168.128.112 -q 42100
