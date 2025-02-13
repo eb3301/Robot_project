@@ -38,9 +38,16 @@ class Timestamp(Node):
 
         self.proj = LaserProjection()
 
-    def listener_callback(self, msg):
+        self.counter = 0
 
-        to_frame_rel = 'odom'
+    def listener_callback(self, msg):
+        if self.counter != 10:
+            self.counter += 1
+            return
+        else:
+            self.counter = 0
+
+        to_frame_rel = 'map'
         from_frame_rel = msg.header.frame_id
 
         #Create a transform between LiDAR to base_link
