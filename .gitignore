@@ -7,3 +7,22 @@ install/
 # Ignore Python cache
 __pycache__/
 *.pyc
+*.pyo
+
+#Ignore CMake and other build system artifacts
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Ignore colcon-related metadata
+.colcon/
+
+# Ignore ROS 2 launch logs and debugging outputs
+launch/log/
+dd2419_ws/build/
+dd2419_ws/install/
+dd2419_ws/log/
+
+# Ignore robp_robot
+robp_robot/
