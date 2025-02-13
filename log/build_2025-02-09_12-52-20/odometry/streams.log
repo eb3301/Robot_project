@@ -1,0 +1,17 @@
+[1.634s] Invoking command in '/home/robot/dd2419_ws/build/odometry': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/odometry/build --no-deps symlink_data
+[1.854s] running develop
+[1.968s] running egg_info
+[1.978s] writing odometry.egg-info/PKG-INFO
+[1.979s] writing dependency_links to odometry.egg-info/dependency_links.txt
+[1.979s] writing entry points to odometry.egg-info/entry_points.txt
+[1.979s] writing requirements to odometry.egg-info/requires.txt
+[1.979s] writing top-level names to odometry.egg-info/top_level.txt
+[2.001s] reading manifest file 'odometry.egg-info/SOURCES.txt'
+[2.002s] writing manifest file 'odometry.egg-info/SOURCES.txt'
+[2.014s] running build_ext
+[2.014s] Creating /home/robot/dd2419_ws/install/odometry/lib/python3.12/site-packages/odometry.egg-link (link to .)
+[2.014s] Installing odometry script to /home/robot/dd2419_ws/install/odometry/lib/odometry
+[2.014s] 
+[2.014s] Installed /home/robot/dd2419_ws/build/odometry
+[2.015s] running symlink_data
+[2.040s] Invoked command in '/home/robot/dd2419_ws/build/odometry' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/build/odometry/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/install/odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/robot/dd2419_ws/build/odometry/build --no-deps symlink_data

@@ -20,7 +20,12 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'detection = detection.detection:main'
+<<<<<<< HEAD
+            'detection = detection.detection:main', 'obj_detection = detection.obj_detection:main'
+=======
+            'detection = detection.detection:main',
+            'obj_detection = detection.obj_detection:main'
+>>>>>>> 35a6c91ad09a5a06c566324978e4fec66ced618d
         ],
     },
 )

@@ -1,0 +1,37 @@
+[2.163s] Invoking command in '/home/robot/dd2419_ws/src/display': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/src/build/display/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/src/install/display/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/display build --build-base /home/robot/dd2419_ws/src/build/display/build install --record /home/robot/dd2419_ws/src/build/display/install.log --single-version-externally-managed install_data
+[2.430s] running egg_info
+[2.430s] creating ../build/display/display.egg-info
+[2.442s] writing ../build/display/display.egg-info/PKG-INFO
+[2.442s] writing dependency_links to ../build/display/display.egg-info/dependency_links.txt
+[2.442s] writing entry points to ../build/display/display.egg-info/entry_points.txt
+[2.442s] writing requirements to ../build/display/display.egg-info/requires.txt
+[2.442s] writing top-level names to ../build/display/display.egg-info/top_level.txt
+[2.443s] writing manifest file '../build/display/display.egg-info/SOURCES.txt'
+[2.502s] reading manifest file '../build/display/display.egg-info/SOURCES.txt'
+[2.502s] writing manifest file '../build/display/display.egg-info/SOURCES.txt'
+[2.502s] running build
+[2.502s] running build_py
+[2.503s] creating /home/robot/dd2419_ws/src/build/display/build
+[2.503s] creating /home/robot/dd2419_ws/src/build/display/build/lib
+[2.503s] creating /home/robot/dd2419_ws/src/build/display/build/lib/display
+[2.503s] copying display/display.py -> /home/robot/dd2419_ws/src/build/display/build/lib/display
+[2.504s] copying display/__init__.py -> /home/robot/dd2419_ws/src/build/display/build/lib/display
+[2.510s] running install
+[2.527s] running install_lib
+[2.561s] creating /home/robot/dd2419_ws/src/install/display/lib/python3.12/site-packages/display
+[2.561s] copying /home/robot/dd2419_ws/src/build/display/build/lib/display/display.py -> /home/robot/dd2419_ws/src/install/display/lib/python3.12/site-packages/display
+[2.561s] copying /home/robot/dd2419_ws/src/build/display/build/lib/display/__init__.py -> /home/robot/dd2419_ws/src/install/display/lib/python3.12/site-packages/display
+[2.562s] byte-compiling /home/robot/dd2419_ws/src/install/display/lib/python3.12/site-packages/display/display.py to display.cpython-312.pyc
+[2.567s] byte-compiling /home/robot/dd2419_ws/src/install/display/lib/python3.12/site-packages/display/__init__.py to __init__.cpython-312.pyc
+[2.567s] running install_data
+[2.567s] creating /home/robot/dd2419_ws/src/install/display/share/ament_index
+[2.567s] creating /home/robot/dd2419_ws/src/install/display/share/ament_index/resource_index
+[2.567s] creating /home/robot/dd2419_ws/src/install/display/share/ament_index/resource_index/packages
+[2.568s] copying resource/display -> /home/robot/dd2419_ws/src/install/display/share/ament_index/resource_index/packages
+[2.568s] copying package.xml -> /home/robot/dd2419_ws/src/install/display/share/display
+[2.568s] running install_egg_info
+[2.610s] Copying ../build/display/display.egg-info to /home/robot/dd2419_ws/src/install/display/lib/python3.12/site-packages/display-0.0.0-py3.12.egg-info
+[2.610s] running install_scripts
+[2.919s] Installing display script to /home/robot/dd2419_ws/src/install/display/lib/display
+[2.920s] writing list of installed files to '/home/robot/dd2419_ws/src/build/display/install.log'
+[2.971s] Invoked command in '/home/robot/dd2419_ws/src/display' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/src/build/display/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/src/install/display/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/display build --build-base /home/robot/dd2419_ws/src/build/display/build install --record /home/robot/dd2419_ws/src/build/display/install.log --single-version-externally-managed install_data

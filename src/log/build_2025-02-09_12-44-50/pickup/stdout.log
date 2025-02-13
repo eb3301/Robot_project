@@ -1,0 +1,38 @@
+running egg_info
+creating ../build/pickup/pickup.egg-info
+writing ../build/pickup/pickup.egg-info/PKG-INFO
+writing dependency_links to ../build/pickup/pickup.egg-info/dependency_links.txt
+writing entry points to ../build/pickup/pickup.egg-info/entry_points.txt
+writing requirements to ../build/pickup/pickup.egg-info/requires.txt
+writing top-level names to ../build/pickup/pickup.egg-info/top_level.txt
+writing manifest file '../build/pickup/pickup.egg-info/SOURCES.txt'
+reading manifest file '../build/pickup/pickup.egg-info/SOURCES.txt'
+writing manifest file '../build/pickup/pickup.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/robot/dd2419_ws/src/build/pickup/build
+creating /home/robot/dd2419_ws/src/build/pickup/build/lib
+creating /home/robot/dd2419_ws/src/build/pickup/build/lib/pickup
+copying pickup/pickup (Copy)-feb4-11am.py -> /home/robot/dd2419_ws/src/build/pickup/build/lib/pickup
+copying pickup/pickup.py -> /home/robot/dd2419_ws/src/build/pickup/build/lib/pickup
+copying pickup/__init__.py -> /home/robot/dd2419_ws/src/build/pickup/build/lib/pickup
+running install
+running install_lib
+creating /home/robot/dd2419_ws/src/install/pickup/lib/python3.12/site-packages/pickup
+copying /home/robot/dd2419_ws/src/build/pickup/build/lib/pickup/pickup (Copy)-feb4-11am.py -> /home/robot/dd2419_ws/src/install/pickup/lib/python3.12/site-packages/pickup
+copying /home/robot/dd2419_ws/src/build/pickup/build/lib/pickup/pickup.py -> /home/robot/dd2419_ws/src/install/pickup/lib/python3.12/site-packages/pickup
+copying /home/robot/dd2419_ws/src/build/pickup/build/lib/pickup/__init__.py -> /home/robot/dd2419_ws/src/install/pickup/lib/python3.12/site-packages/pickup
+byte-compiling /home/robot/dd2419_ws/src/install/pickup/lib/python3.12/site-packages/pickup/pickup (Copy)-feb4-11am.py to pickup (Copy)-feb4-11am.cpython-312.pyc
+byte-compiling /home/robot/dd2419_ws/src/install/pickup/lib/python3.12/site-packages/pickup/pickup.py to pickup.cpython-312.pyc
+byte-compiling /home/robot/dd2419_ws/src/install/pickup/lib/python3.12/site-packages/pickup/__init__.py to __init__.cpython-312.pyc
+running install_data
+creating /home/robot/dd2419_ws/src/install/pickup/share/ament_index
+creating /home/robot/dd2419_ws/src/install/pickup/share/ament_index/resource_index
+creating /home/robot/dd2419_ws/src/install/pickup/share/ament_index/resource_index/packages
+copying resource/pickup -> /home/robot/dd2419_ws/src/install/pickup/share/ament_index/resource_index/packages
+copying package.xml -> /home/robot/dd2419_ws/src/install/pickup/share/pickup
+running install_egg_info
+Copying ../build/pickup/pickup.egg-info to /home/robot/dd2419_ws/src/install/pickup/lib/python3.12/site-packages/pickup-0.0.0-py3.12.egg-info
+running install_scripts
+Installing pickup script to /home/robot/dd2419_ws/src/install/pickup/lib/pickup
+writing list of installed files to '/home/robot/dd2419_ws/src/build/pickup/install.log'

@@ -1,0 +1,9 @@
+# Ignore build files
+build/
+log/
+install/
+*.env
+
+# Ignore Python cache
+__pycache__/
+*.pyc

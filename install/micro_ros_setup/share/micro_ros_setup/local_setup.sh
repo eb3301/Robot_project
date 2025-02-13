@@ -1,1 +1,0 @@
-/home/group1/dd2419_ws/build/micro_ros_setup/ament_cmake_environment_hooks/local_setup.sh

@@ -1,1 +1,0 @@
-/home/group1/dd2419_ws/src/micro_ros_setup/scripts/create_ws.sh
