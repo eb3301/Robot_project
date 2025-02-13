@@ -11,37 +11,15 @@ class WheelController(Node):
     def __init__(self):
         super().__init__("Wheel_Controller")   
 
-<<<<<<< HEAD
-        # Init publisher
-        self.cmd_vel_sub = self.create_subscription(Twist, '/cmd_vel', self.twist_callback, 10)
-        
-        # Init subscriber
-=======
         # Create subscription to /cmd_vel for Twist messages
         self.cmd_vel_sub = self.create_subscription(Twist, '/cmd_vel', self.twist_callback, 10)
 
         # Create publisher to send duty cycle commands to the motors
->>>>>>> Loke
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
 
         # Create a timer to send duty cycles at a regular interval
         self.timer = self.create_timer(0.4, self.publish_duty_cycles)  # 10Hz frequency
 
-<<<<<<< HEAD
-        # Velocity and rotation
-        vel = msg.linear.x # m/s
-        stearing = msg.angular.z # rad
-
-        vel_factor = vel / max_vel
-
-        # GPT -- Duty Cycle Turning Factor
-        rot_factor_L = (np.tan(stearing) - 0.5) / np.tan(stearing)
-        rot_factor_R = (np.tan(stearing) + 0.5) / np.tan(stearing)
-        print(rot_factor_L)
-        print(rot_factor_R)
-
-        # Message
-=======
         # Initialize some variables for the robot's movement
         self.linear_vel = 0.0 # Default linear velocity
         self.rot = 0.0  # Default rotation velocity
@@ -52,7 +30,6 @@ class WheelController(Node):
         self.rot = msg.angular.z
 
     def publish_duty_cycles(self):
->>>>>>> Loke
         duty_cycles_msg = DutyCycles()
         
         rot_speed = 0.08
