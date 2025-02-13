@@ -25,4 +25,4 @@ dd2419_ws/install/
 dd2419_ws/log/
 
 # Ignore robp_robot
-robp_robot/
+src/robp_robot/
