@@ -108,3 +108,18 @@ class ICPNode(Node):
 
         self.tf_broadcaster.sendTransform(t)
         self.get_logger().info('Published ICP transform')
+
+
+def main():
+    rclpy.init()
+    node = ICPNode()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()

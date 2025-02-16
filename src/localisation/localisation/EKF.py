@@ -3,6 +3,7 @@ import rclpy
 from rclpy.node import Node
 import rclpy.time
 import tf2_ros
+from builtin_interfaces.msg import Time
 
 from tf_transformations import euler_from_quaternion, quaternion_from_euler
 from tf2_ros import TransformException
@@ -21,8 +22,7 @@ class EKF_Algorithm(Node):
         
         # ROS topics
         self.odom_pose_sub = self.create_subscription(PoseStamped, '/odom_pose', self.odom_callback, 10)
-        self.icp_sub = self.create_subscription(PoseStamped, '/icp_pose', self.icp_callback)
-        self.describe_parameterose_pub = self.create_publisher(PoseWithCovarianceStamped, '/ekf_pose', 10)
+        self.pose_pub = self.create_publisher(PoseWithCovarianceStamped, '/ekf_pose', 10)
 
         #TF2
         self.tf_buffer = tf2_ros.Buffer()
@@ -58,7 +58,7 @@ class EKF_Algorithm(Node):
         t = rclpy.time.Time().from_msg(msg.header.stamp)
 
         # First time it is called, only update time
-        if self.time.nanoseconds == 0:
+        if self.time.nanoseconds == 0.0:
                 self.time = t
                 return
 
@@ -70,7 +70,7 @@ class EKF_Algorithm(Node):
         theta = self.compute_heading(msg.pose.orientation)
         dtheta = self.heading - theta
 
-        if dt > 0:
+        if dt > 0.0:
             # Update states
             self.x += dx
             self.y += dy
@@ -113,8 +113,8 @@ class EKF_Algorithm(Node):
             
             # Convert current pose to type: Pose()
             pose = Pose()
-            pose.position.x, pose.position.y, pose.position.z = self.x, self.y, 0
-            qx, qy, qz, qw = quaternion_from_euler(0, 0, self.heading)
+            pose.position.x, pose.position.y, pose.position.z = self.x, self.y, 0.0
+            qx, qy, qz, qw = quaternion_from_euler(0.0, 0.0, self.heading)
             pose.orientation.x, pose.orientation.y = qx, qy 
             pose.orientation.z, pose.orientation.w = qz, qw
 
@@ -150,13 +150,13 @@ class EKF_Algorithm(Node):
 
         # Create message
         pose_msg = PoseWithCovarianceStamped()
-        pose_msg.header.stamp = self.time
+        pose_msg.header.stamp = self.time.to_msg()
         pose_msg.header.frame_id = 'map'
 
         # Set Position
         pose_msg.pose.pose.position.x = self.x
         pose_msg.pose.pose.position.y = self.y
-        pose_msg.pose.pose.position.z = 0
+        pose_msg.pose.pose.position.z = 0.0
 
         # Set Orientation
         qx, qy, qz, qw = quaternion_from_euler(0, 0, self.heading)
@@ -180,3 +180,19 @@ class EKF_Algorithm(Node):
             x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
             _, _, yaw = euler_from_quaternion((x, y, z, w))
             return yaw
+    
+
+
+def main():
+    rclpy.init()
+    node = EKF_Algorithm()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
