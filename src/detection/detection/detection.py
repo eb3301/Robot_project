@@ -48,7 +48,6 @@ class Detection(Node):
         
 
         # Convert ROS -> NumPy
-
         gen = pc2.read_points_numpy(msg, skip_nans=True)
         points = gen[:, :3]
         colors = np.empty(points.shape, dtype=np.uint32)
