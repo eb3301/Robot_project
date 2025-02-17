@@ -80,26 +80,6 @@ class AutoControll(Node):
             twist_msg.angular.z = 0.0
             self.cmd_vel_pub.publish(twist_msg)
 
-
-
-    # def calculate_path(self):
-
-    #     #2D stearing twist msg
-    #     twist_msg = Twist()
-    #     #All 0 for 2D stearing
-    #     twist_msg.linear.y = 0.0
-    #     twist_msg.linear.z = 0.0
-    #     twist_msg.angular.x = 0.0
-    #     twist_msg.angular.y = 0.0
-
-    #     #Set velocity and stearing for twist msg
-    #     twist_msg.linear.x = 0.1
-    #     twist_msg.angular.z = np.pi/6 
-
-    #     self.get_logger().info("Turning 30deg")
-    #     self.cmd_vel_pub.publish(twist_msg)
-
-
     def compute_heading(self, orientation):
         x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
         _, _, yaw = euler_from_quaternion((x, y, z, w))
@@ -110,18 +90,6 @@ class AutoControll(Node):
         x, y = (random.uniform(0, 2), random.uniform(0, 2))
         print(f"Moving to marker at:({x, y})")
         return x, y
-
-    # def pub_goal_pose(self):
-    #     goal_pose = PoseStamped()
-    #     goal_pose.header.stamp = self.get_clock().now().to_msg()
-    #     goal_pose.header.frame_id = "odom"
-    #     goal_pose.pose.position.x = self.goal_pose[0]
-    #     goal_pose.pose.position.y = self.goal_pose[1]
-    #     goal_pose.pose.position.z = 0.0
-    #     goal_pose.pose.orientation.x = 0.0
-    #     goal_pose.pose.orientation.y = 0.0
-    #     goal_pose.pose.orientation.z = 0.0
-    #     self.goal_pose_pub.publish(goal_pose)
 
     def pub_goal_marker(self):
         marker = Marker()
