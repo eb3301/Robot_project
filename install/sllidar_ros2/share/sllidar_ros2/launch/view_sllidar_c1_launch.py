@@ -1,1 +1,0 @@
-/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/launch/view_sllidar_c1_launch.py
