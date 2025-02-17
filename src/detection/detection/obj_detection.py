@@ -6,16 +6,17 @@ from rclpy.node import Node
 from sensor_msgs.msg import PointCloud2, PointField
 import sensor_msgs_py.point_cloud2 as pc2
 from sklearn.cluster import DBSCAN
-<<<<<<< HEAD
 
+<<<<<<< HEAD
 =======
 from scipy.spatial import ConvexHull
 >>>>>>> 35a6c91 (object detection based on area)
+=======
+>>>>>>> f817088 (obj detection)
 
 class Detection(Node):
     def __init__(self):
         super().__init__('detection')
-<<<<<<< HEAD
 
         self._pub = self.create_publisher(PointCloud2, '/detected_objects', 10)
         
@@ -107,6 +108,7 @@ class Detection(Node):
 
     def publish_detected_objects(self, clusters, labels, header):
         """Publishes detected objects as PointCloud2."""
+<<<<<<< HEAD
 =======
         self._pub = self.create_publisher(PointCloud2, '/detected_objects', 10)
         self.create_subscription(PointCloud2, '/camera/depth/color/points', self.cloud_callback, 10)
@@ -162,20 +164,24 @@ class Detection(Node):
     def publish_detected_objects(self, clusters, labels, header):
         """Publishes a PointCloud2 message with detected objects."""
 >>>>>>> 35a6c91 (object detection based on area)
+=======
+>>>>>>> f817088 (obj detection)
         detected_points = []
         colors = []
 
         for i, cluster in enumerate(clusters):
             for point in cluster:
                 detected_points.append(point)
-<<<<<<< HEAD
                 colors.append([255, 0, 0] if labels[i] == 1 else [0, 255, 0])  # Red = Cube/Sphere, Green = Box
+<<<<<<< HEAD
 =======
                 if labels[i] == 1:
                     colors.append([255, 0, 0])  # Red for Cube/Sphere
                 else:
                     colors.append([0, 255, 0])  # Green for Large Box
 >>>>>>> 35a6c91 (object detection based on area)
+=======
+>>>>>>> f817088 (obj detection)
 
         if not detected_points:
             return
@@ -184,9 +190,12 @@ class Detection(Node):
         colors = np.array(colors)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         # Create PointCloud2 message
 >>>>>>> 35a6c91 (object detection based on area)
+=======
+>>>>>>> f817088 (obj detection)
         fields = [
             PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
             PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
@@ -196,8 +205,8 @@ class Detection(Node):
             PointField(name='b', offset=14, datatype=PointField.UINT8, count=1)
         ]
 
-<<<<<<< HEAD
         message_data = [struct.pack('fffBBB', *detected_points[i], *colors[i]) for i in range(len(detected_points))]
+<<<<<<< HEAD
 =======
         # Pack data
         message_data = []
@@ -206,6 +215,8 @@ class Detection(Node):
                                             *detected_points[i], 
                                             *colors[i]))
 >>>>>>> 35a6c91 (object detection based on area)
+=======
+>>>>>>> f817088 (obj detection)
 
         msg = PointCloud2()
         msg.header = header
@@ -213,11 +224,13 @@ class Detection(Node):
         msg.width = len(detected_points)
         msg.fields = fields
         msg.is_bigendian = False
-<<<<<<< HEAD
         msg.point_step = 15
+<<<<<<< HEAD
 =======
         msg.point_step = 15  # 12 bytes for XYZ + 3 bytes for RGB
 >>>>>>> 35a6c91 (object detection based on area)
+=======
+>>>>>>> f817088 (obj detection)
         msg.row_step = msg.point_step * msg.width
         msg.is_dense = True
         msg.data = b''.join(message_data)
