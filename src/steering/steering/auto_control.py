@@ -84,11 +84,16 @@ class AutoControll(Node):
         return yaw
     
     def generate_point(self):
+<<<<<<< HEAD
         x, y = (random.uniform(0, 2), random.uniform(0, 2))
         goal_pose = PoseStamped()
         goal_pose.pose.position.x = x
         goal_pose.pose.position.y = y
         self.goal_pose_pub.publish(goal_pose)
+=======
+        x, y = (random.uniform(0, 20), random.uniform(0, 20))
+        # y = (random.uniform(0, 2), random.uniform(0, 2))
+>>>>>>> 5221a43 (få main)
         return x, y
 
 
@@ -109,7 +114,11 @@ def main():
             else: 
                 rclpy.spin_once(node)
                 node.calculate_path()
+<<<<<<< HEAD
                 time.sleep(1) #Waiting 3s before calculating new path
+=======
+                time.sleep(3) #Waiting 3s before calculating new path
+>>>>>>> 5221a43 (få main)
                 
     except KeyboardInterrupt:
         pass
