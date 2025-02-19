@@ -49,7 +49,7 @@ class ObjectMapNode(Node):
     
     def detected_objects_callback(self, msg: PointCloud2):
         """Callback function to process detected objects from PointCloud2"""
-        self.get_logger().info("callback")      
+        self.get_logger().info("callback")
         #print(msg.fields)
         points = pc2.read_points_numpy(msg, field_names=("x","y","z","rgb"), skip_nans=True)
 
@@ -72,7 +72,7 @@ class ObjectMapNode(Node):
             if len(detected_objects) != 0:
                 for obj in detected_objects:
                     key = f"{obj[0]:.2f}_{obj[1]:.2f}_{obj[2]:.2f}"  # Unique key for each object
-                    self.object_map[key] = obj  # Update or add new objects        
+                    self.object_map[key] = obj  # Update or add new objects
             self.save_map()  # Save updated map to file        
             self.get_logger().info(f"Updated map with {len(detected_objects)} objects.")
 
