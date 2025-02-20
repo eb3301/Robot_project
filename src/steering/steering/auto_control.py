@@ -17,45 +17,51 @@ class AutoControll(Node):
     def __init__(self):
         super().__init__('Auto_Controller')
 
+        # Init publisher
         self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
 
+        # Subscribe to current pose
         self.pose_sub = self.create_subscription(PoseStamped, "/odom_pose",
                                                    self.pose_callback, 10)
-        
-        # self.goal_pose_pub = self.create_publisher(PoseStamped, "/goal_pose", 10)
-        self.goal_marker_pub = self.create_publisher(Marker, "/goal_marker", 10)  # Publisher for marker
 
+        # Init publisher of goal marker     
+        self.goal_marker_pub = self.create_publisher(Marker, "/goal_marker", 10) 
+
+        # Preallocation
         self.goal_pose = (0, 0)
         self.pose = Pose()
         self.arrived = True
 
 
-    #Updates current pose
+    # Updates current pose
     def pose_callback(self, msg: PoseStamped):
-        self.pose = msg.pose #Pose
+        # Pose
+        self.pose = msg.pose 
 
-        # self.pub_goal_pose()
+        # Publish goal marker
         self.pub_goal_marker()
-        #Create twist msg
+
+        # Create twist msg
         twist_msg = Twist()
-        #All 0 for 2D steering
+
+        # All 0 for 2D steering
         twist_msg.linear.y = 0.0
         twist_msg.linear.z = 0.0
         twist_msg.angular.x = 0.0
         twist_msg.angular.y = 0.0
-        #Arbitrary velocity
-        twist_msg.linear.x = 0.20
 
-        #Calculate correct desired steering
+        # Arbitrary velocity
+        twist_msg.linear.x = 0.20 # Change
+
+        # Calculate correct desired steering
         curr_x, curr_y = self.pose.position.x, self.pose.position.y
         goal_x, goal_y = self.goal_pose[0], self.goal_pose[1]
-        dx, dy = goal_x - curr_x, goal_y - curr_y
         heading  = self.compute_heading(self.pose.orientation)
-
+        dx, dy = goal_x - curr_x, goal_y - curr_y
         angle = np.arctan2(dy, dx)
         steering = angle - heading
 
-        #Check if we are at goal
+        # Check if we are at goal
         if np.linalg.norm(np.array([dx,dy])) < 0.1:
             print(f"Arrived at destination!")
             twist_msg.angular.z = 1.0
@@ -66,7 +72,7 @@ class AutoControll(Node):
             return
 
         if steering > 0.2 or steering < -0.2: 
-            #Turn
+            # Turn
             if steering <= 0:
                 twist_msg.angular.z = -1.0
                 self.cmd_vel_pub.publish(twist_msg)
@@ -76,7 +82,7 @@ class AutoControll(Node):
             #time.sleep(0.1)
             return
         else: 
-            #We drive
+            # Drive forward
             twist_msg.angular.z = 0.0
             self.cmd_vel_pub.publish(twist_msg)
 
@@ -84,7 +90,6 @@ class AutoControll(Node):
         x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
         _, _, yaw = euler_from_quaternion((x, y, z, w))
         return yaw
-    
     
     def generate_point(self):
         x, y = (random.uniform(0, 2), random.uniform(0, 2))
