@@ -9,4 +9,4 @@
 Wait for detection. 
 
 # Current work:
-Occumṕancy grid node
+Occumṕancy grid node.
