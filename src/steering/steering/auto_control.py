@@ -79,7 +79,6 @@ class AutoControll(Node):
             if steering > 0:
                 twist_msg.angular.z = 1.0
                 self.cmd_vel_pub.publish(twist_msg)
-            #time.sleep(0.1)
             return
         else: 
             # Drive forward
@@ -91,7 +90,7 @@ class AutoControll(Node):
         _, _, yaw = euler_from_quaternion((x, y, z, w))
         return yaw
     
-    def generate_point(self):
+    def generate_point(self): # Random samled point
         x, y = (random.uniform(0, 2), random.uniform(0, 2))
         print(f"Moving to marker at:({x, y})")
         return x, y
