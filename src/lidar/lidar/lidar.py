@@ -26,6 +26,7 @@ class Timestamp(Node):
             '/scan',
             self.listener_callback,
             10)
+        
         self.subscription  # prevent unused variable warning
 
         # Initialize the transform buffer

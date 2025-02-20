@@ -1,1 +1,1 @@
-/home/group1/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig-version.cmake
+/home/kristoffer-germalm/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig-version.cmake

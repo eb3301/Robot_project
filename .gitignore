@@ -3,6 +3,7 @@ build/
 log/
 install/
 *.env
+bags/
 
 # Ignore Python cache
 __pycache__/

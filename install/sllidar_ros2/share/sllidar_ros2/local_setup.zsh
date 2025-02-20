@@ -1,1 +1,1 @@
-/home/group1/dd2419_ws/build/sllidar_ros2/ament_cmake_environment_hooks/local_setup.zsh
+/home/kristoffer-germalm/dd2419_ws/build/sllidar_ros2/ament_cmake_environment_hooks/local_setup.zsh
