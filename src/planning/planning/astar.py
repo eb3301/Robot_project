@@ -198,6 +198,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales):
 
   # For avalible paths
   while open_set:
+    print('In loop')
     current_node_key = min(open_set, key=lambda node: open_set[node].f)
     current_node = open_set[current_node_key]
 
