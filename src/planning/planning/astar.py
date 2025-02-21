@@ -154,6 +154,7 @@ def grid(node, resolution=0.3):
 
 def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales):
   # Calculate different steering angles
+  print('New paths')
   for phi in [-math.pi/4, 0, math.pi/4]: # only grid coordinates
     xn = current_node.x
     yn = current_node.y
