@@ -60,22 +60,11 @@ class Node(object):
     self.time = 0
 
 
-def find_obstacles(map_data, grid_size=10):
-    obstacles = []
-    
-    for index, value in enumerate(map_data):
-        if value == 100:  # Check if the cell is an obstacle (value 100)
-            # Convert index to (x, y) coordinates
-            x = index // grid_size
-            y = index % grid_size
-            obstacles.append((x, y))
-    
-    return obstacles
-
 def reached_target(x, y, xt, yt):
   if math.sqrt(((x - xt)**2 + (y - yt)**2)) <= 0.5:
     return True
   return False
+
 
 def step(x, y, theta, phi, dt=0.01):
   # State change rate
@@ -89,11 +78,26 @@ def step(x, y, theta, phi, dt=0.01):
   thetan = theta + dt*dtheta
   return xn, yn, thetan
 
+
 def step_collided_with_obsticale(obsticales, x, y, marign=0.2):
   for obs in obsticales:
     if math.sqrt((x - obs[0])**2 + (y - obs[1])**2) <= (obs[2] + marign):
       return True
   return False
+
+
+def find_obstacles(map_data, grid_size=10):
+    obstacles = []
+    
+    for index, value in enumerate(map_data):
+        if value == 100:  # Check if the cell is an obstacle (value 100)
+            # Convert index to (x, y) coordinates
+            x = index // grid_size
+            y = index % grid_size
+            obstacles.append((x, y))
+    
+    return obstacles
+
 
 def grid(node, resolution=0.3):
     # Mapping to right position
@@ -104,6 +108,7 @@ def grid(node, resolution=0.3):
     theta_pos = node.theta % (2 * math.pi)
     theta_key = round(theta_pos / (2 * math.pi / 6))
     return (x_key, y_key, theta_key)
+    
     
 def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales): #, xlb, xub, ylb, yub):
   # Calculate different steering angles
@@ -142,6 +147,8 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales)
 # yt - target y position
 # obsticales - list of obsticales [x,y,radius]
 
+
+
 def solution(x0, y0, theta0, xt, yt, obsticales): #, xlb, xub, ylb, yub):
   steps = 80
   start_node = Node(x0, y0, theta0) 
@@ -176,6 +183,8 @@ def solution(x0, y0, theta0, xt, yt, obsticales): #, xlb, xub, ylb, yub):
       return path[::-1], time[::-1]
   
     get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales) #, xlb, xub, ylb, yub)
+
+
 
 
 def main():

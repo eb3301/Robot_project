@@ -11,15 +11,17 @@ class OccupancyGridPublisher(Node):
         self.publisher_ = self.create_publisher(OccupancyGrid, 'map', 10)
         self.timer = self.create_timer(1.0, self.publish_map)
         self.get_logger().info("Occupancy Grid Node Started")
+        self.size = 100
+        self.workspace = 2
 
-    def generate_room_map(self, size=10, obstacle_chance=0.2):
+    def generate_room_map(self, obstacle_chance=0.2):
         """
         Generates a simple room with walls and random obstacles.
         - Walls: 100
         - Free space: 0
         - Obstacles: 100 (randomly placed)
         """
-        grid = np.zeros((size, size), dtype=int)
+        grid = np.zeros((self.size, self.size), dtype=int)
 
         # Add walls (borders)
         grid[0, :] = 100
@@ -27,25 +29,25 @@ class OccupancyGridPublisher(Node):
         grid[:, 0] = 100
         grid[:, -1] = 100
 
-        # Add random obstacles inside the room
-        num_obstacles = int((size * size) * obstacle_chance)
-        obstacle_positions = np.random.choice(size * size, num_obstacles, replace=False)
+        # # Add random obstacles inside the room
+        # num_obstacles = int((self.size * self.size) * obstacle_chance)
+        # obstacle_positions = np.random.choice(size * self.size, num_obstacles, replace=False)
 
-        for pos in obstacle_positions:
-            x, y = divmod(pos, size)
-            if grid[x, y] == 0:  # Only place obstacles in free space
-                grid[x, y] = 100
+        # for pos in obstacle_positions:
+        #     x, y = divmod(pos, self.size)
+        #     if grid[x, y] == 0:  # Only place obstacles in free space
+        #         grid[x, y] = 100
 
         return grid.flatten().tolist()
 
     def publish_map(self):
-        grid_size = 10  # 10x10 grid
-        map_data = self.generate_room_map(size=grid_size)
+        grid_size = self.size  # 10x10 grid
+        map_data = self.generate_room_map()
 
         msg = OccupancyGrid()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = "map"
-        msg.info.resolution = 0.5  # 50 cm per cell
+        msg.info.resolution = self.workspace = 2 / self.size  # cm per cell
         msg.info.width = grid_size
         msg.info.height = grid_size
         msg.info.origin.position.x = 0.0
