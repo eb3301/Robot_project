@@ -266,6 +266,9 @@ class EKF_Algorithm(Node):
         PathPose.pose = pose_msg.pose.pose
         
         self.ekf_path.poses.append(PathPose) 
+
+        self.ekf_path.header.stamp = self.time.to_msg()
+        self.ekf_path.header.frame_id = 'map'
         self.ekfPath_pub.publish(self.ekf_path) 
          
         self.pose_pub.publish(pose_msg)
