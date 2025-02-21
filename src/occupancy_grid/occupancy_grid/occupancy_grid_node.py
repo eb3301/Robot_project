@@ -9,7 +9,7 @@ class OccupancyGridPublisher(Node):
     def __init__(self):
         super().__init__('occupancy_grid')
         self.publisher_ = self.create_publisher(OccupancyGrid, 'map', 10)
-        self.timer = self.create_timer(1.0, self.publish_map)
+        self.timer = self.create_timer(5.0, self.publish_map)
         self.get_logger().info("Occupancy Grid Node Started")
         self.size = 100
         self.workspace = 2

@@ -50,7 +50,7 @@ class Planner(Node):
     self.obsticales = self.find_obstacles(map_data, grid_size, self.resolution)
 
     path, time = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, self.obsticales)
-
+    print('Path found')
     message = Path()
     message.header.stamp = self.get_clock().now().to_msg()
     message.header.frame_id = 'map'
@@ -70,6 +70,7 @@ class Planner(Node):
       
       message.poses.append(pose_msg)
 
+    print('Publish path')
     self.path_pub.publish(message)
 
   def pose_callback(self, msg : PoseWithCovarianceStamped):
@@ -209,7 +210,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales):
     closed_set[current_node_key] = current_node
        
     if reached_target(current_node.x, current_node.y, xt, yt):
-      path=[] 
+      path=[]
       time=[]
 
       while current_node:
