@@ -1,6 +1,50 @@
 #!/usr/bin/env python3
 
+import rclpy
+import rclpy.logging
 import math
+from rclpy.node import Node
+from nav_msgs.msg import OccupancyGrid
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import PoseWithCovarianceStamped
+from tf_transformations import euler_from_quaternion
+
+class Planner(Node):
+
+  def __init__(self):
+    super().__init__('Planner')
+
+    # Subscribe to costmap
+    self.costmap_sub = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
+
+    # Subscribe to current pose
+    self.pose_sub = self.create_subscribtion(PoseWithCovarianceStamped, '/pose', self.pose_callback, 10)
+    
+    # Subscribe to goal pose
+    self.goal_sub = self.create_subscription(Marker, "/goal_marker", self.goal_callback, 10)
+
+  def map_callback(self, msg : OccupancyGrid):
+    obsticales = msg.data
+    resolution = msg.info.resolution
+    grid_width = msg.info.width
+    grid_height = msg.info.height
+    origo_x = msg.info.origin.position.x
+    origo_y = msg.info.origin.position.x
+
+  def pose_callback(self, msg : PoseWithCovarianceStamped):
+    x0 = msg.pose.pose.position.x
+    y0 = msg.pose.pose.position.y
+    theta0 = self.compute_heading(msg.pose.pose.orientation)
+
+  def goal_callback(self, msg : Marker):
+    xt = msg.pose.position.x
+    yt = msg.pose.position.y
+
+  def compute_heading(self, orientation):
+        x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
+        _, _, yaw = euler_from_quaternion((x, y, z, w))
+        return yaw
+
 
 class Node(object):
   def __init__(self, x, y, theta, parent = None):
@@ -27,12 +71,6 @@ def find_obstacles(map_data, grid_size=10):
             obstacles.append((x, y))
     
     return obstacles
-
-
-# def out_of_bounds(x, y, xlb, xub, ylb, yub, marign=0.2):
-#   if x >= xub or x <= xlb or y >= (yub - marign) or y <= (ylb + marign): # change paramters
-#     return True
-#   return False
 
 def reached_target(x, y, xt, yt):
   if math.sqrt(((x - xt)**2 + (y - yt)**2)) <= 0.5:
@@ -78,10 +116,6 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales)
     # Take steps in the best direction
     for i in range(steps):
       xn, yn, thetan = step(xn, yn, thetan, phi)
-  
-      # if out_of_bounds(xn, yn, xlb, xub, ylb, yub):
-      #   feasible = False
-      #   break
             
       if step_collided_with_obsticale(obsticales, xn, yn):
         feasible = False
@@ -108,9 +142,9 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales)
 # yt - target y position
 # obsticales - list of obsticales [x,y,radius]
 
-def solution(x0, y0, xt, yt, obsticales): #, xlb, xub, ylb, yub):
+def solution(x0, y0, theta0, xt, yt, obsticales): #, xlb, xub, ylb, yub):
   steps = 80
-  start_node = Node(x0, y0, 0) 
+  start_node = Node(x0, y0, theta0) 
   start_node.h = math.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2))
   start_node.f = start_node.g + 2 * start_node.h
   start_node_key = grid(start_node)
@@ -145,7 +179,15 @@ def solution(x0, y0, xt, yt, obsticales): #, xlb, xub, ylb, yub):
 
 
 def main():
+    rclpy.init()
     print('Hi from Planning.')
+    node = Planner()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':
