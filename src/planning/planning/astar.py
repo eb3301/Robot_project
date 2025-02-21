@@ -118,7 +118,7 @@ class Node(object):
 
 
 def reached_target(x, y, xt, yt):
-  if math.sqrt(((x - xt)**2 + (y - yt)**2)) <= 0.5: # change distance to target
+  if math.sqrt(((x - xt)**2 + (y - yt)**2)) <= 0.01: # change distance to target
     return True
   return False
 
