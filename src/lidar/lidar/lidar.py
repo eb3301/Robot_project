@@ -79,7 +79,7 @@ class Timestamp(Node):
             t = self.tf_buffer.lookup_transform(
                 to_frame_rel,
                 from_frame_rel,
-                rclpy.time.Time())
+                time)
                 # timeout=rclpy.duration.Duration(seconds=1.0))
         except TransformException as ex:
             self.get_logger().info(

@@ -89,19 +89,36 @@ class OccupancyGridPublisher(Node):
         self.map_data = grid.flatten().tolist()
     """
 
-    def update_occupancy_grid(self, points):
-        #Mark free space and obstacles in the occupancy grid
+    def update_occupancy_grid(self, points, inflation_radius=2, obstacle_value=100, buffer_value=20):
+        # Mark free space and obstacles in the occupancy grid
         grid = np.array(self.map_data).reshape((self.grid_size, self.grid_size))
         
-        # Convert world coordinates to grid coordinates
+        # Convert world coordinates to grid coordinates and apply inflation with opacity
         for point in points:
             gx = int((point[0] - self.origin_x) / self.resolution)
             gy = int((point[1] - self.origin_y) / self.resolution)
 
             if 0 <= gx < self.grid_size and 0 <= gy < self.grid_size:
-                grid[gy, gx] = 100  # Mark as obstacle
-        
+                # Mark the obstacle cell with full opacity
+                grid[gy, gx] = obstacle_value
+
+                # Apply inflation by marking surrounding cells as a buffer with lower opacity
+                for dx in range(-inflation_radius, inflation_radius + 1):
+                    for dy in range(-inflation_radius, inflation_radius + 1):
+                        # Check if the cell is within the grid bounds
+                        nx = gx + dx
+                        ny = gy + dy
+
+                        # Calculate the squared distance to avoid unnecessary sqrt calculation
+                        if (dx ** 2 + dy ** 2) <= inflation_radius ** 2:
+                            if 0 <= nx < self.grid_size and 0 <= ny < self.grid_size:
+                                # Avoid overwriting actual obstacle cells with buffer value
+                                if grid[ny, nx] != obstacle_value:
+                                    grid[ny, nx] = buffer_value  # Mark as buffer/low-opacity
+
+        # Update the map data with the inflated grid
         self.map_data = grid.flatten().tolist()
+
     
     def publish_map(self):
         """ Publish updated occupancy grid """
