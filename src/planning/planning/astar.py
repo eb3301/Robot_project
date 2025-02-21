@@ -54,6 +54,7 @@ class Planner(Node):
     message = Path()
     message.header.stamp = self.get_clock().now().to_msg()
     message.header.frame_id = 'map'
+    print(path[2][-1])
     for i, pose in enumerate(path):
       pose_msg = PoseStamped()
       pose_msg.header.stamp = message.header.stamp
