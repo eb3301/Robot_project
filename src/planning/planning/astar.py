@@ -32,13 +32,13 @@ class Planner(Node):
     self.resolution = 0
 
     # Robot pose coordnates
-    self.x0 = 0
-    self.y0 = 0
+    self.x0 = 0.25
+    self.y0 = 0.25
     self.theta0 = 0
 
     # Target coordinates
-    self.xt = 0.5
-    self.yt = 0.5
+    self.xt = 0.75
+    self.yt = 0.75
 
   def map_callback(self, msg : OccupancyGrid):
     map_data = msg.data
