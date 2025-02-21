@@ -85,7 +85,7 @@ class Planner(Node):
         _, _, yaw = euler_from_quaternion((x, y, z, w))
         return yaw
   
-  def find_obstacles(self, map_data, grid_size=100, resolution=0.05):
+  def find_obstacles(self, map_data, grid_size, resolution):
     obstacles = []
     
     for index, value in enumerate(map_data):
@@ -224,10 +224,10 @@ def solution(x0, y0, theta0, xt, yt, obsticales):
 def main():
     rclpy.init()
     node = Planner()
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
+    # try:
+    #     rclpy.spin(node)
+    # except KeyboardInterrupt:
+    #     pass
     
     rclpy.shutdown()
 
