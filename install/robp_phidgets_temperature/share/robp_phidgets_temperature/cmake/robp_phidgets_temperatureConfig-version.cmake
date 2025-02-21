@@ -1,0 +1,1 @@
+/home/robot/dd2419_ws/build/robp_phidgets_temperature/ament_cmake_core/robp_phidgets_temperatureConfig-version.cmake
