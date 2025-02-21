@@ -17,6 +17,8 @@ from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
 class Timestamp(Node):
 
     def __init__(self):
+
+        print("LE----------------------------------------------------------------------------------------------------------------------------")
         super().__init__('timestamp')
 
         self.publisher = self.create_publisher(PointCloud2, '/lidar', 10)
@@ -77,7 +79,7 @@ class Timestamp(Node):
             t = self.tf_buffer.lookup_transform(
                 to_frame_rel,
                 from_frame_rel,
-                time)
+                rclpy.time.Time())
                 # timeout=rclpy.duration.Duration(seconds=1.0))
         except TransformException as ex:
             self.get_logger().info(

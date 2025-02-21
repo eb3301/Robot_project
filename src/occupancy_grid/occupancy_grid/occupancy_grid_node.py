@@ -1,58 +1,124 @@
 import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid
+from sensor_msgs.msg import PointCloud2
 import numpy as np
+import sensor_msgs_py.point_cloud2 as pc2
+from tf2_ros import Buffer, TransformListener
+from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
 
 class OccupancyGridPublisher(Node):
     def __init__(self):
         super().__init__('occupancy_grid')
+        
+        # Occupancy Grid Publisher
         self.publisher_ = self.create_publisher(OccupancyGrid, 'map', 10)
+        
+        # LiDAR Subscriber
+        self.subscription = self.create_subscription(
+            PointCloud2,
+            '/lidar',
+            self.lidar_callback,
+            10)
+        
+        # TF Listener
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
+        
+        # Grid Parameters
+        self.grid_size = 150  # 15x15 grid (m)
+        self.resolution = 0.05  # 5 cm per cell
+        self.origin_x = - (self.grid_size * self.resolution) / 2
+        self.origin_y = - (self.grid_size * self.resolution) / 2
+
+        # Initialize map
+        self.map_data = self.generate_room_map(size=self.grid_size)
+
+        # Timer to publish occupancy grid
         self.timer = self.create_timer(1.0, self.publish_map)
         self.get_logger().info("Occupancy Grid Node Started")
 
     def generate_room_map(self, size=10, obstacle_chance=0.2):
-        """
-        Generates a simple room with walls and random obstacles.
-        - Walls: 100
-        - Free space: 0
-        - Obstacles: 100 (randomly placed)
-        """
         grid = np.zeros((size, size), dtype=int)
-
-        # Add walls (borders)
         grid[0, :] = 100
         grid[-1, :] = 100
         grid[:, 0] = 100
         grid[:, -1] = 100
-
-        # Add random obstacles inside the room
-        num_obstacles = int((size * size) * obstacle_chance)
-        obstacle_positions = np.random.choice(size * size, num_obstacles, replace=False)
-
-        for pos in obstacle_positions:
-            x, y = divmod(pos, size)
-            if grid[x, y] == 0:  # Only place obstacles in free space
-                grid[x, y] = 100
-
         return grid.flatten().tolist()
 
-    def publish_map(self):
-        grid_size = 10  # 10x10 grid
-        map_data = self.generate_room_map(size=grid_size)
+    def lidar_callback(self, msg):
+        """ Process LiDAR scan and update the occupancy grid """
+        try:
+            # Transform PointCloud2 to the map frame
+            transform = self.tf_buffer.lookup_transform('map', msg.header.frame_id, rclpy.time.Time())
+            cloud_transformed = do_transform_cloud(msg, transform)
+            
+            # Convert PointCloud2 to numpy array
+            points = np.array(list(pc2.read_points(cloud_transformed, field_names=("x", "y"), skip_nans=True)))
 
+            # Update the occupancy grid
+            self.update_occupancy_grid(points)
+
+        except Exception as e:
+            self.get_logger().warn(f"Transform failed: {e}")
+
+    """
+    def update_occupancy_grid(self, points):
+        #Mark obstacles and construct room boundaries using the furthest LiDAR scans
+        grid = np.array(self.map_data).reshape((self.grid_size, self.grid_size))
+
+        # Dictionary to store the furthest point for each angle sector
+        max_range_points = {}
+
+        for point in points:
+            gx = int((point[0] - self.origin_x) / self.resolution)
+            gy = int((point[1] - self.origin_y) / self.resolution)
+
+            if 0 <= gx < self.grid_size and 0 <= gy < self.grid_size:
+                angle = np.arctan2(point[1], point[0])  # Angle of the scan point
+                dist = np.linalg.norm(point)  # Distance of point from the robot
+
+                # Store the furthest point for each angle sector
+                if angle not in max_range_points or dist > max_range_points[angle][0]:
+                    max_range_points[angle] = (dist, gx, gy)
+
+        # Mark the furthest detected points as walls
+        for _, (_, gx, gy) in max_range_points.items():
+            grid[gy, gx] = 100  # Mark as obstacle
+
+        self.map_data = grid.flatten().tolist()
+    """
+
+    def update_occupancy_grid(self, points):
+        #Mark free space and obstacles in the occupancy grid
+        grid = np.array(self.map_data).reshape((self.grid_size, self.grid_size))
+        
+        # Convert world coordinates to grid coordinates
+        for point in points:
+            gx = int((point[0] - self.origin_x) / self.resolution)
+            gy = int((point[1] - self.origin_y) / self.resolution)
+
+            if 0 <= gx < self.grid_size and 0 <= gy < self.grid_size:
+                grid[gy, gx] = 100  # Mark as obstacle
+        
+        self.map_data = grid.flatten().tolist()
+    
+    def publish_map(self):
+        """ Publish updated occupancy grid """
         msg = OccupancyGrid()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = "map"
-        msg.info.resolution = 0.5  # 50 cm per cell
-        msg.info.width = grid_size
-        msg.info.height = grid_size
-        msg.info.origin.position.x = 0.0
-        msg.info.origin.position.y = 0.0
+        msg.info.resolution = self.resolution
+        msg.info.width = self.grid_size
+        msg.info.height = self.grid_size
+        msg.info.origin.position.x = self.origin_x
+        msg.info.origin.position.y = self.origin_y
         msg.info.origin.position.z = 0.0
-        msg.data = map_data
+        msg.data = self.map_data
 
         self.publisher_.publish(msg)
-        self.get_logger().info("Published occupancy grid with a simple room")
+        self.get_logger().info("Updated Occupancy Grid Published")
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -60,6 +126,7 @@ def main(args=None):
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
