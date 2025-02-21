@@ -23,8 +23,8 @@ class Planner(Node):
     # Subscribe to goal pose
     self.goal_sub = self.create_subscription(Marker, "/goal_marker", self.goal_callback, 10)
 
-    # Publish the path
-    self.path_pub = self.create_publisher(Path, "/path", 10)
+    # Publish the planned path
+    self.path_pub = self.create_publisher(Path, "/planned_path", 10)
 
     # Prealocation
     self.obsticales = []
@@ -224,10 +224,10 @@ def solution(x0, y0, theta0, xt, yt, obsticales):
 def main():
     rclpy.init()
     node = Planner()
-    # try:
-    #     rclpy.spin(node)
-    # except KeyboardInterrupt:
-    #     pass
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
     
     rclpy.shutdown()
 
