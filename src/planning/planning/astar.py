@@ -3,6 +3,7 @@
 import rclpy
 import rclpy.logging
 import math
+import time
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
@@ -227,6 +228,7 @@ def main():
     node = Planner()
     try:
         rclpy.spin(node)
+        time.sleep(3)
     except KeyboardInterrupt:
         pass
     
