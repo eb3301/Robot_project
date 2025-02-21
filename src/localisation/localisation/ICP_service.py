@@ -13,11 +13,17 @@ from geometry_msgs.msg import TransformStamped, PoseStamped
 
 import numpy as np
 import open3d as o3d
-import time
 
-class ICPNode(Node):
+from localisation.srv import EstimatePose
+
+
+class ICPservice(Node):
     def __init__(self):
-        super().__init__('ICP_Node')
+        super().__init__('ICP_Service')
+        
+        # Create Service
+        self.srv = self.create_service(EstimatePose, 'ICP_Service', self.ICP)
+
         # ROS Topics
         self.ref_sub = self.create_subscription(PointCloud2, '/lidar_ref', self.ref_callback, 10)
         self.pointcloud = self.create_subscription(PointCloud2, '/lidar', self.cloud_callback, 10)
@@ -25,18 +31,11 @@ class ICPNode(Node):
         #TF2 Broadcaster
         self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
 
-        # Timers
-        self.broadcast_timer = self.create_timer(0.1, self.broadcast_transform)
-        self.ICP_timer = self.create_timer(0.5, self.ICP)
-
         # Initialise Cloud Variables
         self.source_pcd = None
         self.target_pcd = None  
 
         self.current_time = 0.0
-        
-        self.transform = np.zeros((4,4))
-
         self.get_logger().info("Initialised ICP node...")
         
 
@@ -63,14 +62,16 @@ class ICPNode(Node):
         #Convert Numpy array to o3d pointcloud
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(points)
+
         return pcd
 
 
-    def ICP(self):
+    def ICP(self, request, response):
         '''ICP Algorithm Implementation'''
-        if self.source_pcd is None or self.target_pcd is None:
-            return
-        start_time = time.time()
+        # If pointclouds have no arrived, return failed  
+        if self.target_pcd is None or self.source_pcd is None:
+            self.get_logger().info("Pointclouds not available yet")
+            return response
         
         # Compute normals for Point-to-Plane
         radius = 0.1 # max range for neighbour search
@@ -90,38 +91,16 @@ class ICPNode(Node):
             o3d.pipelines.registration.TransformationEstimationPointToPlane(),
             o3d.pipelines.registration.ICPConvergenceCriteria(relative_fitness, relative_rmse, max_iteration)
         )
-        self.transform = result.transformation
- 
-        end_time = time.time()
-      #  print(f"ICP algorithm took {end_time - start_time:.6f} seconds")
 
-    def broadcast_transform(self):
-
-        t_icp = self.transform
-
-        if not t_icp.any():
-            return
-
-        t = TransformStamped()
-        t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = 'map' #base_link: 
-        t.child_frame_id = 'odom' #icp_odom
-
-        t.transform.translation.x = t_icp[0, 3]
-        t.transform.translation.y = t_icp[1, 3]
-        t.transform.translation.z = t_icp[2, 3]
-
-        q = quaternion_from_matrix(t_icp)
-        t.transform.rotation.x = q[0]
-        t.transform.rotation.y = q[1]
-        t.transform.rotation.z = q[2]
-        t.transform.rotation.w = q[3]
-        self.tf_broadcaster.sendTransform(t)
+        transform = result.transformation
+        response.transformation_matrix = transform.flatten().tolist()
+        return response
+    
 
 
 def main():
     rclpy.init()
-    node = ICPNode()
+    node = ICPservice()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:

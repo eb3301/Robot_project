@@ -128,7 +128,7 @@ class Odometry(Node):
 
         pose.pose.position.x = x
         pose.pose.position.y = y
-        pose.pose.position.z = 0.01  # 1 cm up so it will be above ground level
+        pose.pose.position.z = 0.01  # 1cm up so it will be above ground level
 
         q = quaternion_from_euler(0.0, 0.0, yaw)
         pose.pose.orientation.x = q[0]

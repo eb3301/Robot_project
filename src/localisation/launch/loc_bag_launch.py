@@ -6,6 +6,11 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'use_sim_time',
+            default_value='true',
+            description='Use simulation time'),
+
         #Start Rviz (LiDAR also starts rviz so probably not needed....)
         ExecuteProcess(
             cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/group1//dd2419_ws/src/robp_robot/robp_launch/rviz/default.rviz'],
@@ -13,21 +18,20 @@ def generate_launch_description():
             name='rviz'
         ),
         # args="-d $(find-pkg-share robp_launch)/rviz/default.rviz"
-
         
-        # Start odometry
-        ExecuteProcess(
-            cmd=['ros2', 'run', 'odometry', 'odometry'],
-            output='screen',
-            name='odometry_node'
-        ),
+        # # Start odometry
+        # ExecuteProcess(
+        #     cmd=['ros2', 'run', 'odometry', 'odometry'],
+        #     output='screen',
+        #     name='odometry_node'
+        # ),
 
         #Start camera
-        ExecuteProcess(
-            cmd=['ros2', 'run', 'detection', 'detection'],
-            output='screen',
-            name='camera_node'
-        ),
+        # ExecuteProcess(
+        #     cmd=['ros2', 'run', 'detection', 'detection'],
+        #     output='screen',
+        #     name='camera_node'
+        # ),
         
         # Static transform broadcaster for base_link to imu_link
         ExecuteProcess(
@@ -44,11 +48,11 @@ def generate_launch_description():
         ),
         
         # Static broadcaster
-        ExecuteProcess(
-            cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher', '--frame-id', 'map', '--child-frame-id', 'odom'],
-            output='screen',
-            name='static_transform_broadcaster'
-        ),
+        # ExecuteProcess(
+        #     cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher', '--frame-id', 'map', '--child-frame-id', 'odom'],
+        #     output='screen',
+        #     name='static_transform_broadcaster'
+        # ),
 
         #Lidar node
         ExecuteProcess(

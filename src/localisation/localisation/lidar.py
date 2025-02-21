@@ -13,13 +13,16 @@ from tf2_geometry_msgs import TransformStamped
 from tf2_ros import TransformBroadcaster
 from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
 
+import sensor_msgs_py.point_cloud2 as pc2
+import numpy as np
 
-class Timestamp(Node):
+class LidarNode(Node):
 
     def __init__(self):
-        super().__init__('timestamp')
-
+        super().__init__('Lidar')
+    
         self.publisher = self.create_publisher(PointCloud2, '/lidar', 10)
+        self.ref_publisher = self.create_publisher(PointCloud2, '/lidar_ref', 10)
 
         self.subscription = self.create_subscription(
             LaserScan,
@@ -39,20 +42,38 @@ class Timestamp(Node):
         self.proj = LaserProjection()
 
         self.counter = 0
+        self.start_time = None
+        self.create_ref = True
+        self.accumulated_scans = []
+
+        self.get_logger().info("Initialised lidar node...")
+
 
     def listener_callback(self, msg):
+        # Only publish every tenth scan
         if self.counter != 10:
             self.counter += 1
-            return
+            #returns
         else:
             self.counter = 0
 
-        to_frame_rel = 'map'
+        # Time of message
+        time = rclpy.time.Time.from_msg(msg.header.stamp)
+
+        # Take time at first scan
+        if self.start_time is None:
+            self.start_time = time       
+
+        # Check how long since first scan
+        elapsed_time =  time - self.start_time
+        
+
+        to_frame_rel = 'odom'
         from_frame_rel = msg.header.frame_id
 
-        #Create a transform between LiDAR to base_link
+        # Create a transform between LiDAR and to base_link
         transform = TransformStamped()
-        transform.header.stamp = self.get_clock().now().to_msg()
+        transform.header.stamp = msg.header.stamp
         transform.header.frame_id = "base_link"
         transform.child_frame_id = from_frame_rel
 
@@ -67,13 +88,11 @@ class Timestamp(Node):
 
         self.broadcaster.sendTransform(transform)
 
-        time = rclpy.time.Time().from_msg(msg.header.stamp)
-
         # Wait for the transform asynchronously
         tf_future = self.tf_buffer.wait_for_transform_async(
             target_frame=to_frame_rel,
             source_frame=from_frame_rel,
-            time=time
+            time=time 
         )
 
         # Spin until transform found or `timeout_sec` seconds has passed
@@ -96,12 +115,24 @@ class Timestamp(Node):
         # Transform point cloud
         cloud_out = do_transform_cloud(cloud, t)
 
-        self.publisher.publish(cloud_out)
+        points = pc2.read_points_numpy(cloud_out, field_names=("x", "y", "z"), skip_nans=True)
 
+        # Determine what pointcloud to publish to
+        if elapsed_time < rclpy.duration.Duration(seconds = 3):
+            self.accumulated_scans.append(points)
+        else: 
+            if self.create_ref:
+                self.create_ref = False
+                merged_points = np.vstack(self.accumulated_scans)
+                merged_ref = pc2.create_cloud_xyz32(cloud_out.header, merged_points)
+                self.ref_publisher.publish(merged_ref)
+                self.get_logger().info("Reference cloud published!")
+        
+        self.publisher.publish(cloud_out)
 
 def main():
     rclpy.init()
-    node = Timestamp()
+    node = LidarNode()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:

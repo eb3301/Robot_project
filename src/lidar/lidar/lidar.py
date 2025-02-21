@@ -18,8 +18,9 @@ class Timestamp(Node):
 
     def __init__(self):
         super().__init__('timestamp')
-
+    
         self.publisher = self.create_publisher(PointCloud2, '/lidar', 10)
+        self.ref_publisher = self.create_publisher(PointCloud2, '/lidar_ref', 10)
 
         self.subscription = self.create_subscription(
             LaserScan,
@@ -39,20 +40,35 @@ class Timestamp(Node):
         self.proj = LaserProjection()
 
         self.counter = 0
+        self.start_time = None
+        self.create_ref = True
 
     def listener_callback(self, msg):
+        print("TESTTESTSETSETS")
+        # Only publish every tenth scan
         if self.counter != 10:
             self.counter += 1
             return
         else:
             self.counter = 0
 
+        # Time of message
+        time = rclpy.time.Time.from_msg(msg.header.stamp)
+        print("HAALLOOOO")
+        # Take time at first scan
+        if self.start_time is None:
+            self.start_time = time       
+
+        # Check how long since first scan
+        elapsed_time =  time - self.start_time
+        
+
         to_frame_rel = 'map'
         from_frame_rel = msg.header.frame_id
 
-        #Create a transform between LiDAR to base_link
+        # Create a transform between LiDAR and to base_link
         transform = TransformStamped()
-        transform.header.stamp = self.get_clock().now().to_msg()
+        transform.header.stamp = msg.header.stamp
         transform.header.frame_id = "base_link"
         transform.child_frame_id = from_frame_rel
 
@@ -67,13 +83,11 @@ class Timestamp(Node):
 
         self.broadcaster.sendTransform(transform)
 
-        time = rclpy.time.Time().from_msg(msg.header.stamp)
-
         # Wait for the transform asynchronously
         tf_future = self.tf_buffer.wait_for_transform_async(
             target_frame=to_frame_rel,
             source_frame=from_frame_rel,
-            time=time
+            time=time 
         )
 
         # Spin until transform found or `timeout_sec` seconds has passed
@@ -96,8 +110,13 @@ class Timestamp(Node):
         # Transform point cloud
         cloud_out = do_transform_cloud(cloud, t)
 
-        self.publisher.publish(cloud_out)
 
+        # Determine what pointcloud to publish to
+        print(elapsed_time - rclpy.duration.Duration(seconds = 100))
+        if elapsed_time < rclpy.duration.Duration(seconds = 100):
+            self.publisher.publish(cloud_out)
+        else: 
+            self.ref_publisher.publish(cloud_out)
 
 def main():
     rclpy.init()
