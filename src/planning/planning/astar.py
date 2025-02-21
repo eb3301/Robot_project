@@ -47,9 +47,9 @@ class Planner(Node):
     # origo_x = msg.info.origin.position.x
     # origo_y = msg.info.origin.position.x
 
-    self.obsticales = self.find_obstacles(map_data, grid_size, self.resolution)
+    # self.obsticales = self.find_obstacles(map_data, grid_size, self.resolution)
 
-    path, time = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, self.obsticales)
+    path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data)
     print('Path found')
     message = Path()
     message.header.stamp = self.get_clock().now().to_msg()
@@ -100,10 +100,10 @@ class Planner(Node):
             obstacles.append((x, y, radius))
     
     return obstacles
+  
+  
 
-
-
-class Node(object):
+class Plan_node(object):
   def __init__(self, x, y, theta, parent = None):
     self.x = x
     self.y = y
@@ -114,50 +114,54 @@ class Node(object):
     self.h = 0  # Distance cost
     self.f = 0  # Total cost
 
-    self.time = 0
-
 
 def reached_target(x, y, xt, yt):
-  if math.sqrt(((x - xt)**2 + (y - yt)**2)) <= 0.01: # change distance to target
+  if math.sqrt(((x - xt)**2 + (y - yt)**2)) <= 0.1: # change distance to target
     return True
   return False
 
+def find_cell_index(x, y, resolution):
+    # Find the corresponding index in the 1D map_data
+    index = y * resolution + x
+    return index
 
-def step(x, y, theta, phi, dt=0.01):
-  # State change rate
-  dx = math.cos(theta)
-  dy = math.sin(theta)
-  dtheta = math.tan(phi)
+def step(x, y, theta, phi, grid_size, dt=0.01):
+  dx = grid_size * math.cos(phi)
+  dy = grid_size * math.sin(phi)
+  # dtheta = math.tan(phi)
 
-  # New state, euler
-  xn = x + dx*dt
-  yn = y + dy*dt
-  thetan = theta + dt*dtheta
+  xn = x + dx
+  yn = y + dy
+  thetan = phi# + dt*dtheta
   return xn, yn, thetan
 
 
-def step_collided_with_obsticale(obsticales, x, y, marign=0.1):
-  for obs in obsticales:
-    if math.sqrt((x - obs[0])**2 + (y - obs[1])**2) <= (obs[2] + marign):
-      return True
+def step_collided_with_obsticale(obsticales, x, y, resolution):
+  index = find_cell_index(x, y, resolution)
+  if obsticales[index] == 100:
+    return True
   return False
+  # for obs in obsticales:
+  #   if math.sqrt((x - obs[0])**2 + (y - obs[1])**2) <= (obs[2] + marign):
+  #     return True
+  # return False
 
 
-def grid(node, resolution=0.3):
-    # Mapping to right position
-    x_key = round(node.x / resolution)
-    y_key = round(node.y / resolution)
-    
-    # Calculate heading
-    theta_pos = node.theta % (2 * math.pi)
-    theta_key = round(theta_pos / (2 * math.pi / 6))
-    return (x_key, y_key, theta_key)
+# def grid(node, resolution=0.3):
+#   # Mapping to right position
+#   x_key = round(node.x / resolution)
+#   y_key = round(node.y / resolution)
+  
+#   # Calculate heading
+#   theta_pos = node.theta % (2 * math.pi)
+#   theta_key = round(theta_pos / (2 * math.pi / 6))
+#   return (x_key, y_key, theta_key)
     
 
 def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales):
   # Calculate different steering angles
   print('New paths')
-  for phi in [-math.pi/4, 0, math.pi/4]: # only grid coordinates
+  for phi in [-math.pi/2, 0, math.pi/2]: # only grid coordinates
     xn = current_node.x
     yn = current_node.y
     thetan = current_node.theta
@@ -171,8 +175,8 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales)
         feasible = False
         break
         
-    new_node = Node(xn, yn, thetan)
-    new_node_key = grid(new_node)
+    new_node = Plan_node(xn, yn, thetan)
+    new_node_key = (new_node.x, new_node.y)
         
     if not new_node_key in closed_set:
       if not feasible:
@@ -182,17 +186,16 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales)
         new_node.h = math.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2))
         new_node.f = new_node.g + 2 * new_node.h
         new_node.parent = current_node
-        new_node.time = current_node.time + steps * 0.01
         new_node.phi = phi
         open_set[new_node_key] = new_node
 
 
 def solution(x0, y0, theta0, xt, yt, obsticales):
   steps = 80
-  start_node = Node(x0, y0, theta0) 
+  start_node = Plan_node(x0, y0, theta0) 
   start_node.h = math.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2))
   start_node.f = start_node.g + 2 * start_node.h
-  start_node_key = grid(start_node)
+  start_node_key = (start_node.x, start_node.y)
   
   # Innit and preallocate
   open_set = dict()
@@ -212,14 +215,12 @@ def solution(x0, y0, theta0, xt, yt, obsticales):
        
     if reached_target(current_node.x, current_node.y, xt, yt):
       path=[]
-      time=[]
 
       while current_node:
-          time.append(current_node.time)
           path.append((current_node.x, current_node.y, current_node.phi))
           current_node = current_node.parent
       path.pop(-1)
-      return path[::-1], time[::-1]
+      return path[::-1]
   
     get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales)
 
