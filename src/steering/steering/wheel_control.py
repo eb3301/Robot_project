@@ -20,28 +20,6 @@ class WheelController(Node):
         # Create a timer to send duty cycles at a regular interval
         self.timer = self.create_timer(0.4, self.publish_duty_cycles)  # 10Hz frequency
 
-<<<<<<< HEAD
-        # Velocity and rotation
-        vel = msg.linear.x # m/s
-        steering = msg.angular.z # rad
-
-        vel_factor = vel / max_vel
-
-        # GPT -- Duty Cycle Turning Factor - must be between (0,1)
-        if steering <= np.pi/4 and steering >= 0:
-            rot_factor = np.tan(steering)
-        elif steering >= -np.pi/4 and steering <= 0:
-            rot_factor = np.tan(steering)
-        else:
-            if steering <= 0:
-                rot_factor = -1
-            else:
-                rot_factor = 1
-        print(vel_factor * (1 + rot_factor))
-        print(vel_factor * (1 - rot_factor))
-
-        # Message
-=======
         # Initialize some variables for the robot's movement
         self.linear_vel = 0.0 # Default linear velocity
         self.rot = 0.0  # Default rotation velocity
@@ -52,7 +30,6 @@ class WheelController(Node):
         self.rot = msg.angular.z
 
     def publish_duty_cycles(self):
->>>>>>> 5c01b5c107272f43c0f8c801245487c9f1acbfc2
         duty_cycles_msg = DutyCycles()
         
         rot_speed = 0.08
