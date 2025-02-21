@@ -46,7 +46,7 @@ class OccupancyGridPublisher(Node):
         msg = OccupancyGrid()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = "map"
-        msg.info.resolution = self.workspace = 2 / self.size  # cm per cell
+        msg.info.resolution = self.workspace / self.size  # cm per cell
         msg.info.width = self.workspace
         msg.info.height = self.workspace
         msg.info.origin.position.x = 0.0
