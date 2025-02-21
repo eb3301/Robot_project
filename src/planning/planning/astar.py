@@ -26,8 +26,6 @@ class Planner(Node):
   def map_callback(self, msg : OccupancyGrid):
     obsticales = msg.data
     resolution = msg.info.resolution
-    grid_width = msg.info.width
-    grid_height = msg.info.height
     origo_x = msg.info.origin.position.x
     origo_y = msg.info.origin.position.x
 
