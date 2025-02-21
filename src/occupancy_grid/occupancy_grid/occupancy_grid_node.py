@@ -12,7 +12,7 @@ class OccupancyGridPublisher(Node):
         self.timer = self.create_timer(1.0, self.publish_map)
         self.get_logger().info("Occupancy Grid Node Started")
         self.size = 100
-        self.workspace = 200
+        self.workspace = 2
 
     def generate_room_map(self, obstacle_chance=0.2):
         """
