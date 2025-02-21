@@ -31,6 +31,7 @@ class AutoControll(Node):
         self.goal_pose = (0, 0)
         self.pose = Pose()
         self.arrived = True
+        self.index = 0
 
 
     # Updates current pose
@@ -90,8 +91,11 @@ class AutoControll(Node):
         _, _, yaw = euler_from_quaternion((x, y, z, w))
         return yaw
     
-    def generate_point(self): # Random samled point
-        x, y = (random.uniform(0, 2), random.uniform(0, 2))
+    def generate_point(self): 
+        li = [(0, 1),(1, 1),(1, 0),(0, 0)] # Cube shape
+        x, y = li[self.index % 4]
+        self.index += 1
+        # x, y = (random.uniform(0, 2), random.uniform(0, 2)) # Random samled point
         print(f"Moving to marker at:({x, y})")
         return x, y
 
