@@ -53,9 +53,9 @@ class Node(object):
     self.theta = theta
     self.phi = 0
     self.parent = parent 
-    self.g = 0
-    self.h = 0 
-    self.f = 0  
+    self.g = 0  # Travel cost
+    self.h = 0  # Distance cost
+    self.f = 0  # Total cost
 
     self.time = 0
 
@@ -86,7 +86,7 @@ def step_collided_with_obsticale(obsticales, x, y, marign=0.2):
   return False
 
 
-def find_obstacles(map_data, grid_size=10):
+def find_obstacles(map_data, grid_size=100):
     obstacles = []
     
     for index, value in enumerate(map_data):
@@ -109,7 +109,7 @@ def grid(node, resolution=0.3):
     theta_key = round(theta_pos / (2 * math.pi / 6))
     return (x_key, y_key, theta_key)
     
-    
+
 def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales): #, xlb, xub, ylb, yub):
   # Calculate different steering angles
   for phi in [-math.pi/2, 0, math.pi/2]: # only grid coordinates

@@ -41,15 +41,14 @@ class OccupancyGridPublisher(Node):
         return grid.flatten().tolist()
 
     def publish_map(self):
-        grid_size = self.size  # 10x10 grid
         map_data = self.generate_room_map()
 
         msg = OccupancyGrid()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = "map"
         msg.info.resolution = self.workspace = 2 / self.size  # cm per cell
-        msg.info.width = grid_size
-        msg.info.height = grid_size
+        msg.info.width = self.workspace
+        msg.info.height = self.workspace
         msg.info.origin.position.x = 0.0
         msg.info.origin.position.y = 0.0
         msg.info.origin.position.z = 0.0
