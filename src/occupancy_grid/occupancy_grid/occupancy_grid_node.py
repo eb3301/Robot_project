@@ -31,7 +31,7 @@ class OccupancyGridPublisher(Node):
 
         # # Add random obstacles inside the room
         # num_obstacles = int((self.size * self.size) * obstacle_chance)
-        # obstacle_positions = np.random.choice(size * self.size, num_obstacles, replace=False)
+        # obstacle_positions = np.random.choice(self.size * self.size, num_obstacles, replace=False)
 
         # for pos in obstacle_positions:
         #     x, y = divmod(pos, self.size)
