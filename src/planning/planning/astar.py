@@ -2,7 +2,6 @@
 
 import rclpy
 import rclpy.logging
-import math
 import numpy as np
 import time
 from rclpy.node import Node
@@ -115,10 +114,11 @@ class Plan_node(object):
     self.g = 0  # Travel cost
     self.h = 0  # Distance cost
     self.f = 0  # Total cost
+    self.feasible = True
 
 
 def reached_target(x, y, xt, yt, resolution):
-  if math.sqrt(((x - xt)**2 + (y - yt)**2)) <= resolution: # change distance to target
+  if np.sqrt(((x - xt)**2 + (y - yt)**2)) <= resolution: # change distance to target
     return True
   return False
 
@@ -141,26 +141,32 @@ def start_center(x, y, resolution):
 
 
 def step(x, y, theta, phi, resolution):
-  dx = resolution * math.cos(phi)
-  dy = resolution * math.sin(phi)
-  dtheta = phi # math.tan(phi)
+  dx = resolution * np.cos(theta + phi)
+  dy = resolution * np.sin(theta + phi) # problem första, alla åker frammåt
+  dtheta = phi
 
   xn = x + dx
   yn = y + dy
-  thetan = dtheta # theta) +  % (2 * math.pi)
+  thetan = (dtheta + theta) % (2 * np.pi)
   return xn, yn, thetan
 
 
 def step_collided_with_obsticale(obsticales, x, y, resolution):
-  x_index, y_index = find_cell_index(x, y, resolution)
+  x_index, y_index = find_cell_index(x, y, resolution) # Maybe need to be center?
   if obsticales[x_index, y_index] == 100:
     return True
   return False
     
 
-def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution):
+def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions):
+
+  if directions == 4: # only grid coordinates
+    steer_angels = [-np.pi/2, 0, np.pi/2, np.pi]
+  else:
+    steer_angels = [-np.pi/2, 0, np.pi/2]
+
   # Calculate different steering angles
-  for phi in [-math.pi/2, 0, math.pi/2]: # only grid coordinates
+  for phi in steer_angels: 
     xn = current_node.x
     yn = current_node.y
     thetan = current_node.theta
@@ -171,7 +177,7 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
       xn, yn, thetan = step(xn, yn, thetan, phi, resolution)
       # print(xn, yn, thetan)
             
-      if step_collided_with_obsticale(obsticales, xn, yn, resolution):
+      if step_collided_with_obsticale(obsticales, xn, yn, resolution): # chatgpt fail
         feasible = False
         # print('Collided')
         break
@@ -182,28 +188,33 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
         
     if new_node_key not in closed_set:
       if not feasible:
+        new_node.feasible = False
         closed_set[new_node_key] = new_node 
       else:
-        new_node.g = current_node.g + math.sqrt((new_node.x - current_node.x)**2 + (new_node.y - current_node.y)**2) # change to Mahalanobis distance
-        new_node.h = math.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2))
+        new_node.g = current_node.g + resolution #+ math.sqrt((new_node.x - current_node.x)**2 + (new_node.y - current_node.y)**2) # change to Mahalanobis distance
+        new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2))
         new_node.f = new_node.g + new_node.h * 2
-        print(new_node.g,new_node.h, new_node.g-new_node.h)
+        # print(new_node.g, new_node.h, new_node.f)
         new_node.parent = current_node
         new_node.phi = phi
         open_set[new_node_key] = new_node
+    # else:
+    #   if closed_set[new_node_key].feasible:
+    #     pass # Look if g is higher?
 
 
 def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
   steps = 1
+  start = 0
 
   # Ensure grid compatibility
   x0, y0 = start_center(x0, y0, resolution)
   xt, yt = start_center(xt, yt, resolution)
-  print(xt, yt)
+  # print(xt, yt)
 
   start_node = Plan_node(x0, y0, theta0) 
-  start_node.h = math.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2))
-  start_node.f = start_node.g + 2 * start_node.h
+  start_node.h = np.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2))
+  start_node.f = start_node.g + start_node.h * 2
   start_node_key = (start_node.x, start_node.y)
   
   # Innit and preallocate
@@ -231,18 +242,30 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
       path.pop(-1) # The robots position, should be included?
       print('Path found')
       return path[::-1]
-  
-    get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution)
 
-  if not open_set:
-      path=[]
+    if start == 0:
+      directions = 4
+      start = 1
+    else:
+      directions = 3
 
-      while current_node:
-          path.append((current_node.x, current_node.y)) #, current_node.phi))
-          current_node = current_node.parent
-      path.pop(-1) # The robots position, should be included?
-      print('No path found')
-      return path[::-1]
+    get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions)
+
+  # if not open_set:
+  #   path = []
+
+  #   # Get the node with the lowest cost from the closed set, which is the best we have found
+  #   current_node_key = min(closed_set, key=lambda node: closed_set[node].f)
+  #   current_node = closed_set[current_node_key]
+
+  #   # Trace back the path from the best node in the closed set
+  #   while current_node:
+  #       path.append((current_node.x, current_node.y))  # Append the coordinates to the path
+  #       current_node = current_node.parent
+
+  #   path.pop(-1)  # Remove the robot's starting position if needed
+  #   print('No path found, returning the best path found')
+  #   return path[::-1]
 
 
 
@@ -256,7 +279,7 @@ def main2():
   grid[:, -1] = 100
   # grid.flatten().tolist()
 
-  x0 = 0.5 # start x position
+  x0 = 0.1 # start x position
   y0 = 0.1 # start y position
   xt = 0.5 # target x position
   yt = 0.5 # target y position
@@ -267,13 +290,13 @@ def main2():
   goal_x_index = int(xt * 100)
   goal_y_index = int(yt * 100)
 
-  # Add some custom patterns or corridors
-  for i in range(20, 60):
-    grid[i, 20:30] = 100  # Add vertical wall
-  for i in range(50, 70):
-    grid[70:80, i] = 100  # Add horizontal wall
+  # # Add some custom patterns or corridors
+  # for i in range(10, 60):
+  #   grid[i, 20:30] = 100  # Add vertical wall
+  # for i in range(50, 70):
+  #   grid[70:80, i] = 100  # Add horizontal wall
 
-  # # Add random obstacles inside the room
+  # Add random obstacles inside the room
   # num_obstacles = int((100 * 100) * 0.3)
   # obstacle_positions = np.random.choice(100 * 100, num_obstacles, replace=False)
 
