@@ -1,0 +1,10 @@
+/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/uninstall.dir
+/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/robp_phidgets_uninstall.dir
+/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/robp_phidgets.dir
+/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/test.dir
+/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/edit_cache.dir
+/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/rebuild_cache.dir
+/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/list_install_components.dir
+/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/install.dir
+/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/install/local.dir
+/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/install/strip.dir

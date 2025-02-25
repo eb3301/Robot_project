@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_targets("TARGET_FILES" "/home/group1/dd2419_ws/build/arm_interface/rosidl_generator_py/arm_interface/arm_interface_s__rosidl_typesupport_introspection_c.so" "TARGETS" "arm_interface_s__rosidl_typesupport_introspection_c" "DESTINATION" "lib/python3.12/site-packages/arm_interface")

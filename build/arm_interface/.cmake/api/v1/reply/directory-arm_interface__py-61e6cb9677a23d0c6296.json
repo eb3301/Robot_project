@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "arm_interface__py",
+		"source" : "/home/group1/dd2419_ws/build/arm_interface/arm_interface__py"
+	}
+}

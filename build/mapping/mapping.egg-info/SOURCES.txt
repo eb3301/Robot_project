@@ -1,0 +1,13 @@
+package.xml
+setup.cfg
+setup.py
+mapping/__init__.py
+mapping/mapping.py
+mapping.egg-info/PKG-INFO
+mapping.egg-info/SOURCES.txt
+mapping.egg-info/dependency_links.txt
+mapping.egg-info/entry_points.txt
+mapping.egg-info/requires.txt
+mapping.egg-info/top_level.txt
+mapping.egg-info/zip-safe
+resource/mapping

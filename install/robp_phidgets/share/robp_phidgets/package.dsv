@@ -1,0 +1,8 @@
+source;share/robp_phidgets/hook/cmake_prefix_path.ps1
+source;share/robp_phidgets/hook/cmake_prefix_path.dsv
+source;share/robp_phidgets/hook/cmake_prefix_path.sh
+source;share/robp_phidgets/local_setup.bash
+source;share/robp_phidgets/local_setup.dsv
+source;share/robp_phidgets/local_setup.ps1
+source;share/robp_phidgets/local_setup.sh
+source;share/robp_phidgets/local_setup.zsh

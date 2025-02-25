@@ -1,0 +1,121 @@
+[0.058s] Invoking command in '/home/group1/dd2419_ws/build/arm_interface': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/mapping:/home/group1/dd2419_ws/install/arm_service:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/localisation:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/arm_interface -- -j8 -l8
+[1.647s] [  2%] Built target arm_interface__rosidl_generator_type_description
+[1.647s] [  2%] Built target ament_cmake_python_symlink_arm_interface
+[1.648s] [  5%] Built target arm_interface__cpp
+[1.648s] [ 20%] Built target arm_interface__rosidl_generator_c
+[1.648s] [ 29%] Built target arm_interface__rosidl_typesupport_cpp
+[1.648s] [ 38%] Built target arm_interface__rosidl_typesupport_introspection_c
+[1.648s] [ 47%] Built target arm_interface__rosidl_typesupport_fastrtps_c
+[1.648s] [ 55%] Built target arm_interface__rosidl_typesupport_introspection_cpp
+[1.648s] [ 64%] Built target arm_interface__rosidl_typesupport_fastrtps_cpp
+[1.648s] [ 73%] Built target arm_interface__rosidl_typesupport_c
+[1.648s] [ 73%] Built target arm_interface
+[1.648s] [ 76%] Built target arm_interface__py
+[1.648s] [ 82%] Built target arm_interface__rosidl_generator_py
+[1.648s] [ 88%] Built target arm_interface_s__rosidl_typesupport_introspection_c
+[1.649s] [ 94%] Built target arm_interface_s__rosidl_typesupport_c
+[1.649s] [100%] Built target arm_interface_s__rosidl_typesupport_fastrtps_c
+[1.649s] running egg_info
+[1.649s] writing arm_interface.egg-info/PKG-INFO
+[1.649s] writing dependency_links to arm_interface.egg-info/dependency_links.txt
+[1.649s] writing top-level names to arm_interface.egg-info/top_level.txt
+[1.649s] reading manifest file 'arm_interface.egg-info/SOURCES.txt'
+[1.649s] writing manifest file 'arm_interface.egg-info/SOURCES.txt'
+[1.649s] [100%] Built target ament_cmake_python_build_arm_interface_egg
+[1.949s] Invoked command in '/home/group1/dd2419_ws/build/arm_interface' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/mapping:/home/group1/dd2419_ws/install/arm_service:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/localisation:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/group1/dd2419_ws/build/arm_interface -- -j8 -l8
+[1.950s] Invoking command in '/home/group1/dd2419_ws/build/arm_interface': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/mapping:/home/group1/dd2419_ws/install/arm_service:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/localisation:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/group1/dd2419_ws/build/arm_interface
+[1.967s] -- Install configuration: ""
+[1.968s] -- Execute custom install script
+[1.969s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/ament_index/resource_index/rosidl_interfaces/arm_interface
+[1.969s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/srv/Arm.json
+[1.970s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/msg/rosidl_generator_c__visibility_control.h
+[1.970s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/arm.h
+[1.970s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/detail/arm__functions.h
+[1.970s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/detail/arm__struct.h
+[1.971s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/detail/arm__type_support.h
+[1.971s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/environment/library_path.sh
+[1.971s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/environment/library_path.dsv
+[1.975s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[1.976s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/detail/arm__rosidl_typesupport_fastrtps_c.h
+[1.976s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[1.976s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/detail/arm__rosidl_typesupport_introspection_c.h
+[1.977s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/msg/rosidl_generator_cpp__visibility_control.hpp
+[1.977s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/arm.hpp
+[1.978s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/detail/arm__builder.hpp
+[1.978s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/detail/arm__struct.hpp
+[1.978s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/detail/arm__traits.hpp
+[1.978s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/detail/arm__type_support.hpp
+[1.978s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[1.978s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/detail/arm__rosidl_typesupport_fastrtps_cpp.hpp
+[1.979s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/include/arm_interface/arm_interface/srv/detail/arm__rosidl_typesupport_introspection_cpp.hpp
+[1.979s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/environment/pythonpath.sh
+[1.979s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/environment/pythonpath.dsv
+[1.979s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface-0.0.0-py3.12.egg-info/PKG-INFO
+[1.979s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface-0.0.0-py3.12.egg-info/SOURCES.txt
+[1.979s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface-0.0.0-py3.12.egg-info/dependency_links.txt
+[1.979s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface-0.0.0-py3.12.egg-info/top_level.txt
+[1.980s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/__init__.py
+[1.980s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/_arm_interface_s.ep.rosidl_typesupport_c.c
+[1.980s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/_arm_interface_s.ep.rosidl_typesupport_fastrtps_c.c
+[1.989s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/_arm_interface_s.ep.rosidl_typesupport_introspection_c.c
+[1.990s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/arm_interface_s__rosidl_typesupport_c.so
+[1.990s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/arm_interface_s__rosidl_typesupport_fastrtps_c.so
+[1.990s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/arm_interface_s__rosidl_typesupport_introspection_c.so
+[1.992s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/srv/__init__.py
+[1.993s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/srv/_arm.py
+[1.994s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/srv/_arm_s.c
+[1.994s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/arm_interface_s__rosidl_typesupport_fastrtps_c.so
+[1.994s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/arm_interface_s__rosidl_typesupport_introspection_c.so
+[1.994s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/arm_interface_s__rosidl_typesupport_c.so
+[1.995s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/srv/Arm.idl
+[1.995s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/srv/Arm.srv
+[1.995s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/ament_index/resource_index/package_run_dependencies/arm_interface
+[1.995s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/ament_index/resource_index/parent_prefix_path/arm_interface
+[1.995s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/environment/ament_prefix_path.sh
+[1.995s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/environment/ament_prefix_path.dsv
+[1.996s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/environment/path.sh
+[1.996s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/environment/path.dsv
+[1.996s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/local_setup.bash
+[1.996s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/local_setup.sh
+[1.996s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/local_setup.zsh
+[1.996s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/local_setup.dsv
+[1.997s] -- Symlinking: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/package.dsv
+[2.012s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/ament_index/resource_index/packages/arm_interface
+[2.012s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/rosidl_cmake-extras.cmake
+[2.013s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/ament_cmake_export_dependencies-extras.cmake
+[2.013s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/ament_cmake_export_include_directories-extras.cmake
+[2.013s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/ament_cmake_export_libraries-extras.cmake
+[2.014s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/ament_cmake_export_targets-extras.cmake
+[2.014s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[2.015s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[2.015s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/arm_interfaceConfig.cmake
+[2.015s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/arm_interfaceConfig-version.cmake
+[2.016s] -- Up-to-date symlink: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/package.xml
+[2.016s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/lib/libarm_interface__rosidl_generator_c.so
+[2.017s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/lib/libarm_interface__rosidl_typesupport_fastrtps_c.so
+[2.017s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/lib/libarm_interface__rosidl_typesupport_introspection_c.so
+[2.018s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/lib/libarm_interface__rosidl_typesupport_c.so
+[2.018s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/lib/libarm_interface__rosidl_typesupport_fastrtps_cpp.so
+[2.019s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/lib/libarm_interface__rosidl_typesupport_introspection_cpp.so
+[2.020s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/lib/libarm_interface__rosidl_typesupport_cpp.so
+[2.110s] Listing '/home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface'...
+[2.110s] Listing '/home/group1/dd2419_ws/install/arm_interface/lib/python3.12/site-packages/arm_interface/srv'...
+[2.120s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/lib/libarm_interface__rosidl_generator_py.so
+[2.120s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/export_arm_interface__rosidl_generator_cExport.cmake
+[2.121s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/export_arm_interface__rosidl_generator_cExport-noconfig.cmake
+[2.121s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/export_arm_interface__rosidl_typesupport_fastrtps_cExport.cmake
+[2.121s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/export_arm_interface__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[2.121s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/arm_interface__rosidl_typesupport_introspection_cExport.cmake
+[2.121s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/arm_interface__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[2.122s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/arm_interface__rosidl_typesupport_cExport.cmake
+[2.122s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/arm_interface__rosidl_typesupport_cExport-noconfig.cmake
+[2.122s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/export_arm_interface__rosidl_generator_cppExport.cmake
+[2.122s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/export_arm_interface__rosidl_typesupport_fastrtps_cppExport.cmake
+[2.122s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/export_arm_interface__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[2.122s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/arm_interface__rosidl_typesupport_introspection_cppExport.cmake
+[2.123s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/arm_interface__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[2.123s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/arm_interface__rosidl_typesupport_cppExport.cmake
+[2.123s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/arm_interface__rosidl_typesupport_cppExport-noconfig.cmake
+[2.123s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/export_arm_interface__rosidl_generator_pyExport.cmake
+[2.123s] -- Up-to-date: /home/group1/dd2419_ws/install/arm_interface/share/arm_interface/cmake/export_arm_interface__rosidl_generator_pyExport-noconfig.cmake
+[2.173s] Invoked command in '/home/group1/dd2419_ws/build/arm_interface' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/group1/dd2419_ws/install/mapping:/home/group1/dd2419_ws/install/arm_service:/home/group1/dd2419_ws/install/steering:/home/group1/dd2419_ws/install/robp_launch:/home/group1/dd2419_ws/install/robot_odometry:/home/group1/dd2419_ws/install/pickup:/home/group1/dd2419_ws/install/odometry:/home/group1/dd2419_ws/install/localisation:/home/group1/dd2419_ws/install/lidar:/home/group1/dd2419_ws/install/display:/home/group1/dd2419_ws/install/detection:/home/group1/dd2419_ws/install/controller:/home/group1/dd2419_ws/install/arm_servos_pubs_subs:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/group1/dd2419_ws/build/arm_interface

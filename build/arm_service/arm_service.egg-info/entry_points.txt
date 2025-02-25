@@ -1,0 +1,4 @@
+[console_scripts]
+arm_client = arm_service.arm_client:main
+arm_service = arm_service.arm_service:main
+test = arm_service.testrun:main
