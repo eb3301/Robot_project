@@ -4,6 +4,7 @@ import rclpy
 import rclpy.logging
 import numpy as np
 import time
+import heapq
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
@@ -116,9 +117,13 @@ class Plan_node(object):
     self.f = 0  # Total cost
     self.feasible = True
 
+  def __lt__(self, other):
+    # Comparison based on f value, needed for heapq to compare Plan_node objects
+    return self.f < other.f
+
 
 def reached_target(x, y, xt, yt, resolution):
-  if np.sqrt(((x - xt)**2 + (y - yt)**2)) <= resolution/2: # change distance to target x == xt and y == yt: #
+  if np.sqrt(((x - xt)**2 + (y - yt)**2)) <= resolution/2: # change distance to target np.abs(x - xt) < 0.01 and np.abs(y - yt) < 0.01:
     return True
   return False
 
@@ -142,7 +147,7 @@ def start_center(x, y, resolution):
 
 def step(x, y, theta, phi, resolution):
   dx = resolution * np.cos(theta + phi)
-  dy = resolution * np.sin(theta + phi) # problem svängar
+  dy = resolution * np.sin(theta + phi)
   dtheta = phi
 
   xn = x + dx
@@ -175,11 +180,9 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
     # Take steps in the best direction
     for i in range(steps):
       xn, yn, thetan = step(xn, yn, thetan, phi, resolution)
-      # print(xn, yn, thetan)
             
       if step_collided_with_obsticale(obsticales, xn, yn, resolution): # chatgpt fail
         feasible = False
-        # print('Collided')
         break
     
     # print(xn, yn)
@@ -192,9 +195,8 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
         closed_set[new_node_key] = new_node 
       else:
         new_node.g = current_node.g + resolution #+ math.sqrt((new_node.x - current_node.x)**2 + (new_node.y - current_node.y)**2) # change to Mahalanobis distance
-        new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2))
+        new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2)) # np.abs(new_node.x - xt) + np.abs(new_node.y - yt)
         new_node.f = new_node.g + new_node.h * 2
-        # print(new_node.g, new_node.h, new_node.f)
         new_node.parent = current_node
         new_node.phi = phi
         open_set[new_node_key] = new_node
@@ -210,10 +212,10 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
   # Ensure grid compatibility
   x0, y0 = start_center(x0, y0, resolution)
   xt, yt = start_center(xt, yt, resolution)
-  print(xt, yt)
+  # print(xt, yt)
 
   start_node = Plan_node(x0, y0, theta0) 
-  start_node.h = np.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2))
+  start_node.h = np.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2)) # np.abs(start_node.x - xt) + np.abs(start_node.y - yt) #
   start_node.f = start_node.g + start_node.h * 2
   start_node_key = (start_node.x, start_node.y)
   
@@ -234,7 +236,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
        
     if reached_target(current_node.x, current_node.y, xt, yt, resolution):
       path=[]
-      print(current_node.x, current_node.y)
+      # print(current_node.x, current_node.y)
 
       while current_node:
           path.append((current_node.x, current_node.y)) #, current_node.phi))
@@ -251,24 +253,6 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
 
     get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions)
 
-  # if not open_set:
-  #   path = []
-
-  #   # Get the node with the lowest cost from the closed set, which is the best we have found
-  #   current_node_key = min(closed_set, key=lambda node: closed_set[node].f)
-  #   current_node = closed_set[current_node_key]
-
-  #   # Trace back the path from the best node in the closed set
-  #   while current_node:
-  #       path.append((current_node.x, current_node.y))  # Append the coordinates to the path
-  #       current_node = current_node.parent
-
-  #   path.pop(-1)  # Remove the robot's starting position if needed
-  #   print('No path found, returning the best path found')
-  #   return path[::-1]
-
-
-
 
 def main2():
   grid = np.zeros((100, 100), dtype=int)
@@ -281,8 +265,8 @@ def main2():
 
   x0 = 0.1 # start x position
   y0 = 0.1 # start y position
-  xt = 0.4 # target x position
-  yt = 0.6 # target y position
+  xt = 0.1 # target x position
+  yt = 0.9 # target y position
 
   # Mark the start (x0, y0) and goal (xt, yt) points with green (value 50)
   start_x_index = int(x0 * 100)
@@ -291,10 +275,10 @@ def main2():
   goal_y_index = int(yt * 100)
 
   # Add some custom patterns or corridors
-  for i in range(0, 80):
-    grid[i, 20:30] = 100  # Add vertical wall
-  for i in range(20, 50):
-    grid[70:80, i] = 100  # Add horizontal wall
+  # for i in range(0, 60):
+  #   grid[i, 20:30] = 100  # Add vertical wall
+  # for i in range(20, 50):
+  #   grid[70:80, i] = 100  # Add horizontal wall
 
   # # Add random obstacles inside the room
   # num_obstacles = int((100 * 100) * 0.3)
