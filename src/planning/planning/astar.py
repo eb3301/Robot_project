@@ -19,16 +19,16 @@ class Planner(Node):
     super().__init__('Initialize_Planner')
 
     # Subscribe to costmap
-    self.costmap_sub = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
+    self.costmap_sub = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 1)
 
     # Subscribe to current pose
-    self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/pose', self.pose_callback, 10)
+    self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/pose', self.pose_callback, 10) # This might need to be restricted
     
     # Subscribe to goal pose
-    self.goal_sub = self.create_subscription(Marker, "/goal_marker", self.goal_callback, 10)
+    self.goal_sub = self.create_subscription(Marker, "/goal_marker", self.goal_callback, 1)
 
     # Publish the planned path
-    self.path_pub = self.create_publisher(Path, "/planned_path", 10)
+    self.path_pub = self.create_publisher(Path, "/planned_path", 1)
 
     # Robot pose coordnates
     self.x0 = 0.1
@@ -40,11 +40,15 @@ class Planner(Node):
     self.yt = 0.9
 
   def map_callback(self, msg : OccupancyGrid):
+    # Get data from message
     map_data = msg.data
     map_data = np.reshape(map_data, (msg.info.height, msg.info.width))
     resolution = msg.info.resolution
 
+    # Path planning algortim
     path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, resolution)
+    
+    # Path message
     message = Path()
     message.header.stamp = self.get_clock().now().to_msg()
     message.header.frame_id = 'odom'
@@ -75,19 +79,22 @@ class Planner(Node):
     self.path_pub.publish(message)
 
   def pose_callback(self, msg : PoseWithCovarianceStamped):
+    # Get posion of robot
     self.x0 = msg.pose.pose.position.x
     self.y0 = msg.pose.pose.position.y
-    self.theta0 = self.compute_heading(msg.pose.pose.orientation)
+    # self.theta0 = self.compute_heading(msg.pose.pose.orientation)
     # thetao = 0 Do it need to be zero to work?
 
   def goal_callback(self, msg : Marker):
+    # Get position of goal
     self.xt = msg.pose.position.x
     self.yt = msg.pose.position.y
 
-  def compute_heading(self, orientation):
-    x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
-    _, _, yaw = euler_from_quaternion((x, y, z, w))
-    return yaw
+  # def compute_heading(self, orientation):
+  #   # Compute origentation of robot
+  #   x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
+  #   _, _, yaw = euler_from_quaternion((x, y, z, w))
+  #   return yaw
   
 
 class Plan_node(object):
