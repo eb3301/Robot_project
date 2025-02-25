@@ -18,7 +18,6 @@ class Timestamp(Node):
 
     def __init__(self):
 
-        print("LE----------------------------------------------------------------------------------------------------------------------------")
         super().__init__('timestamp')
 
         self.publisher = self.create_publisher(PointCloud2, '/lidar', 10)

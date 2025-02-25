@@ -7,6 +7,8 @@ from sensor_msgs.msg import PointCloud2, PointField
 import sensor_msgs_py.point_cloud2 as pc2
 from sklearn.cluster import DBSCAN
 from visualization_msgs.msg import Marker, MarkerArray
+import cv2
+import numpy as np
 
 class Detection(Node):
     def __init__(self):
@@ -20,22 +22,43 @@ class Detection(Node):
         
         self.get_logger().info(f"Node started")
 
+    def pointcloud_to_image(self, points):
+        """Converts a point cloud to a 2D grayscale depth image."""
+        resolution = 0.005  # 5mm per pixel
+        x_range = (-1, 1)  # x-axis limits in meters
+        z_range = (0, 2)  # z-axis (depth) limits
+
+        img_width = int((x_range[1] - x_range[0]) / resolution)
+        img_height = int((z_range[1] - z_range[0]) / resolution)
+        depth_image = np.zeros((img_height, img_width), dtype=np.uint8)
+
+        for point in points:
+            x, y, z = point
+            if x_range[0] <= x <= x_range[1] and z_range[0] <= z <= z_range[1]:
+                img_x = int((x - x_range[0]) / resolution)
+                img_y = int((z - z_range[0]) / resolution)
+                depth_value = int((1 - (y + 0.5)) * 255)  # Normalize depth
+
+                depth_image[img_y, img_x] = depth_value
+
+        return depth_image
+
     def cloud_callback(self, msg: PointCloud2):
-        """Detects objects using DBSCAN clustering and publishes bounding boxes."""
+        """Detects objects, creates a depth image, and applies edge detection."""
         header = msg.header
         points = pc2.read_points_numpy(msg, skip_nans=True)[:, :3]
 
-        distances = np.linalg.norm(points[:, :3], axis=1)
-        offset = 0.089
-        mask = (distances <= 1.5) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
-        filtered_indices = np.where(mask)[0]
-        filtered_points = points[mask]
+        depth_image = self.pointcloud_to_image(points)
 
-        if filtered_points.shape[0] == 0:
-            self.get_logger().info("No points after filtering")
-            return
+        # Apply Canny edge detection
+        edges = cv2.Canny(depth_image, 50, 150)
 
-        db = DBSCAN(eps=0.2, min_samples=70)
+        # Show the edge-detected image
+        cv2.imshow("Edges", edges)
+        cv2.waitKey(1)
+
+        # Continue with DBSCAN clustering...
+        db = DBSCAN(eps=0.1, min_samples=70)
         labels = db.fit_predict(filtered_points)
 
         detected_indices = []
@@ -58,55 +81,13 @@ class Detection(Node):
             bbox_size = bbox_max - bbox_min
             volume = np.prod(bbox_size)
 
-            # if volume < 0.002:
-            #     self.get_logger().info(f'Detected Objects at {np.mean(cluster_points, axis=0)}')
-            #     classified_labels.append(1)
-            # elif volume < 0.01:
-            #     self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
-            #     classified_labels.append(2)
-
-            if volume < 0.00012:  # Object detected (< 0.002 fluffy + sphere + cube)
-                # Compute curvature
-                curvatures = []
-                # Assuming cluster_points is a 2D numpy array with shape (num_points, 3)
-                for p in cluster_points:
-                    # Calculate the covariance matrix for the entire cluster of points
-                    cov_matrix = np.cov(cluster_points.T)  # Transpose to have points as columns
-                    # Check if the covariance matrix is valid (no NaNs or Infs)
-                    if np.any(np.isnan(cov_matrix)) or np.any(np.isinf(cov_matrix)):
-                        continue  # Skip this iteration if covariance is invalid
-
-                    # Compute the eigenvalues of the covariance matrix
-                    eigenvalues, _ = np.linalg.eig(cov_matrix)
-                    
-                    # Calculate curvature: the ratio of the smallest eigenvalue to the sum of eigenvalues
-                    curvature = eigenvalues.min() / np.sum(eigenvalues)
-                    curvatures.append(curvature)
-                    
-                # Avoid empty list when no valid curvature values are found
-                if curvatures:
-                    avg_curvature = np.mean(curvatures)
-                else:
-                    avg_curvature = 0  # Default to 0 if no valid curvature was found
-                #self.get_logger().info(f'Curvature {avg_curvature}')
-                
-                # Object classification based on curvature
-                if avg_curvature > 0.08:
-                    obj_type = "Cube"
-                else:
-                    obj_type = "Sphere"
-
-                self.get_logger().info(f'Detected {obj_type} at {np.mean(cluster_points, axis=0)}')
-                classified_labels.append(1)
-
-            elif volume < 0.002:
-                self.get_logger().info(f'Detected Fluffy animal at {np.mean(cluster_points, axis=0)}')
+            if volume < 0.002:
+                self.get_logger().info(f'Detected Objects at {np.mean(cluster_points, axis=0)}')
                 classified_labels.append(1)
             elif volume < 0.01:
                 self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
                 classified_labels.append(2)
-
-
+            
             detected_indices.append(cluster_indices)
 
         self.publish_detected_objects(detected_indices, msg)

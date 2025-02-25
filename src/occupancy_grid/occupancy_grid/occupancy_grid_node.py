@@ -6,6 +6,7 @@ import numpy as np
 import sensor_msgs_py.point_cloud2 as pc2
 from tf2_ros import Buffer, TransformListener
 from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
+from sklearn.neighbors import NearestNeighbors
 
 class OccupancyGridPublisher(Node):
     def __init__(self):
@@ -52,42 +53,34 @@ class OccupancyGridPublisher(Node):
             # Transform PointCloud2 to the map frame
             transform = self.tf_buffer.lookup_transform('map', msg.header.frame_id, rclpy.time.Time())
             cloud_transformed = do_transform_cloud(msg, transform)
+
+            # Get the robot's position in the map frame
+            robot_transform = self.tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time())
+            robot_x = robot_transform.transform.translation.x
+            robot_y = robot_transform.transform.translation.y
             
             # Convert PointCloud2 to numpy array
             points = np.array(list(pc2.read_points(cloud_transformed, field_names=("x", "y"), skip_nans=True)))
 
-            # Update the occupancy grid
-            self.update_occupancy_grid(points)
+            # Distance thresholding relative to the robot's position
+            min_distance = 0.4 # Minimum distance, 0.35 enough to remove the arm from the lidar
+            max_distance = 2.0  # Maximum distance (e.g., 10 meters)
+
+            # Filter points based on distance threshold relative to the robot
+            filtered_points = []
+            for point in points:
+                # Calculate distance from the robot (in the map frame)
+                distance = np.sqrt((point[0] - robot_x)**2 + (point[1] - robot_y)**2)
+
+                # Apply the distance thresholding (ignore points too close or too far from the robot)
+                if min_distance <= distance <= max_distance:
+                    filtered_points.append(point)
+
+            # Update the occupancy grid with filtered points
+            self.update_occupancy_grid(filtered_points)
 
         except Exception as e:
             self.get_logger().warn(f"Transform failed: {e}")
-
-    """
-    def update_occupancy_grid(self, points):
-        #Mark obstacles and construct room boundaries using the furthest LiDAR scans
-        grid = np.array(self.map_data).reshape((self.grid_size, self.grid_size))
-
-        # Dictionary to store the furthest point for each angle sector
-        max_range_points = {}
-
-        for point in points:
-            gx = int((point[0] - self.origin_x) / self.resolution)
-            gy = int((point[1] - self.origin_y) / self.resolution)
-
-            if 0 <= gx < self.grid_size and 0 <= gy < self.grid_size:
-                angle = np.arctan2(point[1], point[0])  # Angle of the scan point
-                dist = np.linalg.norm(point)  # Distance of point from the robot
-
-                # Store the furthest point for each angle sector
-                if angle not in max_range_points or dist > max_range_points[angle][0]:
-                    max_range_points[angle] = (dist, gx, gy)
-
-        # Mark the furthest detected points as walls
-        for _, (_, gx, gy) in max_range_points.items():
-            grid[gy, gx] = 100  # Mark as obstacle
-
-        self.map_data = grid.flatten().tolist()
-    """
 
     def update_occupancy_grid(self, points, inflation_radius=2, obstacle_value=100, buffer_value=20):
         # Mark free space and obstacles in the occupancy grid

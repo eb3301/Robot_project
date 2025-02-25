@@ -1,10 +1,10 @@
 #!/usr/bin/python3
-# EASY-INSTALL-ENTRY-SCRIPT: 'pickup==0.0.0','console_scripts','pickup'
+# EASY-INSTALL-ENTRY-SCRIPT: 'pickup','console_scripts','pickup'
 import re
 import sys
 
 # for compatibility with easy_install; see #2198
-__requires__ = 'pickup==0.0.0'
+__requires__ = 'pickup'
 
 try:
     from importlib.metadata import distribution
@@ -30,4 +30,4 @@ globals().setdefault('load_entry_point', importlib_load_entry_point)
 
 if __name__ == '__main__':
     sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
-    sys.exit(load_entry_point('pickup==0.0.0', 'console_scripts', 'pickup')())
+    sys.exit(load_entry_point('pickup', 'console_scripts', 'pickup')())

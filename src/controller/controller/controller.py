@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+import numpy as np
 import rclpy
 from rclpy.node import Node
 
@@ -25,6 +25,8 @@ class Controller(Node):
 
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
 
+        self.get_logger().info("Controller node initialised")
+
     def joy_callback(self, msg: Joy):
 
         
@@ -37,7 +39,7 @@ class Controller(Node):
         rot = abs(joy_rot)
 
         #Transform joy stick reading to velocity
-        max_vel = 0.5 #m/s 
+        max_vel = 0.3 #m/s 
         
         vel = joy_vel * max_vel
 
@@ -45,16 +47,22 @@ class Controller(Node):
         duty_cycles_msg = DutyCycles()
 
         duty_cycles_msg.header = header
-        if joy_rot > 0: 
-            duty_cycles_msg.duty_cycle_left = vel * rot
-            duty_cycles_msg.duty_cycle_right = vel * (1 - rot)
-        elif joy_rot < 0:
-            duty_cycles_msg.duty_cycle_right = vel * rot
-            duty_cycles_msg.duty_cycle_left = vel * (1 - rot)
-        else:
-            duty_cycles_msg.duty_cycle_right = vel
-            duty_cycles_msg.duty_cycle_left = vel
 
+        if joy_rot > 0.05:
+            joy_rot = np.abs(joy_rot/3) 
+            duty_cycles_msg.duty_cycle_left = -0.1
+            duty_cycles_msg.duty_cycle_right = 0.1
+        elif joy_rot < -0.05:
+            joy_rot = np.abs(joy_rot/3)
+            duty_cycles_msg.duty_cycle_left = 0.1
+            duty_cycles_msg.duty_cycle_right = -0.1
+        else:
+            if joy_vel > 0.0: 
+                duty_cycles_msg.duty_cycle_left = 0.2
+                duty_cycles_msg.duty_cycle_right = 0.185
+            if joy_vel < 0.0:
+                duty_cycles_msg.duty_cycle_left = -0.2
+                duty_cycles_msg.duty_cycle_right = -0.185
         self.duty_pub.publish(duty_cycles_msg)
 
 def main():
