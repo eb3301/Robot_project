@@ -4,7 +4,6 @@ import rclpy
 import rclpy.logging
 import numpy as np
 import time
-import heapq
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
@@ -47,10 +46,7 @@ class Planner(Node):
   def map_callback(self, msg : OccupancyGrid):
     map_data = msg.data
     self.resolution = msg.info.resolution
-    grid_size = msg.info.height
-    # origo_x = msg.info.origin.position.x
-    # origo_y = msg.info.origin.position.x
-
+       
     # self.obsticales = self.find_obstacles(map_data, grid_size, self.resolution)
 
     path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, self.resolution)
@@ -64,12 +60,12 @@ class Planner(Node):
       # Set the position and orientation (phi in your case)
       pose_msg.pose.position.x = pose[0]
       pose_msg.pose.position.y = pose[1]
-      # Convert the orientation from phi (heading) to a quaternion
-      quaternion = quaternion_from_euler(0, 0, pose[2])  # Use phi as the yaw angle
-      pose_msg.pose.orientation.x = quaternion[0]
-      pose_msg.pose.orientation.y = quaternion[1]
-      pose_msg.pose.orientation.z = quaternion[2]
-      pose_msg.pose.orientation.w = quaternion[3]
+      # # Convert the orientation from phi (heading) to a quaternion
+      # quaternion = quaternion_from_euler(0, 0, pose[2])  # Use phi as the yaw angle
+      # pose_msg.pose.orientation.x = quaternion[0]
+      # pose_msg.pose.orientation.y = quaternion[1]
+      # pose_msg.pose.orientation.z = quaternion[2]
+      # pose_msg.pose.orientation.w = quaternion[3]
       
       message.poses.append(pose_msg)
 
@@ -80,6 +76,7 @@ class Planner(Node):
     self.x0 = msg.pose.pose.position.x
     self.y0 = msg.pose.pose.position.y
     self.theta0 = self.compute_heading(msg.pose.pose.orientation)
+    # thetao = 0 Do it need to be zero to work?
 
   def goal_callback(self, msg : Marker):
     self.xt = msg.pose.position.x
@@ -116,10 +113,6 @@ class Plan_node(object):
     self.h = 0  # Distance cost
     self.f = 0  # Total cost
     self.feasible = True
-
-  def __lt__(self, other):
-    # Comparison based on f value, needed for heapq to compare Plan_node objects
-    return self.f < other.f
 
 
 def reached_target(x, y, xt, yt, resolution):
@@ -185,7 +178,6 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
         feasible = False
         break
     
-    # print(xn, yn)
     new_node = Plan_node(xn, yn, thetan)
     new_node_key = (new_node.x, new_node.y)
         
@@ -327,7 +319,7 @@ def main2():
 
  
 
-main2()
+# main2()
 
 
 def main():
