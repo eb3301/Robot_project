@@ -25,6 +25,8 @@ class Controller(Node):
 
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
 
+        self.get_logger().info("Controller node initialised")
+
     def joy_callback(self, msg: Joy):
 
         

@@ -11,7 +11,7 @@ def generate_launch_description():
             default_value='true',
             description='Use simulation time'),
 
-        #Start Rviz (LiDAR also starts rviz so probably not needed....)
+        #Start Rviz
         ExecuteProcess(
             cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/robot/dd2419_ws/src/localisation/launch/rviz/loc.rviz'],
             output='screen',

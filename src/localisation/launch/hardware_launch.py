@@ -6,14 +6,6 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     return LaunchDescription([
-        #Start Rviz (LiDAR also starts rviz so probably not needed....)
-        ExecuteProcess(
-            cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/group1//dd2419_ws/src/default.rviz'],
-            output='screen',
-            name='rviz'
-        ),
-        # args="-d $(find-pkg-share robp_launch)/rviz/default.rviz"
-
 
         # Start Motor
         ExecuteProcess(
@@ -43,6 +35,13 @@ def generate_launch_description():
             cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher', '--x', '0.08987', '--y', '0.0175', '--z', '0.10456', '--frame-id', 'base_link', '--child-frame-id', 'camera_link'],
             output='screen',
             name='base_to_rs_d435i'
+        ),
+
+        #Static broadcaster: LiDAR - base_link
+        ExecuteProcess(
+            cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher','--x', '0.0', '--y', '0.1', '--z', '0.1', '--frame-id', 'base_link', '--child-frame-id', 'lidar_link'],
+            output='screen',
+            name='baselink_to_lidar'
         ),
         
         # Static broadcaster

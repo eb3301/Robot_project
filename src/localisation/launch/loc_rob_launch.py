@@ -7,6 +7,13 @@ from launch_ros.actions import Node
 def generate_launch_description():
     return LaunchDescription([
 
+    #Start Rviz
+    ExecuteProcess(
+        cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/robot/dd2419_ws/src/localisation/launch/rviz/loc.rviz'],
+        output='screen',
+        name='rviz'
+    ),
+
     # Start controller_node
     ExecuteProcess(
         cmd=['ros2', 'run', 'controller', 'controller'],
@@ -15,11 +22,11 @@ def generate_launch_description():
     ),
 
     #Lidar node
-    ExecuteProcess(
-        cmd=['ros2', 'run', 'localisation', 'lidar'],
-        output='screen',
-        name='lidar_node'
-    ),
+    # ExecuteProcess(
+    #     cmd=['ros2', 'run', 'localisation', 'lidar'],
+    #     output='screen',
+    #     name='lidar_node'
+    # ),
 
     #EKF Node
     ExecuteProcess(
