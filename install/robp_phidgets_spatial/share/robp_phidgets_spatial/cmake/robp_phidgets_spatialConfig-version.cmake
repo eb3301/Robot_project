@@ -1,1 +1,0 @@
-/home/robot/dd2419_ws/build/robp_phidgets_spatial/ament_cmake_core/robp_phidgets_spatialConfig-version.cmake
