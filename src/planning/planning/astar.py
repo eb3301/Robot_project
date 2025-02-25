@@ -48,21 +48,28 @@ class Planner(Node):
     message = Path()
     message.header.stamp = self.get_clock().now().to_msg()
     message.header.frame_id = 'odom'
-    for i, pose in enumerate(path):
-      pose_msg = PoseStamped()
-      pose_msg.header.stamp = message.header.stamp
-      pose_msg.header.frame_id = message.header.frame_id
-      # Set the position and orientation (phi in your case)
-      pose_msg.pose.position.x = pose[0]
-      pose_msg.pose.position.y = pose[1]
-      # Convert the orientation from phi (heading) to a quaternion
-      quaternion = quaternion_from_euler(0, 0, pose[2])  # Use phi as the yaw angle
-      pose_msg.pose.orientation.x = quaternion[0]
-      pose_msg.pose.orientation.y = quaternion[1]
-      pose_msg.pose.orientation.z = quaternion[2]
-      pose_msg.pose.orientation.w = quaternion[3]
-      
-      message.poses.append(pose_msg)
+    
+    if path:# If the path exists, publish it
+      for i, pose in enumerate(path):
+        pose_msg = PoseStamped()
+        pose_msg.header.stamp = message.header.stamp
+        pose_msg.header.frame_id = message.header.frame_id
+        # Set the position and orientation (phi in your case)
+        pose_msg.pose.position.x = pose[0]
+        pose_msg.pose.position.y = pose[1]
+        # Convert the orientation from phi (heading) to a quaternion
+        quaternion = quaternion_from_euler(0, 0, pose[2])  # Use phi as the yaw angle
+        pose_msg.pose.orientation.x = quaternion[0]
+        pose_msg.pose.orientation.y = quaternion[1]
+        pose_msg.pose.orientation.z = quaternion[2]
+        pose_msg.pose.orientation.w = quaternion[3]
+        
+        message.poses.append(pose_msg)
+    # else: # If no path exist, publish empty path
+    #   pose_msg = PoseStamped()
+    #   pose_msg.header.stamp = message.header.stamp
+    #   pose_msg.header.frame_id = message.header.frame_id
+    #   message.poses.append(pose_msg)
 
     print('Publish path')
     self.path_pub.publish(message)
