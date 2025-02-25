@@ -54,8 +54,8 @@ class MinimalService(Node):
     def arm_callback(self, request, response):
         data_sets = [[12000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
                     [2000,12000,3000,12000,4000,12000,2000,2000,2000,2000,2000,2000],
-                    [11000,12000,5000,16000,4000,12000,2000,2000,2000,2000,2000,2000],
-                    [2000,12000,8000,16000,8000,12000,2000,2000,2000,2000,2000,2000]]
+                    [11000,12000,10000,15000,4000,12000,2000,2000,2000,2000,2000,2000],
+                    [2000,12000,8000,16000,10000,12000,2000,2000,2000,2000,2000,2000]]
         msg = Int16MultiArray()
         msg.data = data_sets[int(request.xy[0]-1)]
 
@@ -71,7 +71,8 @@ class MinimalService(Node):
         elif request.xy[0] == 4: 
             self.get_logger().info('moving arm to drop')
             self.publisher.publish(msg)
-            
+        
+        
         #self.get_logger().info('Incoming request\na: %d b: %d' % (request.xy[0]))
         response.success = True
         return response
