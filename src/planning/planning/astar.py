@@ -118,7 +118,7 @@ class Plan_node(object):
 
 
 def reached_target(x, y, xt, yt, resolution):
-  if np.sqrt(((x - xt)**2 + (y - yt)**2)) <= resolution: # change distance to target
+  if np.sqrt(((x - xt)**2 + (y - yt)**2)) <= resolution/2: # change distance to target x == xt and y == yt: #
     return True
   return False
 
@@ -142,7 +142,7 @@ def start_center(x, y, resolution):
 
 def step(x, y, theta, phi, resolution):
   dx = resolution * np.cos(theta + phi)
-  dy = resolution * np.sin(theta + phi) # problem första, alla åker frammåt
+  dy = resolution * np.sin(theta + phi) # problem svängar
   dtheta = phi
 
   xn = x + dx
@@ -210,7 +210,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
   # Ensure grid compatibility
   x0, y0 = start_center(x0, y0, resolution)
   xt, yt = start_center(xt, yt, resolution)
-  # print(xt, yt)
+  print(xt, yt)
 
   start_node = Plan_node(x0, y0, theta0) 
   start_node.h = np.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2))
@@ -234,7 +234,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
        
     if reached_target(current_node.x, current_node.y, xt, yt, resolution):
       path=[]
-      # print(current_node.x, current_node.y)
+      print(current_node.x, current_node.y)
 
       while current_node:
           path.append((current_node.x, current_node.y)) #, current_node.phi))
@@ -281,8 +281,8 @@ def main2():
 
   x0 = 0.1 # start x position
   y0 = 0.1 # start y position
-  xt = 0.5 # target x position
-  yt = 0.5 # target y position
+  xt = 0.4 # target x position
+  yt = 0.6 # target y position
 
   # Mark the start (x0, y0) and goal (xt, yt) points with green (value 50)
   start_x_index = int(x0 * 100)
@@ -290,13 +290,13 @@ def main2():
   goal_x_index = int(xt * 100)
   goal_y_index = int(yt * 100)
 
-  # # Add some custom patterns or corridors
-  # for i in range(10, 60):
-  #   grid[i, 20:30] = 100  # Add vertical wall
-  # for i in range(50, 70):
-  #   grid[70:80, i] = 100  # Add horizontal wall
+  # Add some custom patterns or corridors
+  for i in range(0, 80):
+    grid[i, 20:30] = 100  # Add vertical wall
+  for i in range(20, 50):
+    grid[70:80, i] = 100  # Add horizontal wall
 
-  # Add random obstacles inside the room
+  # # Add random obstacles inside the room
   # num_obstacles = int((100 * 100) * 0.3)
   # obstacle_positions = np.random.choice(100 * 100, num_obstacles, replace=False)
 
@@ -331,8 +331,8 @@ def main2():
   plt.imshow(grid, cmap=cmap, norm=norm, interpolation='nearest')
 
   # Plot start and goal as green points
-  plt.scatter(start_x_index, start_y_index, c='green', marker='o', s=50, label=f"Start ({start_x_index}, {start_y_index})")
-  plt.scatter(goal_x_index, goal_y_index, c='green', marker='o', s=50, label=f"Goal ({goal_x_index}, {goal_y_index})")
+  plt.scatter(start_y_index, start_x_index, c='green', marker='o', s=50, label=f"Start ({start_x_index}, {start_y_index})")
+  plt.scatter(goal_y_index, goal_x_index, c='green', marker='o', s=50, label=f"Goal ({goal_x_index}, {goal_y_index})")
 
   plt.gca().invert_yaxis()
   
