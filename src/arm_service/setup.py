@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'pickup'
+package_name = 'arm_service'
 
 setup(
     name=package_name,
@@ -13,15 +13,16 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='group1',
-    maintainer_email='group1@todo.todo',
-    description='TODO: Package description',
+    maintainer='robot',
+    maintainer_email='dharas@kth.se',
+    description='Arm serrvice',
     license='MIT',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'pickup = pickup.pickup:main'
-
+            'arm_service = arm_service.arm_service:main',
+            'arm_client = arm_service.arm_client:main', 
+            'test = arm_service.testrun:main',
         ],
     },
 )

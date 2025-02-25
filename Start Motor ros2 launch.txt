@@ -38,3 +38,8 @@ USE THIS TO RUN EVERYTHING:
 Rosbag:
 	ros2 bag record -o Test1 --all
 	ros2 bag play --read-ahead-queue-size 100 -r 1.0 --start-paused "bag name"
+	
+Arm action:
+	Server: ros2 run arm_action_py arm_action_server
+	Client: ros2 run arm_action_py arm_action_client
+
