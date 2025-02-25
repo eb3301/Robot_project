@@ -30,29 +30,24 @@ class Planner(Node):
     # Publish the planned path
     self.path_pub = self.create_publisher(Path, "/planned_path", 10)
 
-    # Prealocation
-    self.obsticales = []
-    self.resolution = 0
-
     # Robot pose coordnates
-    self.x0 = 0.25
-    self.y0 = 0.25
+    self.x0 = 0.1
+    self.y0 = 0.1
     self.theta0 = 0
 
     # Target coordinates
-    self.xt = 0.75
-    self.yt = 0.75
+    self.xt = 0.9
+    self.yt = 0.9
 
   def map_callback(self, msg : OccupancyGrid):
     map_data = msg.data
-    self.resolution = msg.info.resolution
-       
-    # self.obsticales = self.find_obstacles(map_data, grid_size, self.resolution)
+    map_data = np.reshape(map_data, (msg.info.height, msg.info.width))
+    resolution = msg.info.resolution
 
-    path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, self.resolution)
+    path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, resolution)
     message = Path()
     message.header.stamp = self.get_clock().now().to_msg()
-    message.header.frame_id = 'map'
+    message.header.frame_id = 'odom'
     for i, pose in enumerate(path):
       pose_msg = PoseStamped()
       pose_msg.header.stamp = message.header.stamp
@@ -60,12 +55,12 @@ class Planner(Node):
       # Set the position and orientation (phi in your case)
       pose_msg.pose.position.x = pose[0]
       pose_msg.pose.position.y = pose[1]
-      # # Convert the orientation from phi (heading) to a quaternion
-      # quaternion = quaternion_from_euler(0, 0, pose[2])  # Use phi as the yaw angle
-      # pose_msg.pose.orientation.x = quaternion[0]
-      # pose_msg.pose.orientation.y = quaternion[1]
-      # pose_msg.pose.orientation.z = quaternion[2]
-      # pose_msg.pose.orientation.w = quaternion[3]
+      # Convert the orientation from phi (heading) to a quaternion
+      quaternion = quaternion_from_euler(0, 0, pose[2])  # Use phi as the yaw angle
+      pose_msg.pose.orientation.x = quaternion[0]
+      pose_msg.pose.orientation.y = quaternion[1]
+      pose_msg.pose.orientation.z = quaternion[2]
+      pose_msg.pose.orientation.w = quaternion[3]
       
       message.poses.append(pose_msg)
 
@@ -83,23 +78,9 @@ class Planner(Node):
     self.yt = msg.pose.position.y
 
   def compute_heading(self, orientation):
-        x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
-        _, _, yaw = euler_from_quaternion((x, y, z, w))
-        return yaw
-  
-  def find_obstacles(self, map_data, grid_size, resolution):
-    obstacles = []
-    
-    for index, value in enumerate(map_data):
-        if value == 100:  # Check if the cell is an obstacle (value 100)
-            # Convert index to (x, y) coordinates
-            x = index // grid_size
-            y = index % grid_size
-            radius = resolution
-            obstacles.append((x, y, radius))
-    
-    return obstacles
-  
+    x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
+    _, _, yaw = euler_from_quaternion((x, y, z, w))
+    return yaw
   
 
 class Plan_node(object):
@@ -112,6 +93,7 @@ class Plan_node(object):
     self.g = 0  # Travel cost
     self.h = 0  # Distance cost
     self.f = 0  # Total cost
+    self.c = 0  # Cost of kernel
     self.feasible = True
 
 
@@ -139,10 +121,12 @@ def start_center(x, y, resolution):
 
 
 def step(x, y, theta, phi, resolution):
+  # Take a one cell step
   dx = resolution * np.cos(theta + phi)
   dy = resolution * np.sin(theta + phi)
   dtheta = phi
 
+  # New cell positions
   xn = x + dx
   yn = y + dy
   thetan = (dtheta + theta) % (2 * np.pi)
@@ -157,8 +141,8 @@ def step_collided_with_obsticale(obsticales, x, y, resolution):
     
 
 def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions):
-
-  if directions == 4: # only grid coordinates
+  # Get steering angles, only grid coordinates
+  if directions == 4:
     steer_angels = [-np.pi/2, 0, np.pi/2, np.pi]
   else:
     steer_angels = [-np.pi/2, 0, np.pi/2]
@@ -170,7 +154,7 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
     thetan = current_node.theta
     feasible = True
 
-    # Take steps in the best direction
+    # Take steps in the direction of travel
     for i in range(steps):
       xn, yn, thetan = step(xn, yn, thetan, phi, resolution)
             
@@ -178,17 +162,23 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
         feasible = False
         break
     
+    # Calculate new node
     new_node = Plan_node(xn, yn, thetan)
     new_node_key = (new_node.x, new_node.y)
         
     if new_node_key not in closed_set:
       if not feasible:
+        # If node in obsticle
         new_node.feasible = False
         closed_set[new_node_key] = new_node 
       else:
+        # Cost functions
         new_node.g = current_node.g + resolution #+ math.sqrt((new_node.x - current_node.x)**2 + (new_node.y - current_node.y)**2) # change to Mahalanobis distance
         new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2)) # np.abs(new_node.x - xt) + np.abs(new_node.y - yt)
-        new_node.f = new_node.g + new_node.h * 2
+        x_index, y_index = find_cell_index(xn, yn, resolution) 
+        new_node.c = obsticales[x_index, y_index]
+        new_node.f = new_node.g + new_node.h * 2 + new_node.c
+        
         new_node.parent = current_node
         new_node.phi = phi
         open_set[new_node_key] = new_node
@@ -204,45 +194,48 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
   # Ensure grid compatibility
   x0, y0 = start_center(x0, y0, resolution)
   xt, yt = start_center(xt, yt, resolution)
-  # print(xt, yt)
 
+  # Start node
   start_node = Plan_node(x0, y0, theta0) 
   start_node.h = np.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2)) # np.abs(start_node.x - xt) + np.abs(start_node.y - yt) #
   start_node.f = start_node.g + start_node.h * 2
   start_node_key = (start_node.x, start_node.y)
   
-  # Innit and preallocate
+  # Innit and preallocate lists
   open_set = dict()
   closed_set = dict()
-    
+  
+  # Put in the start node in the open list
   open_set[start_node_key] = start_node
 
   # For avalible paths
   while open_set:
+    # Find and take out the lowest cost node
     current_node_key = min(open_set, key=lambda node: open_set[node].f)
     current_node = open_set[current_node_key]
-
     del open_set[current_node_key]
-       
+    
+    # Add visited nodes
     closed_set[current_node_key] = current_node
        
     if reached_target(current_node.x, current_node.y, xt, yt, resolution):
       path=[]
-      # print(current_node.x, current_node.y)
-
+      
+      # Take out hte path
       while current_node:
-          path.append((current_node.x, current_node.y)) #, current_node.phi))
+          path.append((current_node.x, current_node.y, current_node.theta))
           current_node = current_node.parent
       path.pop(-1) # The robots position, should be included?
-      print('Path found')
       return path[::-1]
 
+    # For the start, explore all directions
     if start == 0:
       directions = 4
       start = 1
     else:
       directions = 3
 
+    # Get new nodes
     get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions)
 
 
@@ -253,11 +246,11 @@ def main2():
   grid[-1, :] = 100
   grid[:, 0] = 100
   grid[:, -1] = 100
-  # grid.flatten().tolist()
+  # grid = grid.flatten().tolist()
 
   x0 = 0.1 # start x position
   y0 = 0.1 # start y position
-  xt = 0.1 # target x position
+  xt = 0.9 # target x position
   yt = 0.9 # target y position
 
   # Mark the start (x0, y0) and goal (xt, yt) points with green (value 50)
@@ -290,8 +283,9 @@ def main2():
     print("No possible path")
   else:
     # Plot path
+    print('Path found')
     for node in path:
-      (x,y) = node
+      (x,y, theta) = node
       x_index = int(x * 100)
       y_index = int(y * 100)
       grid[x_index, y_index] = 5
