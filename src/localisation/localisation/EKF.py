@@ -28,40 +28,32 @@ class EKF_Algorithm(Node):
         self.pose_pub = self.create_publisher(PoseWithCovarianceStamped, '/ekf_pose', 10)
         self.create_subscription(
             Encoders, '/motor/encoders', self.odom_callback, 10)
-        self.imu_sub = self.create_subscription(Imu, '/imu/data_raw', self.imu_callback,10)
-        self.OdomPath_pub = self.create_publisher(Path, 'odom_path', 10)
+        self.imu_sub = self.create_subscription(Imu, '/imu/data_raw', self.imu_callback, 10)
         self.ekfPath_pub = self.create_publisher(Path, 'EKF_Path', 10)
+        self.odom_path_pub = self.create_publisher(Path, '/odom_path', 10)
 
         #TF2
         self.tf_buffer = tf2_ros.Buffer()
-        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self, spin_thread = True)
         self._tf_broadcaster = TransformBroadcaster(self)
 
         # Timers
-        self.ICP_timer = self.create_timer(1, self.ICP_update)
         self.pub_timer = self.create_timer(0.1, self.publish_pose)
-        self.broadcast_timer = self.create_timer(0.1, self.broadcast_transform)
 
-        # KF Parameters
+        # EKF Parameters
         self.ekf = EKF(dim_x =3, dim_z = 3) # x: state, z: measurement 
         self.ekf.x = np.array([0.0, 0.0, 0.0]) # Initial state
+        self.ekf.P = np.diag([1e-4, 1e-4, 1e-4]) # Initial Uncertainty
 
-        self.ekf.F = np.eye(3) # Transition Matrix (Jacobian of motion model)
-        self.ekf.H = np.eye(3) # Meausrement model
-         
-        self.ekf.P = np.eye(3) * 0.1# Covariance matrix
-        self.ekf.Q = np.diag([0.08, 0.08, 0.08]) # Odom noise
-        self.ekf.R = np.eye(3) * 0.1 # Measurement noise
-        
         # Paths
-        self.odom_path = Path()
         self.ekf_path = Path()
+        self.odom_path = Path()
+        self.odom_pose = np.array([0.0, 0.0, 0.0])
 
-        #Time
+        # Time
         self.time = rclpy.time.Time()
-
         self.imu_counter = 0
-
+        self.test = 0
         self.get_logger().info("Initialised EKF node...")
 
 
@@ -93,22 +85,36 @@ class EKF_Algorithm(Node):
  
         if dt > 0.0:
             yaw = self.ekf.x[2]
+            odom_yaw = self.odom_pose[2]
 
             # Update states
             self.ekf.x[0] += v*np.cos(yaw)
             self.ekf.x[1] += v*np.sin(yaw)
             self.ekf.x[2] += w
+
+            self.odom_pose[0] += v*np.cos(odom_yaw)
+            self.odom_pose[1] += v*np.sin(odom_yaw)
+            self.odom_pose[2] += w
+
             self.time = t
+            
+
 
             # Update transition matrix
             self.ekf.F = np.array([[1, 0,-v * np.sin(yaw) * dt],
                                    [0, 1, v * np.cos(yaw) * dt],
                                    [0, 0, 1                   ]])
+            
+            # Set noise to 3% of distance traveled
+            self.ekf.Q = np.diag([0.03 * v**2, 0.03 * v**2, 0.003 * w**2])
 
-            self.publish_odom_path(msg.header.stamp)
+
             # Perform prediction step
             self.ekf.predict()
     
+            self.publish_odom_path(t, self.odom_pose[0], self.odom_pose[1], self.odom_pose[2])
+            self.broadcast_transform(t, self.ekf.x[0], self.ekf.x[1], self.ekf.x[2])
+
 
     def imu_callback(self, msg: Imu):
         '''Run update step using IMU orientaiton. Imu publishes with freq 250 hz'''
@@ -123,6 +129,8 @@ class EKF_Algorithm(Node):
         # Orientation and corresponding covariance
         q = msg.orientation
         cov = msg.orientation_covariance 
+        if cov[8] != 0:
+            self.get_logger().info('TEst')
 
         if cov[0] == -1.0:
             return
@@ -143,16 +151,16 @@ class EKF_Algorithm(Node):
         # Transform to quarternion
         final_q = q2_rot.as_quat()
 
-        yaw = self.compute_heading(final_q)
+        yaw_offset = 0.5248198502591641
+        yaw = self.compute_heading(final_q) + yaw_offset
+
+        # if self.test < 10:
+        #     self.get_logger().info(f'yaw: {yaw}')
+        #     self.test += 1
 
         z_obs = np.array([yaw]) # Measured pose
 
-        # Noise -- 0 Covariance leads to singular values
-        if cov[8] == 0:
-            cov_yaw = 0.05
-        else:
-            cov_yaw = cov[8]
-        R_imu = np.array([[cov_yaw]]) * 0.1 # Noise -- Adapt
+        R_imu = np.array([[0.01]]) # Noise -- Adapt
     
         self.ekf.update(z_obs, # measurement
                         HJacobian = self.imu_jacobian, # measurement jacobian
@@ -169,68 +177,6 @@ class EKF_Algorithm(Node):
         return H
 
 
-    def ICP_update(self):
-        '''Perform update step based on transform from ICP algorithm'''
-        try:
-
-            # Lookup Transform
-            tf_future = self.tf_buffer.wait_for_transform_async(
-                target_frame = "map",
-                source_frame = "odom",
-                time = rclpy.time.Time()
-            )
-            
-            rclpy.spin_until_future_complete(self, tf_future, timeout_sec = 1)
-
-            icp_tf = self.tf_buffer.lookup_transform(
-                "map",  
-                'odom', 
-                time = rclpy.time.Time(),
-                timeout = rclpy.duration.Duration(seconds=0.1)
-            )
-            
-            # Convert current pose to type: Pose()
-            pose = Pose()
-            pose.position.x, pose.position.y, pose.position.z = self.ekf.x[0], self.ekf.x[1], 0.0
-            qx, qy, qz, qw = quaternion_from_euler(0.0, 0.0, self.ekf.x[2])
-            pose.orientation.x, pose.orientation.y = qx, qy 
-            pose.orientation.z, pose.orientation.w = qz, qw
-
-            # Transform pose based on ICP transform
-            icp_pose = tf2_geometry_msgs.do_transform_pose(pose, icp_tf)        
-
-            # Extract observed measurements
-            x_obs = icp_pose.position.x
-            y_obs = icp_pose.position.y
-            theta_obs = self.compute_heading(icp_pose.orientation)
-
-            z_obs = np.array([x_obs, y_obs, theta_obs]) # Measured pose
-
-            R_icp = np.eye(3) * 0.4 # Noise -- Adapt
-
-            # Perform EKF update step
-
-            self.ekf.update(z_obs, # measurement
-                            HJacobian = self.JacobianICP, # measurement jacobian
-                            Hx = self.ICP_measurement, # Prediction
-                            R = R_icp, # Noise model
-                            residual = np.subtract) # residual function(z_obs - z_pred)
-
-        except TransformException as ex:
-            self.get_logger().info(
-                f'Could not transform {'odom'} to {"map"}: {ex}')
-
-    
-    def ICP_measurement(self, x):
-        '''Returns expected pose at time of measurement update'''
-        return x
-    
-
-    def JacobianICP(self, x):
-        '''Return Jacobian for ICP measurement function'''
-        return np.eye(3)
-
-
     def publish_pose(self):
         '''Publish estimated pose with corresponding covariance'''
         # Current pose
@@ -239,7 +185,7 @@ class EKF_Algorithm(Node):
         # Create message
         pose_msg = PoseWithCovarianceStamped()
         pose_msg.header.stamp = self.time.to_msg()
-        pose_msg.header.frame_id = 'map'
+        pose_msg.header.frame_id = 'odom'
 
         # Set Position
         pose_msg.pose.pose.position.x = x
@@ -268,29 +214,29 @@ class EKF_Algorithm(Node):
         self.ekf_path.poses.append(PathPose) 
 
         self.ekf_path.header.stamp = self.time.to_msg()
-        self.ekf_path.header.frame_id = 'map'
+        self.ekf_path.header.frame_id = 'odom'
         self.ekfPath_pub.publish(self.ekf_path) 
          
         self.pose_pub.publish(pose_msg)
         
 
-    def broadcast_transform(self):
+    def broadcast_transform(self, time, x, y, yaw):
         """Takes a 2D pose and broadcasts it as a ROS transform. """
         t = TransformStamped()
-        t.header.stamp = self.time.to_msg()
+        t.header.stamp = time.to_msg()
         t.header.frame_id = 'odom'
         t.child_frame_id = 'base_link'
 
         # The robot only exists in 2D, thus we set x and y translation
         # coordinates and set the z coordinate to 0
-        t.transform.translation.x = self.ekf.x[0]
-        t.transform.translation.y = self.ekf.x[1]
-        t.transform.translation.z = self.ekf.x[2]
+        t.transform.translation.x = x
+        t.transform.translation.y = y
+        t.transform.translation.z = 0.0
 
         # For the same reason, the robot can only rotate around one axis
         # and this why we set rotation in x and y to 0 and obtain
         # rotation in z axis from the message
-        q = quaternion_from_euler(0.0, 0.0, self.ekf.x[2])
+        q = quaternion_from_euler(0.0, 0.0, yaw)
         t.transform.rotation.x = q[0]
         t.transform.rotation.y = q[1]
         t.transform.rotation.z = q[2]
@@ -300,35 +246,27 @@ class EKF_Algorithm(Node):
         self._tf_broadcaster.sendTransform(t)
 
 
-    def publish_odom_path(self, stamp):
-        """Takes a 2D pose appends it to the path and publishes the whole path.
+    def publish_odom_path(self, time, x, y, yaw):
+        '''Publishes odometry path'''
 
-        Keyword arguments:
-        stamp -- timestamp of the transform
-        x -- x coordinate of the 2D pose
-        y -- y coordinate of the 2D pose
-        yaw -- yaw of the 2D pose (in radians)
-        """
-
-        self.odom_path.header.stamp = stamp
+        self.odom_path.header.stamp = time.to_msg()
         self.odom_path.header.frame_id = 'odom'
 
         pose = PoseStamped()
         pose.header = self.odom_path.header
 
-        pose.pose.position.x = self.ekf.x[0]
-        pose.pose.position.y = self.ekf.x[1]
+        pose.pose.position.x = x
+        pose.pose.position.y = y
         pose.pose.position.z = 0.01  # 1cm up so it will be above ground level
 
-        q = quaternion_from_euler(0.0, 0.0, self.ekf.x[2])
+        q = quaternion_from_euler(0.0, 0.0, yaw)
         pose.pose.orientation.x = q[0]
         pose.pose.orientation.y = q[1]
         pose.pose.orientation.z = q[2]
         pose.pose.orientation.w = q[3]
 
         self.odom_path.poses.append(pose)
-        self.OdomPath_pub.publish(self.odom_path)
-
+        self.odom_path_pub.publish(self.odom_path)
 
 
     def compute_heading(self, orientation):

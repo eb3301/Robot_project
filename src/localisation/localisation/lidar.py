@@ -29,8 +29,7 @@ class LidarNode(Node):
             '/scan',
             self.listener_callback,
             10)
-        self.subscription  # prevent unused variable warning
-
+        
         # Initialize the transform buffer
         self.tf_buffer = Buffer()
 
@@ -68,7 +67,7 @@ class LidarNode(Node):
         elapsed_time =  time - self.start_time
         
 
-        to_frame_rel = 'odom'
+        to_frame_rel = 'map'
         from_frame_rel = msg.header.frame_id
 
         # Create a transform between LiDAR and to base_link
@@ -92,7 +91,7 @@ class LidarNode(Node):
         tf_future = self.tf_buffer.wait_for_transform_async(
             target_frame=to_frame_rel,
             source_frame=from_frame_rel,
-            time=time 
+            time=rclpy.time.Time()
         )
 
         # Spin until transform found or `timeout_sec` seconds has passed
@@ -102,8 +101,8 @@ class LidarNode(Node):
             t = self.tf_buffer.lookup_transform(
                 to_frame_rel,
                 from_frame_rel,
-                time)
-                # timeout=rclpy.duration.Duration(seconds=1.0))
+                rclpy.time.Time(),
+                timeout=rclpy.duration.Duration(seconds=1.0))
         except TransformException as ex:
             self.get_logger().info(
                 f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')

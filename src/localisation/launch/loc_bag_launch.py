@@ -13,7 +13,7 @@ def generate_launch_description():
 
         #Start Rviz (LiDAR also starts rviz so probably not needed....)
         ExecuteProcess(
-            cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/group1//dd2419_ws/src/robp_robot/robp_launch/rviz/default.rviz'],
+            cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/robot/dd2419_ws/src/localisation/launch/rviz/loc.rviz'],
             output='screen',
             name='rviz'
         ),
@@ -47,19 +47,19 @@ def generate_launch_description():
             name='base_to_rs_d435i'
         ),
         
-        # Static broadcaster
-        # ExecuteProcess(
-        #     cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher', '--frame-id', 'map', '--child-frame-id', 'odom'],
-        #     output='screen',
-        #     name='static_transform_broadcaster'
-        # ),
-
-        #Lidar node
+        #Static broadcaster: LiDAR - base_link
         ExecuteProcess(
-            cmd=['ros2', 'run', 'localisation', 'lidar'],
+            cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher','--x', '0.0', '--y', '0.1', '--z', '0.1', '--frame-id', 'base_link', '--child-frame-id', 'lidar_link'],
             output='screen',
-            name='lidar_node'
+            name='baselink_to_lidar'
         ),
+
+        # #Lidar node
+        # ExecuteProcess(
+        #     cmd=['ros2', 'run', 'localisation', 'lidar'],
+        #     output='screen',
+        #     name='lidar_node'
+        # ),
 
         #EKF Node
         ExecuteProcess(
