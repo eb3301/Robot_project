@@ -1,9 +1,0 @@
-{
-  "package_name": "drive_base_msgs",
-  "non_idl_tuples": [
-    "/home/group1/dd2419_ws/src/uros/drive_base/drive_base_msgs:msg/CommandHeader.msg",
-    "/home/group1/dd2419_ws/src/uros/drive_base/drive_base_msgs:msg/BaseInfo.msg",
-    "/home/group1/dd2419_ws/src/uros/drive_base/drive_base_msgs:msg/CommandStatus.msg",
-    "/home/group1/dd2419_ws/src/uros/drive_base/drive_base_msgs:msg/TRVCommand.msg"
-  ]
-}

@@ -1,0 +1,10 @@
+# Ignore build files
+build/
+log/
+install/
+*.env
+bags/
+
+# Ignore Python cache
+__pycache__/
+*.pyc

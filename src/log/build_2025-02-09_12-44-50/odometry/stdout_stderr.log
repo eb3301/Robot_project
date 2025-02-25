@@ -1,0 +1,35 @@
+running egg_info
+creating ../build/odometry/odometry.egg-info
+writing ../build/odometry/odometry.egg-info/PKG-INFO
+writing dependency_links to ../build/odometry/odometry.egg-info/dependency_links.txt
+writing entry points to ../build/odometry/odometry.egg-info/entry_points.txt
+writing requirements to ../build/odometry/odometry.egg-info/requires.txt
+writing top-level names to ../build/odometry/odometry.egg-info/top_level.txt
+writing manifest file '../build/odometry/odometry.egg-info/SOURCES.txt'
+reading manifest file '../build/odometry/odometry.egg-info/SOURCES.txt'
+writing manifest file '../build/odometry/odometry.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/robot/dd2419_ws/src/build/odometry/build
+creating /home/robot/dd2419_ws/src/build/odometry/build/lib
+creating /home/robot/dd2419_ws/src/build/odometry/build/lib/odometry
+copying odometry/__init__.py -> /home/robot/dd2419_ws/src/build/odometry/build/lib/odometry
+copying odometry/odometry.py -> /home/robot/dd2419_ws/src/build/odometry/build/lib/odometry
+running install
+running install_lib
+creating /home/robot/dd2419_ws/src/install/odometry/lib/python3.12/site-packages/odometry
+copying /home/robot/dd2419_ws/src/build/odometry/build/lib/odometry/__init__.py -> /home/robot/dd2419_ws/src/install/odometry/lib/python3.12/site-packages/odometry
+copying /home/robot/dd2419_ws/src/build/odometry/build/lib/odometry/odometry.py -> /home/robot/dd2419_ws/src/install/odometry/lib/python3.12/site-packages/odometry
+byte-compiling /home/robot/dd2419_ws/src/install/odometry/lib/python3.12/site-packages/odometry/__init__.py to __init__.cpython-312.pyc
+byte-compiling /home/robot/dd2419_ws/src/install/odometry/lib/python3.12/site-packages/odometry/odometry.py to odometry.cpython-312.pyc
+running install_data
+creating /home/robot/dd2419_ws/src/install/odometry/share/ament_index
+creating /home/robot/dd2419_ws/src/install/odometry/share/ament_index/resource_index
+creating /home/robot/dd2419_ws/src/install/odometry/share/ament_index/resource_index/packages
+copying resource/odometry -> /home/robot/dd2419_ws/src/install/odometry/share/ament_index/resource_index/packages
+copying package.xml -> /home/robot/dd2419_ws/src/install/odometry/share/odometry
+running install_egg_info
+Copying ../build/odometry/odometry.egg-info to /home/robot/dd2419_ws/src/install/odometry/lib/python3.12/site-packages/odometry-0.0.0-py3.12.egg-info
+running install_scripts
+Installing odometry script to /home/robot/dd2419_ws/src/install/odometry/lib/odometry
+writing list of installed files to '/home/robot/dd2419_ws/src/build/odometry/install.log'

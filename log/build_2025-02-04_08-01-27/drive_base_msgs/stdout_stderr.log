@@ -1,8 +1,0 @@
-[  1%] Built target drive_base_msgs__rosidl_generator_type_description
-[  3%] Built target drive_base_msgs__cpp
-[ 25%] Built target drive_base_msgs__rosidl_generator_c
-failed to create symbolic link '/home/group1/dd2419_ws/build/drive_base_msgs/ament_cmake_python/drive_base_msgs/drive_base_msgs' because existing path cannot be removed: Is a directory
-gmake[2]: *** [CMakeFiles/ament_cmake_python_symlink_drive_base_msgs.dir/build.make:70: CMakeFiles/ament_cmake_python_symlink_drive_base_msgs] Error 1
-gmake[1]: *** [CMakeFiles/Makefile2:452: CMakeFiles/ament_cmake_python_symlink_drive_base_msgs.dir/all] Error 2
-gmake[1]: *** Waiting for unfinished jobs....
-gmake: *** [Makefile:146: all] Error 2

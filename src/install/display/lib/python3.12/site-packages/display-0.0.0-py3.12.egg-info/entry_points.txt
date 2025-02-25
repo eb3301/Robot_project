@@ -1,0 +1,2 @@
+[console_scripts]
+display = display.display:main

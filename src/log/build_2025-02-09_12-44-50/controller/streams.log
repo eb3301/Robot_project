@@ -1,0 +1,37 @@
+[2.164s] Invoking command in '/home/robot/dd2419_ws/src/controller': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/src/build/controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/src/install/controller/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/controller build --build-base /home/robot/dd2419_ws/src/build/controller/build install --record /home/robot/dd2419_ws/src/build/controller/install.log --single-version-externally-managed install_data
+[2.445s] running egg_info
+[2.445s] creating ../build/controller/controller.egg-info
+[2.470s] writing ../build/controller/controller.egg-info/PKG-INFO
+[2.470s] writing dependency_links to ../build/controller/controller.egg-info/dependency_links.txt
+[2.471s] writing entry points to ../build/controller/controller.egg-info/entry_points.txt
+[2.471s] writing requirements to ../build/controller/controller.egg-info/requires.txt
+[2.471s] writing top-level names to ../build/controller/controller.egg-info/top_level.txt
+[2.472s] writing manifest file '../build/controller/controller.egg-info/SOURCES.txt'
+[2.527s] reading manifest file '../build/controller/controller.egg-info/SOURCES.txt'
+[2.529s] writing manifest file '../build/controller/controller.egg-info/SOURCES.txt'
+[2.529s] running build
+[2.529s] running build_py
+[2.529s] creating /home/robot/dd2419_ws/src/build/controller/build
+[2.529s] creating /home/robot/dd2419_ws/src/build/controller/build/lib
+[2.530s] creating /home/robot/dd2419_ws/src/build/controller/build/lib/controller
+[2.530s] copying controller/controller.py -> /home/robot/dd2419_ws/src/build/controller/build/lib/controller
+[2.541s] copying controller/__init__.py -> /home/robot/dd2419_ws/src/build/controller/build/lib/controller
+[2.541s] running install
+[2.549s] running install_lib
+[2.586s] creating /home/robot/dd2419_ws/src/install/controller/lib/python3.12/site-packages/controller
+[2.586s] copying /home/robot/dd2419_ws/src/build/controller/build/lib/controller/controller.py -> /home/robot/dd2419_ws/src/install/controller/lib/python3.12/site-packages/controller
+[2.593s] copying /home/robot/dd2419_ws/src/build/controller/build/lib/controller/__init__.py -> /home/robot/dd2419_ws/src/install/controller/lib/python3.12/site-packages/controller
+[2.593s] byte-compiling /home/robot/dd2419_ws/src/install/controller/lib/python3.12/site-packages/controller/controller.py to controller.cpython-312.pyc
+[2.594s] byte-compiling /home/robot/dd2419_ws/src/install/controller/lib/python3.12/site-packages/controller/__init__.py to __init__.cpython-312.pyc
+[2.598s] running install_data
+[2.598s] creating /home/robot/dd2419_ws/src/install/controller/share/ament_index
+[2.598s] creating /home/robot/dd2419_ws/src/install/controller/share/ament_index/resource_index
+[2.598s] creating /home/robot/dd2419_ws/src/install/controller/share/ament_index/resource_index/packages
+[2.598s] copying resource/controller -> /home/robot/dd2419_ws/src/install/controller/share/ament_index/resource_index/packages
+[2.598s] copying package.xml -> /home/robot/dd2419_ws/src/install/controller/share/controller
+[2.598s] running install_egg_info
+[2.637s] Copying ../build/controller/controller.egg-info to /home/robot/dd2419_ws/src/install/controller/lib/python3.12/site-packages/controller-0.0.0-py3.12.egg-info
+[2.637s] running install_scripts
+[2.790s] Installing controller script to /home/robot/dd2419_ws/src/install/controller/lib/controller
+[2.790s] writing list of installed files to '/home/robot/dd2419_ws/src/build/controller/install.log'
+[2.849s] Invoked command in '/home/robot/dd2419_ws/src/controller' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/robot/dd2419_ws/src/build/controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/robot/dd2419_ws/src/install/controller/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/controller build --build-base /home/robot/dd2419_ws/src/build/controller/build install --record /home/robot/dd2419_ws/src/build/controller/install.log --single-version-externally-managed install_data

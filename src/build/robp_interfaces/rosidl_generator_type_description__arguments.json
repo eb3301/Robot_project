@@ -1,0 +1,12 @@
+{
+  "package_name": "robp_interfaces",
+  "output_dir": "/home/robot/dd2419_ws/src/build/robp_interfaces/rosidl_generator_type_description/robp_interfaces",
+  "idl_tuples": [
+    "/home/robot/dd2419_ws/src/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/DutyCycles.idl",
+    "/home/robot/dd2419_ws/src/build/robp_interfaces/rosidl_adapter/robp_interfaces:msg/Encoders.idl"
+  ],
+  "include_paths": [
+    "std_msgs:/opt/ros/jazzy/share/std_msgs",
+    "builtin_interfaces:/opt/ros/jazzy/share/builtin_interfaces"
+  ]
+}
