@@ -38,10 +38,10 @@ class EKF_Algorithm(Node):
         self._tf_broadcaster = TransformBroadcaster(self)
 
         # Timers
-        self.pub_timer = self.create_timer(0.1, self.publish_pose)
+       # self.pub_timer = self.create_timer(0.1, self.publish_pose)
 
         # EKF Parameters
-        self.ekf = EKF(dim_x =3, dim_z = 3) # x: state, z: measurement 
+        self.ekf = EKF(dim_x =3, dim_z = 1) # x: state, z: measurement 
         self.ekf.x = np.array([0.0, 0.0, 0.0]) # Initial state
         self.ekf.P = np.diag([1e-4, 1e-4, 1e-4]) # Initial Uncertainty
 
@@ -51,26 +51,30 @@ class EKF_Algorithm(Node):
         self.odom_pose = np.array([0.0, 0.0, 0.0])
 
         # Time
-        self.time = rclpy.time.Time()
+        self.time = None
         self.imu_counter = 0
-        self.test = 0
+
+        # None
+        self.yaw_offset = None
+        self.imu_yaw = 0
+
         self.get_logger().info("Initialised EKF node...")
 
 
     def odom_callback(self, msg: Encoders):
         '''Prediction step based on encoders'''
         # The kinematic parameters for the differential configuration
-        dt = 50 / 1000
         t = rclpy.time.Time().from_msg(msg.header.stamp)
-
-        # First time it is called, only update time
-        if self.time.nanoseconds == 0.0:
-                self.time = t
-                return
+        
+        if self.time is None:
+            self.time = t
+            return
+        else: 
+            dt = (t - self.time).nanoseconds * 1e-9
         
         ticks_per_rev = 48 * 64
-        wheel_radius = 0.04915 # 0.04921
-        base = 0.31 # 0.30
+        wheel_radius = 0.045 # 9.6cm
+        base = 0.27 # 29.7cm 
 
         # Ticks since last message
         delta_ticks_left = msg.delta_encoder_left
@@ -79,61 +83,49 @@ class EKF_Algorithm(Node):
         K = 1/ticks_per_rev * 2*np.pi
         
         # Control Parameters
-        v = wheel_radius/2 * (K*delta_ticks_right + K*delta_ticks_left) 
-        w = wheel_radius/base * (K*delta_ticks_right - K*delta_ticks_left)
+        v = wheel_radius / 2 * (K * delta_ticks_right + K*delta_ticks_left) 
+        w = wheel_radius / base * (K * delta_ticks_right - K * delta_ticks_left)
 
- 
-        if dt > 0.0:
+        if dt > 0:
             yaw = self.ekf.x[2]
             odom_yaw = self.odom_pose[2]
 
-            # Update states
-            self.ekf.x[0] += v*np.cos(yaw)
-            self.ekf.x[1] += v*np.sin(yaw)
-            self.ekf.x[2] += w
+            # # Update states
+            self.ekf.x[0] += v*np.cos(yaw) 
+            self.ekf.x[1] += v*np.sin(yaw) 
+            self.ekf.x[2] += w 
 
-            self.odom_pose[0] += v*np.cos(odom_yaw)
-            self.odom_pose[1] += v*np.sin(odom_yaw)
-            self.odom_pose[2] += w
-
+            self.odom_pose[0] += v*np.cos(odom_yaw) 
+            self.odom_pose[1] += v*np.sin(odom_yaw) 
+            self.odom_pose[2] += w 
             self.time = t
             
+            # Set noise to 1% of distance traveled
+            self.ekf.Q = np.diag([0.01 * v**2, 0.01 * v**2, 0.01 * w**2])
+
+            # Update step
+            #self.imu_update(self.imu_yaw)
 
 
-            # Update transition matrix
-            self.ekf.F = np.array([[1, 0,-v * np.sin(yaw) * dt],
-                                   [0, 1, v * np.cos(yaw) * dt],
-                                   [0, 0, 1                   ]])
-            
-            # Set noise to 3% of distance traveled
-            self.ekf.Q = np.diag([0.03 * v**2, 0.03 * v**2, 0.003 * w**2])
-
-
-            # Perform prediction step
-            self.ekf.predict()
-    
-            self.publish_odom_path(t, self.odom_pose[0], self.odom_pose[1], self.odom_pose[2])
             self.broadcast_transform(t, self.ekf.x[0], self.ekf.x[1], self.ekf.x[2])
+            self.publish_pose(self.ekf.x[0], self.ekf.x[1], self.ekf.x[2])
+            self.publish_odom_path(t, self.odom_pose[0], self.odom_pose[1], self.odom_pose[2])
+            
+
+            
 
 
     def imu_callback(self, msg: Imu):
-        '''Run update step using IMU orientaiton. Imu publishes with freq 250 hz'''
-        # Change freq to 50 hz       
-        if self.imu_counter != 5:
-            self.imu_counter += 1 
-            return
-
+        '''Run update step using IMU orientaiton. Imu publishes with freq 250 hz'''   
+    # #Change freq to 50 hz       
+        # if self.imu_counter != 5:
+        #     self.imu_counter += 1 
+        #     return
+        # self.imu_counter= 0
         '''Process imu data and perform update step '''
-        t = rclpy.time.Time().from_msg(msg.header.stamp)
 
         # Orientation and corresponding covariance
         q = msg.orientation
-        cov = msg.orientation_covariance 
-        if cov[8] != 0:
-            self.get_logger().info('TEst')
-
-        if cov[0] == -1.0:
-            return
 
         # Transform data to correct orientation
         q = np.array([msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w])
@@ -151,13 +143,16 @@ class EKF_Algorithm(Node):
         # Transform to quarternion
         final_q = q2_rot.as_quat()
 
-        yaw_offset = 0.5248198502591641
-        yaw = self.compute_heading(final_q) + yaw_offset
+        # Calculate imu offset
+        if self.yaw_offset is None:
+            self.yaw_offset = self.compute_heading(final_q)
 
-        # if self.test < 10:
-        #     self.get_logger().info(f'yaw: {yaw}')
-        #     self.test += 1
+        yaw = self.compute_heading(final_q) - self.yaw_offset
+        
+        self.imu_update(yaw)
 
+    def imu_update(self, yaw):
+        
         z_obs = np.array([yaw]) # Measured pose
 
         R_imu = np.array([[0.01]]) # Noise -- Adapt
@@ -166,19 +161,27 @@ class EKF_Algorithm(Node):
                         HJacobian = self.imu_jacobian, # measurement jacobian
                         Hx = self.imu_model, # Prediction
                         R = R_imu, # Noise model
-                        residual = np.subtract) # residual function(z_obs - z_pred)
+                        residual = self.angle_residual) # residual function(z_obs - z_pred)
+        
 
     def imu_model(self, x):
-        return np.array([x[2]])
+        return np.array([self.ekf.x[2]])
     
     def imu_jacobian(self, x):
         H = np.zeros((1,3))
         H[0, 2] = 1
         return H
+    
+    def angle_residual(self, a, b):
+        res = a - b
+        return (res + np.pi) % (2 * np.pi) - np.pi
 
 
-    def publish_pose(self):
+    def publish_pose(self, x, y, theta):
         '''Publish estimated pose with corresponding covariance'''
+        if self.time is None:
+            return
+
         # Current pose
         x, y, theta = self.ekf.x[0], self.ekf.x[1], self.ekf.x[2]
         
@@ -278,7 +281,6 @@ class EKF_Algorithm(Node):
             _, _, yaw = euler_from_quaternion((x, y, z, w))
             return yaw
 
-    
 
 
 def main():
