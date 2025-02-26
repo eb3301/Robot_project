@@ -1,9 +1,9 @@
 CMakeFiles/sllidar_node.dir/sdk/src/dataunpacker/unpacker/handler_hqnode.cpp.o: \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/handler_hqnode.cpp \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/handler_hqnode.cpp \
  /usr/include/stdc-predef.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/../dataunnpacker_commondef.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/sdkcommon.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/arch/linux/arch_linux.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/../dataunnpacker_commondef.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/sdkcommon.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/arch/linux/arch_linux.h \
  /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
@@ -216,40 +216,40 @@ CMakeFiles/sllidar_node.dir/sdk/src/dataunpacker/unpacker/handler_hqnode.cpp.o: 
  /usr/include/asm-generic/ioctl.h \
  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
  /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/arch/linux/timer.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/types.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/types.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/assert.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/arch/linux/timer.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/types.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/types.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/assert.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar.h \
  /usr/include/c++/13/vector /usr/include/c++/13/bits/stl_uninitialized.h \
  /usr/include/c++/13/bits/stl_vector.h \
  /usr/include/c++/13/bits/stl_bvector.h \
  /usr/include/c++/13/bits/vector.tcc \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_protocol.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_protocol.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_types.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_protocol.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_protocol.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_types.h \
  /usr/include/c++/13/cstdint \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_cmd.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_driver.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_driver.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_cmd.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_cmd.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/rplidar_driver.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_lidar_driver.h \
  /usr/include/c++/13/map /usr/include/c++/13/bits/stl_tree.h \
  /usr/include/c++/13/ext/aligned_buffer.h \
  /usr/include/c++/13/bits/node_handle.h \
  /usr/include/c++/13/bits/stl_map.h \
  /usr/include/c++/13/bits/stl_multimap.h \
  /usr/include/c++/13/bits/erase_if.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/util.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/abs_rxtx.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/thread.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/assert.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/locker.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/socket.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/event.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/waiter.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/byteorder.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/byteops.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_crc.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/util.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/abs_rxtx.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/thread.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/assert.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/locker.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/socket.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/event.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/waiter.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/byteorder.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/src/hal/byteops.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/./sdk/include/sl_crc.h \
  /usr/include/c++/13/algorithm /usr/include/c++/13/bits/stl_algo.h \
  /usr/include/c++/13/bits/algorithmfwd.h \
  /usr/include/c++/13/bits/stl_heap.h \
@@ -268,7 +268,7 @@ CMakeFiles/sllidar_node.dir/sdk/src/dataunpacker/unpacker/handler_hqnode.cpp.o: 
  /usr/include/c++/13/bits/atomic_lockfree_defines.h \
  /usr/include/c++/13/backward/auto_ptr.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/../dataupacker_namespace.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/../dataunpacker.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/../dataunnpacker_internal.h \
- /home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/handler_hqnode.h
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/../dataupacker_namespace.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/../dataunpacker.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/../dataunnpacker_internal.h \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/sllidar_ros2/sdk/src/dataunpacker/unpacker/handler_hqnode.h

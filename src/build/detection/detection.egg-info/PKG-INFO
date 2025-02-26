@@ -1,7 +1,13 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.2
 Name: detection
 Version: 0.0.0
 Summary: TODO: Package description
 Maintainer: group1
 Maintainer-email: group1@todo.todo
 License: MIT
+Requires-Dist: setuptools
+Dynamic: license
+Dynamic: maintainer
+Dynamic: maintainer-email
+Dynamic: requires-dist
+Dynamic: summary

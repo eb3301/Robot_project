@@ -17,6 +17,7 @@ from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
 class Timestamp(Node):
 
     def __init__(self):
+
         super().__init__('timestamp')
 
         self.publisher = self.create_publisher(PointCloud2, '/lidar', 10)
@@ -26,6 +27,7 @@ class Timestamp(Node):
             '/scan',
             self.listener_callback,
             10)
+        
         self.subscription  # prevent unused variable warning
 
         # Initialize the transform buffer

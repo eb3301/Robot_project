@@ -3,7 +3,7 @@
 
 # Relative path conversion top directories.
 set(CMAKE_RELATIVE_PATH_TOP_SOURCE "/opt/ros/jazzy/src/gtest_vendor")
-set(CMAKE_RELATIVE_PATH_TOP_BINARY "/home/robot/dd2419_ws/src/build/usb_cam")
+set(CMAKE_RELATIVE_PATH_TOP_BINARY "/home/kristoffer-germalm/dd2419_ws/src/build/usb_cam")
 
 # Force unix paths in dependencies.
 set(CMAKE_FORCE_UNIX_PATHS 1)

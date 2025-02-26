@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/robot/dd2419_ws/src/robp_robot/robp_interfaces
+CMAKE_SOURCE_DIR = /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_interfaces
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/robot/dd2419_ws/src/build/robp_interfaces
+CMAKE_BINARY_DIR = /home/kristoffer-germalm/dd2419_ws/src/build/robp_interfaces
 
 # Utility rule file for robp_interfaces.
 
@@ -66,8 +66,8 @@ include CMakeFiles/robp_interfaces.dir/compiler_depend.make
 # Include the progress variables for this target.
 include CMakeFiles/robp_interfaces.dir/progress.make
 
-CMakeFiles/robp_interfaces: /home/robot/dd2419_ws/src/robp_robot/robp_interfaces/msg/DutyCycles.msg
-CMakeFiles/robp_interfaces: /home/robot/dd2419_ws/src/robp_robot/robp_interfaces/msg/Encoders.msg
+CMakeFiles/robp_interfaces: /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_interfaces/msg/DutyCycles.msg
+CMakeFiles/robp_interfaces: /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_interfaces/msg/Encoders.msg
 CMakeFiles/robp_interfaces: /opt/ros/jazzy/share/std_msgs/msg/Bool.idl
 CMakeFiles/robp_interfaces: /opt/ros/jazzy/share/std_msgs/msg/Byte.idl
 CMakeFiles/robp_interfaces: /opt/ros/jazzy/share/std_msgs/msg/ByteMultiArray.idl
@@ -112,6 +112,6 @@ CMakeFiles/robp_interfaces.dir/clean:
 .PHONY : CMakeFiles/robp_interfaces.dir/clean
 
 CMakeFiles/robp_interfaces.dir/depend:
-	cd /home/robot/dd2419_ws/src/build/robp_interfaces && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robot/dd2419_ws/src/robp_robot/robp_interfaces /home/robot/dd2419_ws/src/robp_robot/robp_interfaces /home/robot/dd2419_ws/src/build/robp_interfaces /home/robot/dd2419_ws/src/build/robp_interfaces /home/robot/dd2419_ws/src/build/robp_interfaces/CMakeFiles/robp_interfaces.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/kristoffer-germalm/dd2419_ws/src/build/robp_interfaces && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_interfaces /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_interfaces /home/kristoffer-germalm/dd2419_ws/src/build/robp_interfaces /home/kristoffer-germalm/dd2419_ws/src/build/robp_interfaces /home/kristoffer-germalm/dd2419_ws/src/build/robp_interfaces/CMakeFiles/robp_interfaces.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/robp_interfaces.dir/depend
 

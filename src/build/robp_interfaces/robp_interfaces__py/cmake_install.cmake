@@ -1,8 +1,8 @@
-# Install script for directory: /home/robot/dd2419_ws/src/build/robp_interfaces/robp_interfaces__py
+# Install script for directory: /home/kristoffer-germalm/dd2419_ws/src/build/robp_interfaces/robp_interfaces__py
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/robot/dd2419_ws/src/install/robp_interfaces")
+  set(CMAKE_INSTALL_PREFIX "/home/kristoffer-germalm/dd2419_ws/src/install/robp_interfaces")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

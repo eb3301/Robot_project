@@ -1,2 +1,3 @@
 [console_scripts]
 detection = detection.detection:main
+obj_detection = detection.obj_detection:main

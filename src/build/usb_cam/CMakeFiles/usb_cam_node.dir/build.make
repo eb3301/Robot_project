@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/robot/dd2419_ws/src/robp_robot/usb_cam
+CMAKE_SOURCE_DIR = /home/kristoffer-germalm/dd2419_ws/src/robp_robot/usb_cam
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/robot/dd2419_ws/src/build/usb_cam
+CMAKE_BINARY_DIR = /home/kristoffer-germalm/dd2419_ws/src/build/usb_cam
 
 # Include any dependencies generated for this target.
 include CMakeFiles/usb_cam_node.dir/depend.make
@@ -70,18 +70,18 @@ include CMakeFiles/usb_cam_node.dir/progress.make
 include CMakeFiles/usb_cam_node.dir/flags.make
 
 CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o: CMakeFiles/usb_cam_node.dir/flags.make
-CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o: /home/robot/dd2419_ws/src/robp_robot/usb_cam/src/usb_cam_node.cpp
+CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o: /home/kristoffer-germalm/dd2419_ws/src/robp_robot/usb_cam/src/usb_cam_node.cpp
 CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o: CMakeFiles/usb_cam_node.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/robot/dd2419_ws/src/build/usb_cam/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o -MF CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o.d -o CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o -c /home/robot/dd2419_ws/src/robp_robot/usb_cam/src/usb_cam_node.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kristoffer-germalm/dd2419_ws/src/build/usb_cam/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o -MF CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o.d -o CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.o -c /home/kristoffer-germalm/dd2419_ws/src/robp_robot/usb_cam/src/usb_cam_node.cpp
 
 CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/robot/dd2419_ws/src/robp_robot/usb_cam/src/usb_cam_node.cpp > CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kristoffer-germalm/dd2419_ws/src/robp_robot/usb_cam/src/usb_cam_node.cpp > CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.i
 
 CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/robot/dd2419_ws/src/robp_robot/usb_cam/src/usb_cam_node.cpp -o CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kristoffer-germalm/dd2419_ws/src/robp_robot/usb_cam/src/usb_cam_node.cpp -o CMakeFiles/usb_cam_node.dir/src/usb_cam_node.cpp.s
 
 # Object files for target usb_cam_node
 usb_cam_node_OBJECTS = \
@@ -114,22 +114,18 @@ libusb_cam_node.so: /opt/ros/jazzy/lib/libcomposition_interfaces__rosidl_typesup
 libusb_cam_node.so: /opt/ros/jazzy/lib/libcomposition_interfaces__rosidl_generator_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_srvs__rosidl_typesupport_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_srvs__rosidl_generator_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_fastrtps_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_fastrtps_cpp.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_introspection_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_introspection_cpp.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_generator_py.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_fastrtps_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_fastrtps_cpp.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_introspection_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_introspection_cpp.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_cpp.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_generator_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_cpp.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_generator_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libmessage_filters.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libcamera_info_manager.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/librclcpp_lifecycle.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/librcl_lifecycle.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/liblifecycle_msgs__rosidl_typesupport_fastrtps_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/liblifecycle_msgs__rosidl_typesupport_introspection_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/liblifecycle_msgs__rosidl_typesupport_fastrtps_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/liblifecycle_msgs__rosidl_typesupport_introspection_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/liblifecycle_msgs__rosidl_typesupport_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/liblifecycle_msgs__rosidl_generator_py.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/liblifecycle_msgs__rosidl_typesupport_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/liblifecycle_msgs__rosidl_generator_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librclcpp.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/liblibstatistics_collector.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librcl.so
@@ -150,13 +146,6 @@ libusb_cam_node.so: /opt/ros/jazzy/lib/librcl_interfaces__rosidl_typesupport_cpp
 libusb_cam_node.so: /opt/ros/jazzy/lib/librcl_interfaces__rosidl_generator_py.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librcl_interfaces__rosidl_typesupport_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librcl_interfaces__rosidl_generator_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_fastrtps_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_introspection_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_fastrtps_cpp.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_introspection_cpp.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_cpp.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_generator_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librcl_yaml_param_parser.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librosgraph_msgs__rosidl_typesupport_fastrtps_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librosgraph_msgs__rosidl_typesupport_fastrtps_cpp.so
@@ -176,14 +165,26 @@ libusb_cam_node.so: /opt/ros/jazzy/lib/libstatistics_msgs__rosidl_typesupport_c.
 libusb_cam_node.so: /opt/ros/jazzy/lib/libstatistics_msgs__rosidl_generator_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libtracetools.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librcl_logging_interface.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_fastrtps_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_fastrtps_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_introspection_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_introspection_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_generator_py.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_fastrtps_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_introspection_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_fastrtps_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_introspection_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_fastrtps_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_fastrtps_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_introspection_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_introspection_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_typesupport_fastrtps_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_typesupport_fastrtps_cpp.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_typesupport_introspection_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_typesupport_introspection_cpp.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_typesupport_cpp.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_generator_py.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_typesupport_c.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_generator_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librosidl_typesupport_fastrtps_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libbuiltin_interfaces__rosidl_typesupport_introspection_c.so
@@ -195,10 +196,20 @@ libusb_cam_node.so: /opt/ros/jazzy/lib/libfastcdr.so.2.2.5
 libusb_cam_node.so: /opt/ros/jazzy/lib/libbuiltin_interfaces__rosidl_typesupport_introspection_cpp.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librosidl_typesupport_introspection_cpp.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librosidl_typesupport_introspection_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libbuiltin_interfaces__rosidl_generator_py.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_typesupport_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libbuiltin_interfaces__rosidl_typesupport_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_generator_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_typesupport_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libservice_msgs__rosidl_generator_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_typesupport_cpp.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_typesupport_cpp.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libbuiltin_interfaces__rosidl_typesupport_cpp.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librosidl_typesupport_cpp.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libbuiltin_interfaces__rosidl_generator_py.so
-libusb_cam_node.so: /opt/ros/jazzy/lib/libbuiltin_interfaces__rosidl_typesupport_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libgeometry_msgs__rosidl_generator_c.so
+libusb_cam_node.so: /opt/ros/jazzy/lib/libstd_msgs__rosidl_generator_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/libbuiltin_interfaces__rosidl_generator_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librosidl_typesupport_c.so
 libusb_cam_node.so: /opt/ros/jazzy/lib/librcpputils.so
@@ -260,7 +271,7 @@ libusb_cam_node.so: /usr/lib/x86_64-linux-gnu/libopencv_photo.so.4.6.0
 libusb_cam_node.so: /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.6.0
 libusb_cam_node.so: /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.6.0
 libusb_cam_node.so: CMakeFiles/usb_cam_node.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/robot/dd2419_ws/src/build/usb_cam/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX shared library libusb_cam_node.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/kristoffer-germalm/dd2419_ws/src/build/usb_cam/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX shared library libusb_cam_node.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/usb_cam_node.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -272,6 +283,6 @@ CMakeFiles/usb_cam_node.dir/clean:
 .PHONY : CMakeFiles/usb_cam_node.dir/clean
 
 CMakeFiles/usb_cam_node.dir/depend:
-	cd /home/robot/dd2419_ws/src/build/usb_cam && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robot/dd2419_ws/src/robp_robot/usb_cam /home/robot/dd2419_ws/src/robp_robot/usb_cam /home/robot/dd2419_ws/src/build/usb_cam /home/robot/dd2419_ws/src/build/usb_cam /home/robot/dd2419_ws/src/build/usb_cam/CMakeFiles/usb_cam_node.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/kristoffer-germalm/dd2419_ws/src/build/usb_cam && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/kristoffer-germalm/dd2419_ws/src/robp_robot/usb_cam /home/kristoffer-germalm/dd2419_ws/src/robp_robot/usb_cam /home/kristoffer-germalm/dd2419_ws/src/build/usb_cam /home/kristoffer-germalm/dd2419_ws/src/build/usb_cam /home/kristoffer-germalm/dd2419_ws/src/build/usb_cam/CMakeFiles/usb_cam_node.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/usb_cam_node.dir/depend
 

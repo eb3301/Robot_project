@@ -25,7 +25,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: PointCloud2
+    SyncSource: ""
 Visualization Manager:
   Class: ""
   Displays:
@@ -65,7 +65,7 @@ Visualization Manager:
       Enabled: true
       Name: MarkerArray
       Namespaces:
-        bounding_boxes: true
+        {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -248,6 +248,21 @@ Visualization Manager:
         Value: /edge_points
       Use Fixed Frame: true
       Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/PointStamped
+      Color: 204; 41; 204
+      Enabled: true
+      History Length: 1
+      Name: PointStamped
+      Radius: 0.20000000298023224
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /object_centroids
       Value: true
   Enabled: true
   Global Options:

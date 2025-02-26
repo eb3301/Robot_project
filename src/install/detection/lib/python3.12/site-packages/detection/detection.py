@@ -7,7 +7,7 @@ import numpy as np
 import rclpy
 from rclpy.node import Node
 
-from sensor_msgs.msg import PointCloud2
+from sensor_msgs.msg import PointCloud2, PointField
 import sensor_msgs_py.point_cloud2 as pc2
 from tf2_ros.buffer import Buffer
 from tf2_ros import TransformException
@@ -89,9 +89,26 @@ class Detection(Node):
         
         message = PointCloud2()
         message.header = msg.header
-        message.height = msg.height
+        message.height = 1 # unordered
         message.width = len(objects)
-        message.fields = msg.fields
+        #print(msg.fields)
+        # x_field = PointField()
+        # x_field.name = 'x'
+        # x_field.point_step = 0
+        # x_field.row_step = PointField.FLOAT32
+        # x_field.data = 1
+        # fields = [
+        #     PointField(name='x', 0, PointField.FLOAT32, 1),
+        #     PointField('y', 4, PointField.FLOAT32, 1),
+        #     PointField('z', 8, PointField.FLOAT32, 1),
+        #     PointField('r', 12, PointField.UINT8, 1),
+        #     PointField('g', 13, PointField.UINT8, 1),
+        #     PointField('b', 14, PointField.UINT8, 1),
+        #     PointField('intensity', 15, PointField.FLOAT32, 1)
+        # ]
+
+
+        message.fields = msg.fields # PointField msg
 
         message.is_bigendian = False
         message.point_step = 16
@@ -107,10 +124,13 @@ class Detection(Node):
             green = int(color[i][1] * 255)  # Convert back to 0-255 range
             blue = int(color[i][2] * 255)  # Convert back to 0-255 range
 
+            # message_data.append(struct.pack('B', red))  # Red channel
+            # message_data.append(struct.pack('B', green))  # Green channel
+            # message_data.append(struct.pack('B', blue))  # Blue channel
+
             packed_color = (red << 24) | (green << 16) | (blue << 8) | 255
-            # packed_float = struct.pack('>l', packed_color)
-            # intensity = struct.unpack('>f', packed_float)[0]
-            message_data.append(struct.pack('f', packed_color)) 
+            intensity = float(sum(color[i]))  # Just an example; you can use another formula for intensity
+            message_data.append(struct.pack('f', intensity))
         
         message.data = b''.join(message_data)
 

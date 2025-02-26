@@ -9,7 +9,12 @@ setup.py
 ../build/detection/detection.egg-info/top_level.txt
 ../build/detection/detection.egg-info/zip-safe
 detection/__init__.py
+detection/canny_edge_detection.py
 detection/detection.py
+detection/obj_2dimage.py
+detection/obj_detection.py
+detection/obj_detection_edge.py
+detection/tesing_stuff.py
 resource/detection
 test/test_copyright.py
 test/test_flake8.py

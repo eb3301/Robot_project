@@ -1,1 +1,0 @@
-/home/kristoffer-germalm/dd2419_ws/build/robp_phidgets_spatial/ament_cmake_environment_hooks/local_setup.zsh
