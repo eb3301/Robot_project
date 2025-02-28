@@ -18,7 +18,7 @@ class WheelController(Node):
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
 
         # Create a timer to send duty cycles at a regular interval
-        self.timer = self.create_timer(0.5.publish_duty_cycles)  # 2 Hz Frequency
+        self.timer = self.create_timer(0.5, self.publish_duty_cycles)  # 2 Hz Frequency
 
         # Initialize some variables for the robot's movement
         self.vel_x = 0.0 # Default linear velocity

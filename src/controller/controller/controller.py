@@ -20,6 +20,7 @@ class Controller(Node):
         self.create_subscription(
             Joy, '/joy', self.joy_callback, 10)
         
+        # Publish to cmd_vel topic
         self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
 
 
@@ -32,15 +33,23 @@ class Controller(Node):
         max_vel = 0.5 #m/s 
         max_rot = 0.25 # rad/s
         vel = np.sqrt(joy_vel_x**2 + joy_vel_y**2)
-        vel_x = joy_vel_x / vel * max_vel
-        vel_y = joy_vel_y / vel * max_vel
+
+        if vel != 0:
+            vel_x = joy_vel_x / vel * max_vel
+            vel_y = joy_vel_y / vel * max_vel
+        else:
+            vel_x = 0
+            vel_y = 0
+
         if np.abs(joy_vel_y) >= 0.95:
             rot = max_rot
             vel_x = 0
             vel_y = 0
         else:
             rot = 0
-
+            
+        print(vel_x)
+        print(vel_y)
         # Create Twist msg
         cmd_msg = Twist()
         cmd_msg.linear.x = vel_x

@@ -5,13 +5,9 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import PointCloud2, PointField
 import sensor_msgs_py.point_cloud2 as pc2
-<<<<<<< HEAD
-# from sklearn.cluster import DBSCAN
-=======
 from sklearn.cluster import DBSCAN
 
 from scipy.spatial import ConvexHull
->>>>>>> 5c01b5c107272f43c0f8c801245487c9f1acbfc2
 
 
 class Detection(Node):
