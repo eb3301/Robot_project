@@ -34,12 +34,12 @@ def generate_launch_description():
             name='odometry_node'
         ),
 
-        # Start wheel control
-        ExecuteProcess(
-            cmd=['ros2', 'run', 'steering', 'wheel_control'],
-            output='screen',
-            name='wheel_control_node'
-        ),
+        # # Start wheel control
+        # ExecuteProcess(
+        #     cmd=['ros2', 'run', 'steering', 'wheel_control'],
+        #     output='screen',
+        #     name='wheel_control_node'
+        # ),
 
         # # Start camera
         # ExecuteProcess(
