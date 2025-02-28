@@ -25,36 +25,41 @@ class Controller(Node):
 
 
     def joy_callback(self, msg: Joy):
-        # Joy stick returns float in [-1,1]
+        # Joystick returns float in [-1, 1]
         joy_vel_x = msg.axes[3]
         joy_vel_y = msg.axes[2] 
+
+        # Robot paramters
+        wheel_radius = 0.04915 # m
+        base = 0.31 # m
         
-        # Transform joy stick reading to velocity
-        max_vel = 0.5 #m/s 
-        max_rot = 0.25 # rad/s
-        vel = np.sqrt(joy_vel_x**2 + joy_vel_y**2)
+        # Maximum velocities
+        max_vel = wheel_radius / 2 # m/s
+        max_rot = ((wheel_radius / base) / (np.pi/2)) / 2 # rad/s
 
-        if vel != 0:
-            vel_x = joy_vel_x / vel * max_vel
-            vel_y = joy_vel_y / vel * max_vel
-        else:
-            vel_x = 0
-            vel_y = 0
+        # Calculate raw velocities
+        vel_x = joy_vel_x * max_vel
+        vel_y = joy_vel_y * max_vel
 
-        if np.abs(joy_vel_y) >= 0.95:
-            rot = max_rot
-            vel_x = 0
-            vel_y = 0
+        # Calculate the magnitude of the velocity vector
+        velocity_magnitude = np.sqrt(vel_x**2 + vel_y**2)
+
+        # If the magnitude exceeds max_vel, normalize it
+        if velocity_magnitude > max_vel:
+            vel_x = vel_x / velocity_magnitude * max_vel
+            vel_y = vel_y / velocity_magnitude * max_vel
+
+        # Calculate rotation change
+        if np.abs(vel_x) > 0 or np.abs(vel_y) > 0:
+            rot = np.arctan2(vel_y, vel_x) * max_rot 
         else:
             rot = 0
-            
-        print(vel_x)
-        print(vel_y)
+
         # Create Twist msg
         cmd_msg = Twist()
-        cmd_msg.linear.x = vel_x
-        cmd_msg.linear.y = vel_y
-        cmd_msg.angular.z = rot
+        cmd_msg.linear.x = float(vel_x)
+        cmd_msg.linear.y = float(vel_y)
+        cmd_msg.angular.z = float(rot)
         
         # Publish message
         self.cmd_pub.publish(cmd_msg)

@@ -22,31 +22,37 @@ class WheelController(Node):
 
         # Initialize some variables for the robot's movement
         self.vel_x = 0.0 # Default linear velocity
-        self.vel_y = 0.0 # Default linear velocity
-        self.theta = 0.0 # Default orientation
+        # self.vel_y = 0.0 # Default linear velocity
+        # self.theta = 0.0 # Default orientation
         self.rot_z = 0.0  # Default rotation velocity
 
     def twist_callback(self, msg: Twist):
         # Update linear and rotational velocities based on cmd_vel message
         self.vel_x = msg.linear.x
-        self.vel_y = msg.linear.y
+        # self.vel_y = msg.linear.y
         self.rot_z = msg.angular.z
-        self.theta = np.arctan(self.vel_y / self.vel_x)
 
     def publish_duty_cycles(self):
         # Given parameters
         wheel_radius = 0.04915 # 0.04921
         base = 0.31 # 0.30
 
-        # Steer geometry, from velocity to wheel velocity
-        u_w = self.vel_x / (wheel_radius * np.cos(self.theta))
+        # # Steer geometry, from velocity to wheel velocity
+        # if np.abs(self.vel_x) > 0 or np.abs(self.vel_y) > 0:
+        #     self.theta = np.arctan2(self.vel_y, self.vel_x)
+
+        u_w = self.vel_x / (wheel_radius)
         u_phi = self.rot_z * base / wheel_radius 
+        # print(u_w)
+        # print(u_phi)
 
         # Wheel angular velocity
-        w_l = u_w - u_phi/2
-        w_r = u_w + u_phi/2 
-        print(w_l)
-        print(w_r)
+        w_l = u_w + u_phi/2
+        w_r = u_w - u_phi/2
+
+        # print(w_l)
+        # print(w_r)
+        # print('------')
 
         # Create message
         duty_cycles_msg = DutyCycles()
