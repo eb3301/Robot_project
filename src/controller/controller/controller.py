@@ -4,15 +4,14 @@ import rclpy
 from rclpy.node import Node
 
 from tf2_ros import TransformBroadcaster
-#from tf_transformations import quaternion_from_euler, euler_from_quaternion
-
 from sensor_msgs.msg import Joy
-from robp_interfaces.msg import DutyCycles
+from geometry_msgs.msg import Twist
+import numpy as np
 
 class Controller(Node):
 
     def __init__(self):
-        super().__init__('controller')
+        super().__init__('Joy_Controller')
         
         # Initialize the transform broadcaster
         self._tf_broadcaster = TransformBroadcaster(self)
@@ -21,41 +20,35 @@ class Controller(Node):
         self.create_subscription(
             Joy, '/joy', self.joy_callback, 10)
         
-        # self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
+        self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
 
-        self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
 
     def joy_callback(self, msg: Joy):
-
+        # Joy stick returns float in [-1,1]
+        joy_vel_x = msg.axes[3]
+        joy_vel_y = msg.axes[2] 
         
-        header = msg.header
-
-        #Joy stick returns float in [-1,1]
-        joy_vel = msg.axes[3]
-        joy_rot = msg.axes[2] 
-        
-        rot = abs(joy_rot)
-
-        #Transform joy stick reading to velocity
+        # Transform joy stick reading to velocity
         max_vel = 0.5 #m/s 
-        
-        vel = joy_vel * max_vel
-
-        #Create DutyCycles msg
-        duty_cycles_msg = DutyCycles()
-
-        duty_cycles_msg.header = header
-        if joy_rot > 0: 
-            duty_cycles_msg.duty_cycle_left = vel * rot
-            duty_cycles_msg.duty_cycle_right = vel * (1 - rot)
-        elif joy_rot < 0:
-            duty_cycles_msg.duty_cycle_right = vel * rot
-            duty_cycles_msg.duty_cycle_left = vel * (1 - rot)
+        max_rot = 0.25 # rad/s
+        vel = np.sqrt(joy_vel_x**2 + joy_vel_y**2)
+        vel_x = joy_vel_x / vel * max_vel
+        vel_y = joy_vel_y / vel * max_vel
+        if np.abs(joy_vel_y) >= 0.95:
+            rot = max_rot
+            vel_x = 0
+            vel_y = 0
         else:
-            duty_cycles_msg.duty_cycle_right = vel
-            duty_cycles_msg.duty_cycle_left = vel
+            rot = 0
 
-        self.duty_pub.publish(duty_cycles_msg)
+        # Create Twist msg
+        cmd_msg = Twist()
+        cmd_msg.linear.x = vel_x
+        cmd_msg.linear.y = vel_y
+        cmd_msg.angular.z = rot
+        
+        # Publish message
+        self.cmd_pub.publish(cmd_msg)
 
 def main():
     rclpy.init()
