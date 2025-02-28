@@ -9,7 +9,7 @@ import numpy as np
 class WheelController(Node):
 
     def __init__(self):
-        super().__init__("Wheel_Controller")   
+        super().__init__("Wheel_Controller") 
 
         # Create subscription to /cmd_vel for Twist messages
         self.cmd_vel_sub = self.create_subscription(Twist, '/cmd_vel', self.twist_callback, 10)
@@ -18,34 +18,41 @@ class WheelController(Node):
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
 
         # Create a timer to send duty cycles at a regular interval
-        self.timer = self.create_timer(0.4, self.publish_duty_cycles)  # 10Hz frequency
+        self.timer = self.create_timer(0.5.publish_duty_cycles)  # 2 Hz Frequency
 
         # Initialize some variables for the robot's movement
-        self.linear_vel = 0.0 # Default linear velocity
-        self.rot = 0.0  # Default rotation velocity
+        self.vel_x = 0.0 # Default linear velocity
+        self.vel_y = 0.0 # Default linear velocity
+        self.theta = 0.0 # Default orientation
+        self.rot_z = 0.0  # Default rotation velocity
 
     def twist_callback(self, msg: Twist):
         # Update linear and rotational velocities based on cmd_vel message
-        self.linear_vel = msg.linear.x
-        self.rot = msg.angular.z
+        self.vel_x = msg.linear.x
+        self.vel_y = msg.linear.y
+        self.rot_z = msg.angular.z
+        self.theta = np.arctan(self.vel_y / self.vel_x)
 
     def publish_duty_cycles(self):
+        # Given parameters
+        wheel_radius = 0.04915 # 0.04921
+        base = 0.31 # 0.30
+
+        # Steer geometry, from velocity to wheel velocity
+        u_w = self.vel_x / (wheel_radius * np.cos(self.theta))
+        u_phi = self.rot_z * base / wheel_radius 
+
+        # Wheel angular velocity
+        w_l = u_w - u_phi/2
+        w_r = u_w + u_phi/2 
+        print(w_l)
+        print(w_r)
+
+        # Create message
         duty_cycles_msg = DutyCycles()
-        
-        rot_speed = 0.08
-        binary_rot = self.rot
-        
-        
-        if binary_rot == 0.0:
-            # Move straight
-            duty_cycles_msg.duty_cycle_left = self.linear_vel
-            duty_cycles_msg.duty_cycle_right = self.linear_vel
-        elif binary_rot == -1:
-            duty_cycles_msg.duty_cycle_left = rot_speed
-            duty_cycles_msg.duty_cycle_right = -rot_speed
-        elif binary_rot == 1:
-            duty_cycles_msg.duty_cycle_left = -rot_speed
-            duty_cycles_msg.duty_cycle_right = rot_speed
+              
+        duty_cycles_msg.duty_cycle_left = w_l
+        duty_cycles_msg.duty_cycle_right = w_r
 
         # Publish the duty cycle message to control motors
         self.duty_pub.publish(duty_cycles_msg)
