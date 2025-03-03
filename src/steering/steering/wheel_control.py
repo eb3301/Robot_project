@@ -18,18 +18,20 @@ class WheelController(Node):
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
 
         # Create a timer to send duty cycles at a regular interval
-        self.timer = self.create_timer(0.5, self.publish_duty_cycles)  # 2 Hz Frequency
+        self.timer = self.create_timer(0.2, self.publish_duty_cycles)  # 5 Hz Frequency
 
         # Initialize some variables for the robot's movement
         self.vel_x = 0.0 # Default linear velocity
         # self.vel_y = 0.0 # Default linear velocity
         # self.theta = 0.0 # Default orientation
         self.rot_z = 0.0  # Default rotation velocity
+        self.max_factor = 0.0 # Dedault max factor
 
     def twist_callback(self, msg: Twist):
         # Update linear and rotational velocities based on cmd_vel message
         self.vel_x = msg.linear.x
         # self.vel_y = msg.linear.y
+        self.max_factor = msg.linear.z
         self.rot_z = msg.angular.z
 
     def publish_duty_cycles(self):
@@ -43,30 +45,30 @@ class WheelController(Node):
 
         u_w = self.vel_x / (wheel_radius)
         u_phi = self.rot_z * base / wheel_radius 
-        if np.abs(u_phi) >= 0.5:
+        if np.abs(u_phi) >= self.max_factor:
             if u_phi >= 0:
-                u_phi = 1 - u_phi
+                u_phi = 2*self.max_factor - u_phi
             if u_phi < 0:
-                u_phi = 1 + u_phi 
-        # print(u_w)
-        # print(u_phi)
+                u_phi = -(2*self.max_factor + u_phi)
+        print(u_w)
+        print(u_phi)
 
         # Wheel angular velocity
         w_l = u_w + u_phi/2
         w_r = u_w - u_phi/2
 
-        # print(w_l)
-        # print(w_r)
-        # print('------')
+        print(w_l)
+        print(w_r)
+        print('------')
 
-        # Create message
-        duty_cycles_msg = DutyCycles()
+        # # Create message
+        # duty_cycles_msg = DutyCycles()
               
-        duty_cycles_msg.duty_cycle_left = w_l
-        duty_cycles_msg.duty_cycle_right = w_r
+        # duty_cycles_msg.duty_cycle_left = w_l
+        # duty_cycles_msg.duty_cycle_right = w_r
 
-        # Publish the duty cycle message to control motors
-        self.duty_pub.publish(duty_cycles_msg)
+        # # Publish the duty cycle message to control motors
+        # self.duty_pub.publish(duty_cycles_msg)
        
 
 def main():

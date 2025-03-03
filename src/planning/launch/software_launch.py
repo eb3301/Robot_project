@@ -6,12 +6,12 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     return LaunchDescription([
-        #Start Rviz
-        ExecuteProcess(
-            cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/robot//dd2419_ws/src/default.rviz'],
-            output='screen',
-            name='rviz'
-        ),
+        # #Start Rviz
+        # ExecuteProcess(
+        #     cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/robot//dd2419_ws/src/default.rviz'],
+        #     output='screen',
+        #     name='rviz'
+        # ),
         
         # Start controller joystick 
         ExecuteProcess(

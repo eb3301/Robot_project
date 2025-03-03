@@ -34,8 +34,9 @@ class Controller(Node):
         base = 0.31 # m
         
         # Maximum velocities
-        max_vel = wheel_radius / 2 # m/s
-        max_rot = ((wheel_radius / base) / (np.pi/2)) / 2 # rad/s
+        max_factor = 1 / 4
+        max_vel = wheel_radius * max_factor # m/s
+        max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
 
         # Calculate raw velocities
         vel_x = joy_vel_x * max_vel
@@ -54,11 +55,12 @@ class Controller(Node):
             rot = np.arctan2(vel_y, vel_x) * max_rot 
         else:
             rot = 0
-        print(rot)
+
         # Create Twist msg
         cmd_msg = Twist()
         cmd_msg.linear.x = float(vel_x)
         cmd_msg.linear.y = float(vel_y)
+        cmd_msg.linear.z = float(max_factor)
         cmd_msg.angular.z = float(rot)
         
         # Publish message
@@ -71,9 +73,7 @@ def main():
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass
-
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
