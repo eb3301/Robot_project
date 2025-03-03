@@ -1,7 +1,13 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.2
 Name: mapping
 Version: 0.0.0
 Summary: TODO: Package description
-Maintainer: group1
-Maintainer-email: dharas@kth.se
-License: MIT
+Maintainer: kristoffer-germalm
+Maintainer-email: kristoffer-germalm@todo.todo
+License: TODO: License declaration
+Requires-Dist: setuptools
+Dynamic: license
+Dynamic: maintainer
+Dynamic: maintainer-email
+Dynamic: requires-dist
+Dynamic: summary

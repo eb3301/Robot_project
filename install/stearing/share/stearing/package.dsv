@@ -1,9 +1,0 @@
-source;share/stearing/hook/pythonpath.ps1
-source;share/stearing/hook/pythonpath.dsv
-source;share/stearing/hook/pythonpath.sh
-source;share/stearing/hook/ament_prefix_path.ps1
-source;share/stearing/hook/ament_prefix_path.dsv
-source;share/stearing/hook/ament_prefix_path.sh
-source;../../build/stearing/share/stearing/hook/pythonpath_develop.ps1
-source;../../build/stearing/share/stearing/hook/pythonpath_develop.dsv
-source;../../build/stearing/share/stearing/hook/pythonpath_develop.sh

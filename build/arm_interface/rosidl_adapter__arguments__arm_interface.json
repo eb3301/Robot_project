@@ -1,6 +1,0 @@
-{
-  "package_name": "arm_interface",
-  "non_idl_tuples": [
-    "/home/group1/dd2419_ws/src/arm_interface:srv/Arm.srv"
-  ]
-}

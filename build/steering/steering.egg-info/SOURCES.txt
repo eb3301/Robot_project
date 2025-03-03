@@ -1,6 +1,13 @@
 package.xml
 setup.cfg
 setup.py
+../../build/steering/steering.egg-info/PKG-INFO
+../../build/steering/steering.egg-info/SOURCES.txt
+../../build/steering/steering.egg-info/dependency_links.txt
+../../build/steering/steering.egg-info/entry_points.txt
+../../build/steering/steering.egg-info/requires.txt
+../../build/steering/steering.egg-info/top_level.txt
+../../build/steering/steering.egg-info/zip-safe
 resource/steering
 steering/__init__.py
 steering/auto_control.py

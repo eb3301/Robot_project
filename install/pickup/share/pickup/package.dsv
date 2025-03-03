@@ -4,3 +4,6 @@ source;share/pickup/hook/pythonpath.sh
 source;share/pickup/hook/ament_prefix_path.ps1
 source;share/pickup/hook/ament_prefix_path.dsv
 source;share/pickup/hook/ament_prefix_path.sh
+source;../../build/pickup/share/pickup/hook/pythonpath_develop.ps1
+source;../../build/pickup/share/pickup/hook/pythonpath_develop.dsv
+source;../../build/pickup/share/pickup/hook/pythonpath_develop.sh

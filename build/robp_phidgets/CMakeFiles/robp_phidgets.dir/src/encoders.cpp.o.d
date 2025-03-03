@@ -1,8 +1,8 @@
 CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o: \
- /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/encoders.cpp \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/encoders.cpp \
  /usr/include/stdc-predef.h \
- /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/include/robp_phidgets/encoders.hpp \
- /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/include/robp_phidgets/encoder.hpp \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/include/robp_phidgets/encoders.hpp \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/include/robp_phidgets/encoder.hpp \
  /opt/ros/jazzy/share/libphidget22/cmake/../../../opt/libphidget22/include/libphidget22/phidget22.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
@@ -592,14 +592,14 @@ CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o: \
  /opt/ros/jazzy/include/rclcpp/rclcpp/node_interfaces/node_base_interface_traits.hpp \
  /opt/ros/jazzy/include/rclcpp/rclcpp/node_interfaces/get_node_clock_interface.hpp \
  /opt/ros/jazzy/include/rclcpp/rclcpp/node_interfaces/node_clock_interface_traits.hpp \
- /home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/encoders.hpp \
- /home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/detail/encoders__struct.hpp \
+ /home/kristoffer-germalm/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/encoders.hpp \
+ /home/kristoffer-germalm/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/detail/encoders__struct.hpp \
  /opt/ros/jazzy/include/std_msgs/std_msgs/msg/detail/header__struct.hpp \
- /home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/detail/encoders__builder.hpp \
- /home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/detail/encoders__traits.hpp \
+ /home/kristoffer-germalm/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/detail/encoders__builder.hpp \
+ /home/kristoffer-germalm/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/detail/encoders__traits.hpp \
  /opt/ros/jazzy/include/std_msgs/std_msgs/msg/detail/header__traits.hpp \
- /home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/detail/encoders__type_support.hpp \
- /home/group1/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/rosidl_generator_cpp__visibility_control.hpp \
+ /home/kristoffer-germalm/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/detail/encoders__type_support.hpp \
+ /home/kristoffer-germalm/dd2419_ws/build/robp_interfaces/rosidl_generator_cpp/robp_interfaces/msg/rosidl_generator_cpp__visibility_control.hpp \
  /opt/ros/jazzy/include/rclcpp/rclcpp/rclcpp.hpp \
  /usr/include/c++/13/csignal /usr/include/signal.h \
  /usr/include/x86_64-linux-gnu/bits/signum-generic.h \

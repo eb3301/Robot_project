@@ -24,14 +24,7 @@ class Detection(Node):
         
         self.get_logger().info(f"Node started")
 
-        self.previous_detections = []
-
-    def is_new_detection(self, center, obj_type, threshold=0.02):
-        """Check if the detected object is new by comparing positions"""
-        for prev_center, prev_type in self.previous_detections:
-            if prev_type == obj_type and np.linalg.norm(np.array(center) - np.array(prev_center)) < threshold:
-                return False  # Object already detected
-        return True
+        self.object_history = {}  # Dictionary to track previous classifications
 
     def cloud_callback(self, msg: PointCloud2):
         """Detects objects using DBSCAN clustering and publishes bounding boxes."""
@@ -73,8 +66,6 @@ class Detection(Node):
             bbox_size = bbox_max - bbox_min
             bbox_center = (bbox_min + bbox_max) / 2
 
-            #self.get_logger().info(f'MMMAAOS {bbox_center}')
-
             # Compute width, height, and depth
             width = bbox_max[0] - bbox_min[0]  # Difference in x (or y, depending on orientation)
             depth = bbox_max[1] - bbox_min[1]  # Difference in y (side view width)
@@ -85,12 +76,14 @@ class Detection(Node):
             normalized_height = height / np.mean(cluster_points[:, 2])
             normalized_depth = depth / np.mean(cluster_points[:, 2])
 
-            # if volume < 0.002:
-            #     self.get_logger().info(f'Detected Objects at {np.mean(cluster_points, axis=0)}')
-            #     classified_labels.append(1)
-            # elif volume < 0.01:
-            #     self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
-            #     classified_labels.append(2)
+
+
+
+
+
+
+
+
 
             obj_type = ""
             if volume < 0.00012:  # Object detected (< 0.002 fluffy + sphere + cube)
@@ -139,13 +132,11 @@ class Detection(Node):
 
             center = np.mean(cluster_points, axis=0)
 
-            self.previous_detections.append((center, obj_type))
-            if self.is_new_detection(center, obj_type):
-                detected_object.x = float(center[0])  
-                detected_object.y = float(center[1])  
-                detected_object.z = float(center[2])  
-                detected_object.label = obj_type  # This should be a string
-                self._detected_object_pub.publish(detected_object)
+            detected_object.x = float(center[0])  
+            detected_object.y = float(center[1])  
+            detected_object.z = float(center[2])  
+            detected_object.label = obj_type  # This should be a string
+            self._detected_object_pub.publish(detected_object)
             
             detected_indices.append(cluster_indices)
 

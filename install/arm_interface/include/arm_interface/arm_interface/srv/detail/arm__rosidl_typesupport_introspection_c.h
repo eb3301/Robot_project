@@ -1,1 +1,0 @@
-/home/group1/dd2419_ws/build/arm_interface/rosidl_typesupport_introspection_c/arm_interface/srv/detail/arm__rosidl_typesupport_introspection_c.h

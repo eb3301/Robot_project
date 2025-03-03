@@ -1,1 +1,0 @@
-/home/group1/dd2419_ws/build/arm_interface/ament_cmake_environment_hooks/local_setup.sh

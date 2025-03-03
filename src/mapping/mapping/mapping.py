@@ -27,7 +27,7 @@ class ObjectMapNode(Node):
         self.map_file = 'map_file.json'
         self.object_map = self.load_map()
 
-        self.get_logger().info("Object Map Node Started!")
+        self.get_logger().info("Object Map Node Started! loool")
 
     def load_map(self):
         """Load the map file if it exists, otherwise return an empty dictionary."""
@@ -68,7 +68,7 @@ class ObjectMapNode(Node):
         # We'll store the label as part of the data in the map
         key = f"{round(object_x, 4)}_{round(object_y, 4)}_{round(object_z, 4)}"
 
-        self.get_logger().info(f"Map saved at: ")
+        self.get_logger().info(f"Object: {object_label} @ ({object_x}, {object_y}, {object_z})")
         if key not in self.object_map:
             self.object_map[key] = {
                 'x': object_x,

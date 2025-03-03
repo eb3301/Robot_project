@@ -1,8 +1,16 @@
 package.xml
 setup.cfg
 setup.py
+../../build/mapping/mapping.egg-info/PKG-INFO
+../../build/mapping/mapping.egg-info/SOURCES.txt
+../../build/mapping/mapping.egg-info/dependency_links.txt
+../../build/mapping/mapping.egg-info/entry_points.txt
+../../build/mapping/mapping.egg-info/requires.txt
+../../build/mapping/mapping.egg-info/top_level.txt
+../../build/mapping/mapping.egg-info/zip-safe
 mapping/__init__.py
 mapping/mapping.py
+mapping/testing.py
 mapping.egg-info/PKG-INFO
 mapping.egg-info/SOURCES.txt
 mapping.egg-info/dependency_links.txt

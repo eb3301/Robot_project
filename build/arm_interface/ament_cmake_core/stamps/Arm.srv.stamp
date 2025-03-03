@@ -1,6 +1,0 @@
-# Goal 
-float32[2] xy
-string obj_class
----
-# result
-bool success

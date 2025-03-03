@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group1/dd2419_ws/src/robp_robot/robp_phidgets
+CMAKE_SOURCE_DIR = /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group1/dd2419_ws/build/robp_phidgets
+CMAKE_BINARY_DIR = /home/kristoffer-germalm/dd2419_ws/build/robp_phidgets
 
 # Include any dependencies generated for this target.
 include CMakeFiles/robp_phidgets.dir/depend.make
@@ -70,102 +70,102 @@ include CMakeFiles/robp_phidgets.dir/progress.make
 include CMakeFiles/robp_phidgets.dir/flags.make
 
 CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o: CMakeFiles/robp_phidgets.dir/flags.make
-CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o: /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/phidgets.cpp
+CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o: /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/phidgets.cpp
 CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o: CMakeFiles/robp_phidgets.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o -c /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/phidgets.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kristoffer-germalm/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.o -c /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/phidgets.cpp
 
 CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/phidgets.cpp > CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/phidgets.cpp > CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.i
 
 CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/phidgets.cpp -o CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/phidgets.cpp -o CMakeFiles/robp_phidgets.dir/src/phidgets.cpp.s
 
 CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o: CMakeFiles/robp_phidgets.dir/flags.make
-CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o: /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/encoder.cpp
+CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o: /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/encoder.cpp
 CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o: CMakeFiles/robp_phidgets.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o -c /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/encoder.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kristoffer-germalm/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/encoder.cpp.o -c /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/encoder.cpp
 
 CMakeFiles/robp_phidgets.dir/src/encoder.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robp_phidgets.dir/src/encoder.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/encoder.cpp > CMakeFiles/robp_phidgets.dir/src/encoder.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/encoder.cpp > CMakeFiles/robp_phidgets.dir/src/encoder.cpp.i
 
 CMakeFiles/robp_phidgets.dir/src/encoder.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robp_phidgets.dir/src/encoder.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/encoder.cpp -o CMakeFiles/robp_phidgets.dir/src/encoder.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/encoder.cpp -o CMakeFiles/robp_phidgets.dir/src/encoder.cpp.s
 
 CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o: CMakeFiles/robp_phidgets.dir/flags.make
-CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o: /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/encoders.cpp
+CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o: /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/encoders.cpp
 CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o: CMakeFiles/robp_phidgets.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o -c /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/encoders.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kristoffer-germalm/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/encoders.cpp.o -c /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/encoders.cpp
 
 CMakeFiles/robp_phidgets.dir/src/encoders.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robp_phidgets.dir/src/encoders.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/encoders.cpp > CMakeFiles/robp_phidgets.dir/src/encoders.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/encoders.cpp > CMakeFiles/robp_phidgets.dir/src/encoders.cpp.i
 
 CMakeFiles/robp_phidgets.dir/src/encoders.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robp_phidgets.dir/src/encoders.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/encoders.cpp -o CMakeFiles/robp_phidgets.dir/src/encoders.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/encoders.cpp -o CMakeFiles/robp_phidgets.dir/src/encoders.cpp.s
 
 CMakeFiles/robp_phidgets.dir/src/motor.cpp.o: CMakeFiles/robp_phidgets.dir/flags.make
-CMakeFiles/robp_phidgets.dir/src/motor.cpp.o: /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/motor.cpp
+CMakeFiles/robp_phidgets.dir/src/motor.cpp.o: /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/motor.cpp
 CMakeFiles/robp_phidgets.dir/src/motor.cpp.o: CMakeFiles/robp_phidgets.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/robp_phidgets.dir/src/motor.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/motor.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/motor.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/motor.cpp.o -c /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/motor.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kristoffer-germalm/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/robp_phidgets.dir/src/motor.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/motor.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/motor.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/motor.cpp.o -c /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/motor.cpp
 
 CMakeFiles/robp_phidgets.dir/src/motor.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robp_phidgets.dir/src/motor.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/motor.cpp > CMakeFiles/robp_phidgets.dir/src/motor.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/motor.cpp > CMakeFiles/robp_phidgets.dir/src/motor.cpp.i
 
 CMakeFiles/robp_phidgets.dir/src/motor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robp_phidgets.dir/src/motor.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/motor.cpp -o CMakeFiles/robp_phidgets.dir/src/motor.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/motor.cpp -o CMakeFiles/robp_phidgets.dir/src/motor.cpp.s
 
 CMakeFiles/robp_phidgets.dir/src/motors.cpp.o: CMakeFiles/robp_phidgets.dir/flags.make
-CMakeFiles/robp_phidgets.dir/src/motors.cpp.o: /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/motors.cpp
+CMakeFiles/robp_phidgets.dir/src/motors.cpp.o: /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/motors.cpp
 CMakeFiles/robp_phidgets.dir/src/motors.cpp.o: CMakeFiles/robp_phidgets.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/robp_phidgets.dir/src/motors.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/motors.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/motors.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/motors.cpp.o -c /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/motors.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kristoffer-germalm/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/robp_phidgets.dir/src/motors.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/motors.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/motors.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/motors.cpp.o -c /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/motors.cpp
 
 CMakeFiles/robp_phidgets.dir/src/motors.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robp_phidgets.dir/src/motors.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/motors.cpp > CMakeFiles/robp_phidgets.dir/src/motors.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/motors.cpp > CMakeFiles/robp_phidgets.dir/src/motors.cpp.i
 
 CMakeFiles/robp_phidgets.dir/src/motors.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robp_phidgets.dir/src/motors.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/motors.cpp -o CMakeFiles/robp_phidgets.dir/src/motors.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/motors.cpp -o CMakeFiles/robp_phidgets.dir/src/motors.cpp.s
 
 CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o: CMakeFiles/robp_phidgets.dir/flags.make
-CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o: /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/spatial.cpp
+CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o: /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/spatial.cpp
 CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o: CMakeFiles/robp_phidgets.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o -c /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/spatial.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kristoffer-germalm/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o -c /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/spatial.cpp
 
 CMakeFiles/robp_phidgets.dir/src/spatial.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robp_phidgets.dir/src/spatial.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/spatial.cpp > CMakeFiles/robp_phidgets.dir/src/spatial.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/spatial.cpp > CMakeFiles/robp_phidgets.dir/src/spatial.cpp.i
 
 CMakeFiles/robp_phidgets.dir/src/spatial.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robp_phidgets.dir/src/spatial.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/spatial.cpp -o CMakeFiles/robp_phidgets.dir/src/spatial.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/spatial.cpp -o CMakeFiles/robp_phidgets.dir/src/spatial.cpp.s
 
 CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o: CMakeFiles/robp_phidgets.dir/flags.make
-CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o: /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/temperature.cpp
+CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o: /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/temperature.cpp
 CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o: CMakeFiles/robp_phidgets.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o -c /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/temperature.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kristoffer-germalm/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o -MF CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o.d -o CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o -c /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/temperature.cpp
 
 CMakeFiles/robp_phidgets.dir/src/temperature.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robp_phidgets.dir/src/temperature.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/temperature.cpp > CMakeFiles/robp_phidgets.dir/src/temperature.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/temperature.cpp > CMakeFiles/robp_phidgets.dir/src/temperature.cpp.i
 
 CMakeFiles/robp_phidgets.dir/src/temperature.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robp_phidgets.dir/src/temperature.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/temperature.cpp -o CMakeFiles/robp_phidgets.dir/src/temperature.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/temperature.cpp -o CMakeFiles/robp_phidgets.dir/src/temperature.cpp.s
 
 # Object files for target robp_phidgets
 robp_phidgets_OBJECTS = \
@@ -188,12 +188,12 @@ robp_phidgets: CMakeFiles/robp_phidgets.dir/src/motors.cpp.o
 robp_phidgets: CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o
 robp_phidgets: CMakeFiles/robp_phidgets.dir/src/temperature.cpp.o
 robp_phidgets: CMakeFiles/robp_phidgets.dir/build.make
-robp_phidgets: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_c.so
-robp_phidgets: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_c.so
-robp_phidgets: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_cpp.so
-robp_phidgets: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_cpp.so
-robp_phidgets: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_cpp.so
-robp_phidgets: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_py.so
+robp_phidgets: /home/kristoffer-germalm/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_c.so
+robp_phidgets: /home/kristoffer-germalm/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_c.so
+robp_phidgets: /home/kristoffer-germalm/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_fastrtps_cpp.so
+robp_phidgets: /home/kristoffer-germalm/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_introspection_cpp.so
+robp_phidgets: /home/kristoffer-germalm/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_cpp.so
+robp_phidgets: /home/kristoffer-germalm/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_py.so
 robp_phidgets: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_fastrtps_c.so
 robp_phidgets: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_fastrtps_cpp.so
 robp_phidgets: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_introspection_c.so
@@ -207,8 +207,8 @@ robp_phidgets: /opt/ros/jazzy/lib/libstd_srvs__rosidl_typesupport_cpp.so
 robp_phidgets: /opt/ros/jazzy/lib/libstd_srvs__rosidl_generator_py.so
 robp_phidgets: /opt/ros/jazzy/share/libphidget22/cmake/../../../opt/libphidget22/lib/libphidget22.so
 robp_phidgets: /opt/ros/jazzy/lib/libphidgets_api.so
-robp_phidgets: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_c.so
-robp_phidgets: /home/group1/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_c.so
+robp_phidgets: /home/kristoffer-germalm/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_typesupport_c.so
+robp_phidgets: /home/kristoffer-germalm/dd2419_ws/install/robp_interfaces/lib/librobp_interfaces__rosidl_generator_c.so
 robp_phidgets: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_c.so
 robp_phidgets: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_typesupport_cpp.so
 robp_phidgets: /opt/ros/jazzy/lib/libsensor_msgs__rosidl_generator_c.so
@@ -326,7 +326,7 @@ robp_phidgets: /opt/ros/jazzy/lib/libunique_identifier_msgs__rosidl_generator_c.
 robp_phidgets: /opt/ros/jazzy/lib/librosidl_runtime_c.so
 robp_phidgets: /opt/ros/jazzy/lib/librcutils.so
 robp_phidgets: CMakeFiles/robp_phidgets.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable robp_phidgets"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/kristoffer-germalm/dd2419_ws/build/robp_phidgets/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable robp_phidgets"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/robp_phidgets.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -338,6 +338,6 @@ CMakeFiles/robp_phidgets.dir/clean:
 .PHONY : CMakeFiles/robp_phidgets.dir/clean
 
 CMakeFiles/robp_phidgets.dir/depend:
-	cd /home/group1/dd2419_ws/build/robp_phidgets && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/group1/dd2419_ws/src/robp_robot/robp_phidgets /home/group1/dd2419_ws/src/robp_robot/robp_phidgets /home/group1/dd2419_ws/build/robp_phidgets /home/group1/dd2419_ws/build/robp_phidgets /home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/robp_phidgets.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/kristoffer-germalm/dd2419_ws/build/robp_phidgets && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets /home/kristoffer-germalm/dd2419_ws/build/robp_phidgets /home/kristoffer-germalm/dd2419_ws/build/robp_phidgets /home/kristoffer-germalm/dd2419_ws/build/robp_phidgets/CMakeFiles/robp_phidgets.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/robp_phidgets.dir/depend
 

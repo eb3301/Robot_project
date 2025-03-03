@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/group1/dd2419_ws/src/robp_robot/robp_phidgets
+CMAKE_SOURCE_DIR = /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/group1/dd2419_ws/build/robp_phidgets
+CMAKE_BINARY_DIR = /home/kristoffer-germalm/dd2419_ws/build/robp_phidgets
 
 # Utility rule file for robp_phidgets_uninstall.
 
@@ -67,7 +67,7 @@ include CMakeFiles/robp_phidgets_uninstall.dir/compiler_depend.make
 include CMakeFiles/robp_phidgets_uninstall.dir/progress.make
 
 CMakeFiles/robp_phidgets_uninstall:
-	/usr/bin/cmake -P /home/group1/dd2419_ws/build/robp_phidgets/ament_cmake_uninstall_target/ament_cmake_uninstall_target.cmake
+	/usr/bin/cmake -P /home/kristoffer-germalm/dd2419_ws/build/robp_phidgets/ament_cmake_uninstall_target/ament_cmake_uninstall_target.cmake
 
 robp_phidgets_uninstall: CMakeFiles/robp_phidgets_uninstall
 robp_phidgets_uninstall: CMakeFiles/robp_phidgets_uninstall.dir/build.make
@@ -82,6 +82,6 @@ CMakeFiles/robp_phidgets_uninstall.dir/clean:
 .PHONY : CMakeFiles/robp_phidgets_uninstall.dir/clean
 
 CMakeFiles/robp_phidgets_uninstall.dir/depend:
-	cd /home/group1/dd2419_ws/build/robp_phidgets && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/group1/dd2419_ws/src/robp_robot/robp_phidgets /home/group1/dd2419_ws/src/robp_robot/robp_phidgets /home/group1/dd2419_ws/build/robp_phidgets /home/group1/dd2419_ws/build/robp_phidgets /home/group1/dd2419_ws/build/robp_phidgets/CMakeFiles/robp_phidgets_uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/kristoffer-germalm/dd2419_ws/build/robp_phidgets && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets /home/kristoffer-germalm/dd2419_ws/build/robp_phidgets /home/kristoffer-germalm/dd2419_ws/build/robp_phidgets /home/kristoffer-germalm/dd2419_ws/build/robp_phidgets/CMakeFiles/robp_phidgets_uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/robp_phidgets_uninstall.dir/depend
 

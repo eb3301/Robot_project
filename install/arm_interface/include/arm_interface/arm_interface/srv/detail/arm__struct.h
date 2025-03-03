@@ -1,1 +1,0 @@
-/home/group1/dd2419_ws/build/arm_interface/rosidl_generator_c/arm_interface/srv/detail/arm__struct.h

@@ -1,7 +1,7 @@
 CMakeFiles/robp_phidgets.dir/src/spatial.cpp.o: \
- /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/src/spatial.cpp \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/src/spatial.cpp \
  /usr/include/stdc-predef.h \
- /home/group1/dd2419_ws/src/robp_robot/robp_phidgets/include/robp_phidgets/spatial.hpp \
+ /home/kristoffer-germalm/dd2419_ws/src/robp_robot/robp_phidgets/include/robp_phidgets/spatial.hpp \
  /opt/ros/jazzy/share/libphidget22/cmake/../../../opt/libphidget22/include/libphidget22/phidget22.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \

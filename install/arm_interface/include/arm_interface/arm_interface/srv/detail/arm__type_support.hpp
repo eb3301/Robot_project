@@ -1,1 +1,0 @@
-/home/group1/dd2419_ws/build/arm_interface/rosidl_generator_cpp/arm_interface/srv/detail/arm__type_support.hpp
