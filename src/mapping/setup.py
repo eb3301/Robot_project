@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'mapping = mapping.mapping:main'
+            'mapping = mapping.mapping:main',
+            'mapping_key = mapping.mapping_key:main',
         ],
     },
 )

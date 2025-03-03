@@ -7,18 +7,18 @@ import numpy as np
 import sensor_msgs_py.point_cloud2 as pc2
 from tf2_ros import Buffer, TransformListener
 from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
-from sklearn.neighbors import NearestNeighbors
 from visualization_msgs.msg import Marker
+import matplotlib.path as mpl_path
 
 class OccupancyGridPublisher(Node):
     def __init__(self):
         super().__init__('occupancy_grid')
-        
-        # Occupancy Grid Publisher
-        self.publisher_ = self.create_publisher(OccupancyGrid, 'map', 10)
+
+        # Publishers
         self.marker_publisher = self.create_publisher(Marker, 'workspace_marker', 10)
+        self.publisher_ = self.create_publisher(OccupancyGrid, 'map', 10)
         
-        # LiDAR Subscriber
+        # LiDAR Subscribers
         self.subscription = self.create_subscription(
             PointCloud2,
             '/lidar',
@@ -39,6 +39,8 @@ class OccupancyGridPublisher(Node):
 
         # Initialize map data
         self.map_data = self.generate_room_map()
+        
+        self.marker_timer = self.create_timer(1.0, self.publish_workspace_marker)
 
         # Timer to publish occupancy grid
         self.timer = self.create_timer(1.0, self.publish_map)
@@ -69,14 +71,25 @@ class OccupancyGridPublisher(Node):
         return grid_size_x, grid_size_y, origin_x, origin_y
 
     def generate_room_map(self):
-        """Generate room map based on workspace size."""
+        """Generate room map based on workspace size and perimeter."""
         grid = np.zeros((self.grid_size_y, self.grid_size_x), dtype=int)  # Use grid_size_x and grid_size_y
-        
-        # Mark the boundary of the workspace as obstacles
-        grid[0, :] = 100
-        grid[-1, :] = 100
-        grid[:, 0] = 100
-        grid[:, -1] = 100
+
+        # Create a path from the workspace coordinates (polygon of the workspace perimeter)
+        workspace_polygon = mpl_path.Path(self.workspace_coordinates)
+
+        # Loop through all grid cells and check if they're inside the workspace polygon
+        for gy in range(self.grid_size_y):
+            for gx in range(self.grid_size_x):
+                # Convert grid cell center (gx, gy) to world coordinates
+                world_x = self.origin_x + gx * self.resolution
+                world_y = self.origin_y + gy * self.resolution
+
+                # Check if the point is inside the workspace polygon
+                if not workspace_polygon.contains_point((world_x, world_y)):
+                    grid[gy, gx] = 100  # Mark as obstacle
+
+        # Optionally, add buffer around the workspace (inflation)
+        # You can apply inflation here if needed to create a buffer zone around the workspace
 
         return grid.flatten().tolist()
 
@@ -200,7 +213,7 @@ class OccupancyGridPublisher(Node):
             # Convert from mm to meters (divide by 1000)
             point = Point()
             point.x, point.y = coord[0], coord[1]  # Convert to meters (?)
-            point.z = 0.0  # Assuming it's a 2D workspace, set z to 0
+            point.z = 1.0  # Assuming it's a 2D workspace, set z to 0
             marker.points.append(point)
             
             # Save the first point

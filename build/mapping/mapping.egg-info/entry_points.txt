@@ -1,2 +1,3 @@
 [console_scripts]
 mapping = mapping.mapping:main
+mapping_key = mapping.mapping_key:main

@@ -14,7 +14,6 @@ class ObjectMapNode(Node):
     def __init__(self):
         super().__init__('object_map_node')
 
-
         # Subscribe to detected objects, not raw PointCloud2
         self.subscription = self.create_subscription(
             DetectedObject,
@@ -69,6 +68,7 @@ class ObjectMapNode(Node):
         key = f"{round(object_x, 4)}_{round(object_y, 4)}_{round(object_z, 4)}"
 
         self.get_logger().info(f"Object: {object_label} @ ({object_x}, {object_y}, {object_z})")
+        
         if key not in self.object_map:
             self.object_map[key] = {
                 'x': object_x,

@@ -10,6 +10,7 @@ setup.py
 ../../build/mapping/mapping.egg-info/zip-safe
 mapping/__init__.py
 mapping/mapping.py
+mapping/mapping_key.py
 mapping/testing.py
 mapping.egg-info/PKG-INFO
 mapping.egg-info/SOURCES.txt
