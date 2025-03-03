@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'occupancy_grid'
+package_name = 'mapping'
 
 setup(
     name=package_name,
@@ -14,13 +14,13 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='kristoffer-germalm',
-    maintainer_email='you@example.com',
+    maintainer_email='kristoffer-germalm@todo.todo',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'occupancy_grid = occupancy_grid.occupancy_grid_node:main',
+            'mapping = mapping.mapping:main'
         ],
     },
 )

@@ -1,61 +1,134 @@
-#!/usr/bin/env python
-
 import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid
+from sensor_msgs.msg import PointCloud2
 import numpy as np
+import sensor_msgs_py.point_cloud2 as pc2
+from tf2_ros import Buffer, TransformListener
+from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
+from sklearn.neighbors import NearestNeighbors
 
 class OccupancyGridPublisher(Node):
     def __init__(self):
         super().__init__('occupancy_grid')
+        
+        # Occupancy Grid Publisher
         self.publisher_ = self.create_publisher(OccupancyGrid, 'map', 10)
-        self.timer = self.create_timer(5.0, self.publish_map)
+        
+        # LiDAR Subscriber
+        self.subscription = self.create_subscription(
+            PointCloud2,
+            '/lidar',
+            self.lidar_callback,
+            10)
+        
+        # TF Listener
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
+        
+        # Grid Parameters
+        self.grid_size = 150  # 15x15 grid (m)
+        self.resolution = 0.05  # 5 cm per cell
+        self.origin_x = - (self.grid_size * self.resolution) / 2
+        self.origin_y = - (self.grid_size * self.resolution) / 2
+
+        # Initialize map
+        self.map_data = self.generate_room_map(size=self.grid_size)
+
+        # Timer to publish occupancy grid
+        self.timer = self.create_timer(1.0, self.publish_map)
         self.get_logger().info("Occupancy Grid Node Started")
-        self.size = 100
-        self.workspace = 2
 
-    def generate_room_map(self, obstacle_chance=0.2):
-        """
-        Generates a simple room with walls and random obstacles.
-        - Walls: 100
-        - Free space: 0
-        - Obstacles: 100 (randomly placed)
-        """
-        grid = np.zeros((self.size, self.size), dtype=int)
-
-        # Add walls (borders)
+    def generate_room_map(self, size=10, obstacle_chance=0.2):
+        grid = np.zeros((size, size), dtype=int)
         grid[0, :] = 100
         grid[-1, :] = 100
         grid[:, 0] = 100
         grid[:, -1] = 100
-
-        # # Add random obstacles inside the room
-        # num_obstacles = int((self.size * self.size) * obstacle_chance)
-        # obstacle_positions = np.random.choice(self.size * self.size, num_obstacles, replace=False)
-
-        # for pos in obstacle_positions:
-        #     x, y = divmod(pos, self.size)
-        #     if grid[x, y] == 0:  # Only place obstacles in free space
-        #         grid[x, y] = 100
-
         return grid.flatten().tolist()
 
-    def publish_map(self):
-        map_data = self.generate_room_map()
+    def lidar_callback(self, msg):
+        """ Process LiDAR scan and update the occupancy grid """
+        try:
+            # Transform PointCloud2 to the map frame
+            transform = self.tf_buffer.lookup_transform('map', msg.header.frame_id, rclpy.time.Time())
+            cloud_transformed = do_transform_cloud(msg, transform)
 
+            # Get the robot's position in the map frame
+            robot_transform = self.tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time())
+            robot_x = robot_transform.transform.translation.x
+            robot_y = robot_transform.transform.translation.y
+            
+            # Convert PointCloud2 to numpy array
+            points = np.array(list(pc2.read_points(cloud_transformed, field_names=("x", "y"), skip_nans=True)))
+
+            # Distance thresholding relative to the robot's position
+            min_distance = 0.4 # Minimum distance, 0.35 enough to remove the arm from the lidar
+            max_distance = 2.0  # Maximum distance (e.g., 10 meters)
+
+            # Filter points based on distance threshold relative to the robot
+            filtered_points = []
+            for point in points:
+                # Calculate distance from the robot (in the map frame)
+                distance = np.sqrt((point[0] - robot_x)**2 + (point[1] - robot_y)**2)
+
+                # Apply the distance thresholding (ignore points too close or too far from the robot)
+                if min_distance <= distance <= max_distance:
+                    filtered_points.append(point)
+
+            # Update the occupancy grid with filtered points
+            self.update_occupancy_grid(filtered_points)
+
+        except Exception as e:
+            self.get_logger().warn(f"Transform failed: {e}")
+
+    def update_occupancy_grid(self, points, inflation_radius=2, obstacle_value=100, buffer_value=20):
+        # Mark free space and obstacles in the occupancy grid
+        grid = np.array(self.map_data).reshape((self.grid_size, self.grid_size))
+        
+        # Convert world coordinates to grid coordinates and apply inflation with opacity
+        for point in points:
+            gx = int((point[0] - self.origin_x) / self.resolution)
+            gy = int((point[1] - self.origin_y) / self.resolution)
+
+            if 0 <= gx < self.grid_size and 0 <= gy < self.grid_size:
+                # Mark the obstacle cell with full opacity
+                grid[gy, gx] = obstacle_value
+
+                # Apply inflation by marking surrounding cells as a buffer with lower opacity
+                for dx in range(-inflation_radius, inflation_radius + 1):
+                    for dy in range(-inflation_radius, inflation_radius + 1):
+                        # Check if the cell is within the grid bounds
+                        nx = gx + dx
+                        ny = gy + dy
+
+                        # Calculate the squared distance to avoid unnecessary sqrt calculation
+                        if (dx ** 2 + dy ** 2) <= inflation_radius ** 2:
+                            if 0 <= nx < self.grid_size and 0 <= ny < self.grid_size:
+                                # Avoid overwriting actual obstacle cells with buffer value
+                                if grid[ny, nx] != obstacle_value:
+                                    grid[ny, nx] = buffer_value  # Mark as buffer/low-opacity
+
+        # Update the map data with the inflated grid
+        self.map_data = grid.flatten().tolist()
+
+    
+    def publish_map(self):
+        """ Publish updated occupancy grid """
         msg = OccupancyGrid()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = "map"
-        msg.info.resolution = self.workspace / self.size  # cm per cell
-        msg.info.width = self.size
-        msg.info.height = self.size
-        msg.info.origin.position.x = 0.0
-        msg.info.origin.position.y = 0.0
+        msg.info.resolution = self.resolution
+        msg.info.width = self.grid_size
+        msg.info.height = self.grid_size
+        msg.info.origin.position.x = self.origin_x
+        msg.info.origin.position.y = self.origin_y
         msg.info.origin.position.z = 0.0
-        msg.data = map_data
+        msg.data = self.map_data
 
         self.publisher_.publish(msg)
-        self.get_logger().info("Published occupancy grid with a simple room")
+        self.get_logger().info("Updated Occupancy Grid Published")
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -63,6 +136,7 @@ def main(args=None):
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
