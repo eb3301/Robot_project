@@ -4,7 +4,6 @@ ros2 launch robp_launch mapping_and_detection.py
 ros2 run rviz2 rviz2 -d /home/kristoffer-germalm/dd2419_ws/my_config.rviz
 ros2 bag play --read-ahead-queue-size 100 -r 1.0 --start-paused /home/kristoffer-germalm/dd2419_ws/bags/DetectionBag
 
-
 ros2 run detection obj_detection
 ros2 run mapping mapping
 
@@ -13,6 +12,10 @@ colcon build --symlink-install
 source install/setup.bash
 
 
-cd ~/dd2419_ws
-colcon build --symlink-install
-source install/setup.bash
+
+RUN THESE LATEST FILE:
+ros2 run rviz2 rviz2 -d /home/kristoffer-germalm/dd2419_ws/my_config.rviz
+ros2 run occupancy_grid occupancy_grid
+ros2 run mapping mapping_key
+ros2 launch localisation loc_bag_launch.py
+ros2 bag play --read-ahead-queue-size 100 -r 1.0 --start-paused /home/kristoffer-germalm/dd2419_ws/bags/realistic
