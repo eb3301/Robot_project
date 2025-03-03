@@ -143,7 +143,6 @@ def main():
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass
-
     rclpy.shutdown()
 
 
