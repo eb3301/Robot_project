@@ -24,7 +24,7 @@ class AutoControll(Node):
         self.path_sub = self.create_subscription(Path, "/planned_path", self.path_callback, 1) # latch topic
 
         # Timer
-        self.timer = self.create_timer(0.5, self.timer_callback)
+        self.timer = self.create_timer(0.2, self.timer_callback)
 
         # Preallocation
         self.lookahead_distance = 10
@@ -37,56 +37,34 @@ class AutoControll(Node):
         self.cmd_vel_pub.publish(twist_msg)
         self.get_logger().info(f"Published velocity: linear = {twist_msg.linear.x}, angular = {twist_msg.angular.z}")
 
+    # Get position of robot
     def pose_callback(self, msg : PoseWithCovarianceStamped):
-        # Get posion of robot
         x = msg.pose.pose.position.x
         y = msg.pose.pose.position.y
         self.current_position = (x, y)
         self.current_heading = self.compute_heading(msg.pose.pose.orientation)
 
-    # Updates current path
+    # Updates path, extract position (x, y) and add to list
     def path_callback(self, msg: Path):
-        # Create an empty list to hold the extracted poses
         self.pose_list = []
         
-        # Iterate through the list of PoseStamped messages in the Path
         for pose_msg in msg.poses:
-            # Extract the position (x, y) and orientation (yaw) from each PoseStamped message
+            
             position = (pose_msg.pose.position.x, pose_msg.pose.position.y)
-            # orientation = self.compute_heading(orientation) 
-            
-            # Create a tuple containing the position and orientation
-            # pose = position #, orientation)
-            
-            # Append the pose to the pose list
             self.pose_list.append(position)
 
+    # Compute heading from Loke
     def compute_heading(self, orientation):
         x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
         _, _, yaw = euler_from_quaternion((x, y, z, w))
         return yaw
 
         
-
-def pure_pursuit_velocity(current_position, current_heading, path, lookahead_distance, max_linear_velocity=0.5, steering_gain=1.0):
-    """
-    Pure Pursuit algorithm that calculates linear and angular velocities for ROS 2.
-
-    Parameters:
-    - current_position: Tuple (x, y) representing the current position of the vehicle.
-    - current_heading: The current heading (orientation) of the vehicle in radians.
-    - path: List of waypoints [(x1, y1), (x2, y2), ..., (xn, yn)] representing the path to follow.
-    - lookahead_distance: The lookahead distance (in meters) from the current position to the target point.
-    - max_linear_velocity: The maximum linear velocity of the robot.
-    - steering_gain: A gain factor to adjust how aggressively the robot turns.
-
-    Returns:
-    - twist_msg: A ROS `Twist` message with the calculated linear and angular velocities.
-    """
+def pure_pursuit_velocity(current_position, current_heading, path, lookahead_distance):
     # Convert path to a NumPy array
     path = np.array(path)
 
-    # Calculate the vector from the vehicle to each point in the path
+    # Calculate the vector from the robot to each point in the path
     dx = path[:, 0] - current_position[0]
     dy = path[:, 1] - current_position[1]
 
@@ -104,24 +82,29 @@ def pure_pursuit_velocity(current_position, current_heading, path, lookahead_dis
     # Calculate the steering angle to the target point
     steering_angle = calculate_steering_angle(current_position, current_heading, target_point)
 
-    # Calculate the linear velocity (keep constant or adjust based on the distance)
-    # We use a constant linear velocity for simplicity, but you can adjust it based on the distance
-    linear_velocity = max_linear_velocity
+    # Robot paramters
+    wheel_radius = 0.04915 # m
+    base = 0.31 # m
+    
+    # Maximum velocities
+    max_factor = 1 / 4
+    max_vel = wheel_radius * max_factor # m/s
+    max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
+
+    # Use max linear velocity
+    linear_velocity = max_vel
 
     # Calculate the angular velocity using the steering angle and a gain factor
-    angular_velocity = steering_gain * steering_angle
+    angular_velocity = max_rot * steering_angle
 
     # Create a ROS Twist message
     twist_msg = Twist()
     twist_msg.linear.x = linear_velocity
+    twist_msg.linear.z = max_factor
     twist_msg.angular.z = angular_velocity
-
     return twist_msg
 
 def calculate_steering_angle(current_position, current_heading, target_point):
-    """
-    Calculate the steering angle to the target point using the Pure Pursuit algorithm.
-    """
     # Vector from current position to target point
     vector_to_target = target_point - np.array(current_position)
 
