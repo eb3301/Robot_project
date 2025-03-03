@@ -54,7 +54,7 @@ class Controller(Node):
             rot = np.arctan2(vel_y, vel_x) * max_rot 
         else:
             rot = 0
-
+        print(rot)
         # Create Twist msg
         cmd_msg = Twist()
         cmd_msg.linear.x = float(vel_x)
