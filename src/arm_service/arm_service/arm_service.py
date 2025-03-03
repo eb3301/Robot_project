@@ -1,47 +1,21 @@
 from arm_interface.srv import Arm
 
-import rclpy
-from rclpy.node import Node
-
+import os
+import time
 import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import String
 from std_msgs.msg import Int16MultiArray
 
-import time
+import ikpy.chain
+import ikpy.utils.plot as plot_utils
 
-# class MinimalPublisher(Node):
+import numpy as np
+import math
 
-#     def __init__(self):
-#         super().__init__('move_servos_publisher')
-#         self.publisher_ = self.create_publisher(Int64MultiArray, 'multi_servo_cmd_sub', 10)
-#         timer_period = 2  # seconds
-#         self.timer = self.create_timer(timer_period, self.timer_callback)
-#         self.i = 0
-
-#     def timer_callback(self):
-#         # pick up stuff
-#         # data_sets = [[2000,12000,20000,3000,-1,3000,500,500,500,500,500,500],
-#         #             [16000,-1,-1,-1,-1,-1,500,500,500,500,500,500],
-#         #             [16000,12000,12000,12000,12000,12000,500,500,500,500,500,500],
-#         #             [12000,12000,12000,12000,12000,12000,500,500,500,500,500,500]]
-        
-#         # random movement
-#         data_sets = [[7000,13000,14000,10000,16000,8000,2000,2000,2000,2000,2000,2000],
-#                     [12000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000]]
-        
-#         msg = Int16MultiArray()
-#         msg.data = data_sets[self.i]
-#         self.publisher_.publish(msg)
-
-#         self.i += 1
-#         if self.i == 2:
-#             self.i = 0
-
-        
-#         # self.get_logger().info('Publishing: "%s"' % str(msg.data))
-#         # self.i += 1
+import ipywidgets as widgets
+import serial
 
 
 class MinimalService(Node):
@@ -51,7 +25,64 @@ class MinimalService(Node):
         self.srv = self.create_service(Arm, 'arm', self.arm_callback)
         self.publisher = self.create_publisher(Int16MultiArray, 'multi_servo_cmd_sub', 10)
 
+    def pos_ok_check(self,target_position):
+        # x1_limits = [0.0,0.18] # The limits for two boxes in m
+        # x2_limits = [-0.1,0.0]
+        # y1_limits = [-0.05,0.15]
+        # y2_limits = [-0.15,-0.05]
+        # z_limits = [0.0,0.1]
+        # x = target_position[0]
+        # y = target_position[1]
+        # z = target_position[2]
+        # if y1_limits[0] <= y <= y1_limits[1]:
+        #     if x1_limits[0] <= x <= x1_limits[1]:
+        #         if z_limits[0] <= z <= z_limits[1]:
+        #             return True
+        # elif y2_limits[0] <= y <= y2_limits[1]:
+        #     if x2_limits[0] <= x <= x1_limits[1]:
+        #         if z_limits[0] <= z <= z_limits[1]:
+        #             return True
+        # return False
+        x, y, z = target_position
+        return (
+            (np.all([-0.05 <= y <= 0.15, 0.0 <= x <= 0.18]) or 
+            np.all([-0.15 <= y <= -0.05, -0.1 <= x <= 0.18]))
+            and (0.0 <= z <= 0.1)
+        )
+
+
     def arm_callback(self, request, response):
+        # Load the URDF file
+        urdf_file = os.path.join(os.path.dirname(__file__), "armpi_fpv.urdf")
+        my_chain = ikpy.chain.Chain.from_urdf_file(urdf_file,active_links_mask=[True, True, True, True, True, True])
+        
+        target_position = [ 0.1, 0, 0.05]
+        if not self.pos_ok_check(target_position):
+            self.get_logger().info("Position not within limits")
+            response.success = False # should add something like reason for fail maybe
+            return response
+
+        target_orientation = [0, 0, 0]
+
+        ik = my_chain.inverse_kinematics(target_position, target_orientation, orientation_mode="Y")
+        ik_deg = list(map(lambda r:math.degrees(r),ik.tolist()))
+        print("The angles of each joints are : ", ik_deg)
+        print("raw ik: "+ str(ik))
+        computed_data_set = []
+        for ang in ik_deg:
+            new_ang = round(ang*100) + 12000
+            computed_data_set.append(new_ang)
+        print("comp ik: "+ str(computed_data_set))
+        time_data_set = [2000,2000,2000,2000,2000,2000]
+        computed_data_set = np.concatenate((computed_data_set,time_data_set))
+        print(" send: " + str(computed_data_set))
+        self.get_logger().info("Computed data set is: " + str(computed_data_set))
+
+        computed_position = my_chain.forward_kinematics(ik)
+        print("Computed position: %s, original position : %s" % (computed_position[:3, 3], target_position))
+        print("Computed position (readable) : %s" % [ '%.2f' % elem for elem in computed_position[:3, 3] ])
+
+
         data_sets = [[12000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
                     [2000,12000,3000,12000,4000,12000,2000,2000,2000,2000,2000,2000],
                     [11000,12000,10000,15000,4000,12000,2000,2000,2000,2000,2000,2000],
@@ -70,6 +101,9 @@ class MinimalService(Node):
             self.publisher.publish(msg)
         elif request.xy[0] == 4: 
             self.get_logger().info('moving arm to drop')
+            self.publisher.publish(msg)
+        elif request.xy[0] == 5:
+            msg.data = computed_data_set
             self.publisher.publish(msg)
         
         
