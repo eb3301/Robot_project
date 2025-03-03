@@ -48,16 +48,16 @@ class WheelController(Node):
                 u_phi = 1 - u_phi
             if u_phi < 0:
                 u_phi = 1 + u_phi 
-        print(u_w)
-        print(u_phi)
+        # print(u_w)
+        # print(u_phi)
 
         # Wheel angular velocity
         w_l = u_w + u_phi/2
         w_r = u_w - u_phi/2
 
-        print(w_l)
-        print(w_r)
-        print('------')
+        # print(w_l)
+        # print(w_r)
+        # print('------')
 
         # Create message
         duty_cycles_msg = DutyCycles()
