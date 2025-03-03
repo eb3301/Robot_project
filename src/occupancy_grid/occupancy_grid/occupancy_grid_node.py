@@ -34,7 +34,7 @@ class OccupancyGridPublisher(Node):
 
         # Initialize map
         # Adjust grid size based on workspace dimensions
-        self.workspace_coordinates = self.read_workspace_coordinates("/home/kristoffer-germalm/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
+        self.workspace_coordinates = self.read_workspace_coordinates("/home/group1/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
         self.grid_size_x, self.grid_size_y, self.origin_x, self.origin_y = self.calculate_grid_size_and_origin(self.workspace_coordinates)
 
         # Initialize map data

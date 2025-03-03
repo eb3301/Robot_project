@@ -18,7 +18,7 @@ class AutoControll(Node):
         self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
 
         # Subscribe to current pose
-        self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/pose', self.pose_callback, 10) # This might need to be restricted
+        self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/ekf_pose', self.pose_callback, 10) # This might need to be restricted
 
         # Subscribe to goal pose
         self.path_sub = self.create_subscription(Path, "/planned_path", self.path_callback, 1) # latch topic
