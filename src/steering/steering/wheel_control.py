@@ -49,18 +49,22 @@ class WheelController(Node):
         w_l = u_w - u_phi/2
         w_r = u_w + u_phi/2
 
-        # Corrections for uneven motors - do not work for reverse action
-        correct_factor = 0.015
+        # Corrections for uneven motors
+        correct_factor = 0.016
         if u_w >= 0:
             if -0.25 < u_phi < 0:
                 w_r = w_r - (correct_factor)/(0.25)*u_phi - correct_factor
-                w_l = w_l 
             elif 0 < u_phi < 0.25:
                 w_r = w_r + (correct_factor)/(0.25)*u_phi - correct_factor
-                w_l = w_l 
             elif u_phi == 0 and u_w != 0:
-                w_l = w_l 
                 w_r = w_r - correct_factor
+        elif u_w < 0:
+            if -0.25 < u_phi < 0:
+                w_r = w_r + (correct_factor)/(0.25)*u_phi + correct_factor
+            elif 0 < u_phi < 0.25:
+                w_r = w_r - (correct_factor)/(0.25)*u_phi + correct_factor
+            elif u_phi == 0 and u_w != 0:
+                w_r = w_r + correct_factor
 
         # Create message
         duty_cycles_msg = DutyCycles()

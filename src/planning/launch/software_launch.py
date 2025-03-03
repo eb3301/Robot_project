@@ -27,12 +27,12 @@ def generate_launch_description():
         #     name='auto_control_node'
         # ),
         
-        # Start costmap
-        ExecuteProcess(
-            cmd=['ros2', 'run', 'occupancy_grid', 'occupancy_grid'],
-            output='screen',
-            name='occupancy_grid_node'
-        ),
+        # # Start costmap
+        # ExecuteProcess(
+        #     cmd=['ros2', 'run', 'occupancy_grid', 'occupancy_grid'],
+        #     output='screen',
+        #     name='occupancy_grid_node'
+        # ),
 
         # Start wheel control
         ExecuteProcess(

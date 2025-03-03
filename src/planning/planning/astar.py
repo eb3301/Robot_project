@@ -188,17 +188,26 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
       else:
         # Cost functions
         new_node.g = current_node.g + resolution #+ math.sqrt((new_node.x - current_node.x)**2 + (new_node.y - current_node.y)**2) # change to Mahalanobis distance
-        new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2)) # np.abs(new_node.x - xt) + np.abs(new_node.y - yt)
         x_index, y_index = find_cell_index(xn, yn, resolution) 
         new_node.c = obsticales[x_index, y_index]
-        new_node.f = new_node.g + new_node.h * 2 + new_node.c
         
-        new_node.parent = current_node
-        new_node.phi = phi
-        open_set[new_node_key] = new_node
-    # else:
-    #   if closed_set[new_node_key].feasible:
-    #     pass # Look if g is higher?
+        # Check if is in the open set and if the cost is smaller?
+        if new_node_key in open_set:
+          node = open_set[new_node_key]
+          if node.g + node.c > new_node.g + new_node.c:
+            new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2)) # np.abs(new_node.x - xt) + np.abs(new_node.y - yt)
+            new_node.f = new_node.g + new_node.h * 2 + new_node.c
+                
+            new_node.parent = current_node
+            new_node.phi = phi        
+            open_set[new_node_key] = new_node
+        else:
+          new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2)) # np.abs(new_node.x - xt) + np.abs(new_node.y - yt)
+          new_node.f = new_node.g + new_node.h * 2 + new_node.c
+              
+          new_node.parent = current_node
+          new_node.phi = phi        
+          open_set[new_node_key] = new_node
 
 
 def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
@@ -338,9 +347,7 @@ def main():
         time.sleep(3)
     except KeyboardInterrupt:
         pass
-    
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
