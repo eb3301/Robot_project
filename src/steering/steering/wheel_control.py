@@ -46,8 +46,15 @@ class WheelController(Node):
                 u_phi = -(2*self.max_factor + u_phi)
 
         # Wheel angular velocity
-        w_l = u_w + u_phi/2
-        w_r = u_w - u_phi/2
+        w_l = u_w - u_phi/2
+        w_r = u_w + u_phi/2
+
+        if u_phi < 0:
+            w_r = w_r
+            w_l = w_l + 0.15
+        elif u_phi > 0:
+            w_r = w_r
+            w_l = w_l - 0.15
 
         # Create message
         duty_cycles_msg = DutyCycles()
