@@ -30,15 +30,12 @@ class EKF_Algorithm(Node):
             Encoders, '/motor/encoders', self.odom_callback, 10)
         self.imu_sub = self.create_subscription(Imu, '/imu/data_raw', self.imu_callback, 10)
         self.ekfPath_pub = self.create_publisher(Path, 'EKF_Path', 10)
-        self.odom_path_pub = self.create_publisher(Path, '/odom_path', 10)
 
         #TF2
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self, spin_thread = True)
         self._tf_broadcaster = TransformBroadcaster(self)
 
-        # Timers
-       # self.pub_timer = self.create_timer(0.1, self.publish_pose)
 
         # EKF Parameters
         self.ekf = EKF(dim_x =3, dim_z = 1) # x: state, z: measurement 
@@ -47,8 +44,6 @@ class EKF_Algorithm(Node):
 
         # Paths
         self.ekf_path = Path()
-        self.odom_path = Path()
-        self.odom_pose = np.array([0.0, 0.0, 0.0])
 
         # Time
         self.time = None
@@ -88,16 +83,12 @@ class EKF_Algorithm(Node):
 
         if dt > 0:
             yaw = self.ekf.x[2]
-            odom_yaw = self.odom_pose[2]
 
             # # Update states
             self.ekf.x[0] += v*np.cos(yaw) 
             self.ekf.x[1] += v*np.sin(yaw) 
             self.ekf.x[2] += w 
 
-            self.odom_pose[0] += v*np.cos(odom_yaw) 
-            self.odom_pose[1] += v*np.sin(odom_yaw) 
-            self.odom_pose[2] += w 
             self.time = t
             
             # Set noise to 1% of distance traveled
@@ -109,15 +100,11 @@ class EKF_Algorithm(Node):
 
             self.broadcast_transform(t, self.ekf.x[0], self.ekf.x[1], self.ekf.x[2])
             self.publish_pose(self.ekf.x[0], self.ekf.x[1], self.ekf.x[2])
-            self.publish_odom_path(t, self.odom_pose[0], self.odom_pose[1], self.odom_pose[2])
-            
-
-            
 
 
     def imu_callback(self, msg: Imu):
         '''Run update step using IMU orientaiton. Imu publishes with freq 250 hz'''   
-    # #Change freq to 50 hz       
+        #Change freq to 50 hz       
         # if self.imu_counter != 5:
         #     self.imu_counter += 1 
         #     return
@@ -147,9 +134,9 @@ class EKF_Algorithm(Node):
         if self.yaw_offset is None:
             self.yaw_offset = self.compute_heading(final_q)
 
-        yaw = self.compute_heading(final_q) - self.yaw_offset
+        self.imu_yaw = self.compute_heading(final_q) - self.yaw_offset
         
-        self.imu_update(yaw)
+        #self.imu_update(self.imu_yaw)
 
     def imu_update(self, yaw):
         
@@ -247,29 +234,6 @@ class EKF_Algorithm(Node):
 
         # Send the transformation
         self._tf_broadcaster.sendTransform(t)
-
-
-    def publish_odom_path(self, time, x, y, yaw):
-        '''Publishes odometry path'''
-
-        self.odom_path.header.stamp = time.to_msg()
-        self.odom_path.header.frame_id = 'odom'
-
-        pose = PoseStamped()
-        pose.header = self.odom_path.header
-
-        pose.pose.position.x = x
-        pose.pose.position.y = y
-        pose.pose.position.z = 0.01  # 1cm up so it will be above ground level
-
-        q = quaternion_from_euler(0.0, 0.0, yaw)
-        pose.pose.orientation.x = q[0]
-        pose.pose.orientation.y = q[1]
-        pose.pose.orientation.z = q[2]
-        pose.pose.orientation.w = q[3]
-
-        self.odom_path.poses.append(pose)
-        self.odom_path_pub.publish(self.odom_path)
 
 
     def compute_heading(self, orientation):

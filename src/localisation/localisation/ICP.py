@@ -7,14 +7,16 @@ import rclpy.time
 import tf2_ros
 from tf2_ros import TransformException
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
+import tf2_geometry_msgs
 
 from sensor_msgs.msg import PointCloud2, LaserScan
 import sensor_msgs_py.point_cloud2 as pc2
 from laser_geometry import LaserProjection
 from robp_interfaces.msg import Encoders
+from nav_msgs.msg import Path
 
 from tf_transformations import quaternion_from_euler, euler_from_quaternion, quaternion_from_matrix
-from geometry_msgs.msg import TransformStamped, PoseStamped
+from geometry_msgs.msg import TransformStamped, PoseStamped, PoseWithCovarianceStamped
 from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
 from tf2_ros.transform_listener import TransformListener
 
@@ -49,6 +51,18 @@ class ICPNode(Node):
         self.lidar_pub = self.create_publisher(PointCloud2, '/lidar', lidar_qos)
         self.ref_cloud_pub = self.create_publisher(PointCloud2, 'reference_PointCloud', ref_qos)
         self.encoder_sub = self.create_subscription(Encoders, '/motor/encoders', self.encoder_callback, scan_qos)
+        
+        # Map Pose
+        odom_pose_qos = QoSProfile(
+            reliability = QoSReliabilityPolicy.BEST_EFFORT,
+            durability = QoSDurabilityPolicy.VOLATILE, 
+            depth = 1
+        )
+        self.odom_pose_sub = self.create_subscription(PoseWithCovarianceStamped, 'ekf_pose', self.odom_pose_callback, odom_pose_qos)
+        
+        self.map_pose_pub = self.create_publisher(PoseWithCovarianceStamped, 'map_pose', lidar_qos)
+        self.map_path_pub = self.create_publisher(Path, 'map_path', 10)
+
 
         # TF2 
         self.tf_buffer = tf2_ros.Buffer()
@@ -72,9 +86,10 @@ class ICPNode(Node):
         self.accumulated_scans = []
 
         self.stamp = None
-
         self.rotating  = False
         
+        self.path = Path()
+
         self.get_logger().info("Initialised ICP node...")
         
 
@@ -98,8 +113,6 @@ class ICPNode(Node):
             self.rotating = False
 
     def scan_callback(self, msg: LaserScan):
-        # if self.rotating:
-        #     return
         self.stamp = msg.header.stamp
 
         # Time of message
@@ -137,7 +150,7 @@ class ICPNode(Node):
         points = pc2.read_points_numpy(cloud_out, field_names=("x", "y", "z"), skip_nans=True)
 
         # Create reference pointcloud for ICP
-        if self.ref_counter <= 10:
+        if self.ref_counter <= 5:
             self.accumulated_scans.append(points)
             self.ref_counter += 1
             self.ref_cloud_pub.publish(cloud_out)
@@ -151,24 +164,19 @@ class ICPNode(Node):
                 self.get_logger().info(f"Reference cloud accumulated in {ref_time} seconds")
                 
         else:
-            if not self.create_ref:
-                self.accumulated_scans = []
-                self.create_ref = True 
-
-            else:
-                self.accumulated_scans.append(points)
-                self.lidar_pub.publish(cloud_out)
-                if self.counter == 5:
-                    merged_points = np.vstack(self.accumulated_scans)
-                    merged_ref = pc2.create_cloud_xyz32(cloud_out.header, merged_points)
-
-                    # Save and publish pointcloud
-                    source_pcd =  self.pointcloud_2_open3d(merged_ref)
+            if self.counter % 10 == 0:
+                self.counter += 1
+                if not self.rotating:
+                    self.lidar_pub.publish(cloud_out)
+                    source_pcd = self.pointcloud_2_open3d(cloud_out)
                     self.ICP(source_pcd)
+            else:
+                self.counter += 1
+        
 
-                    self.accumulated_scans = []
-                    self.counter = 0
-                else: self.counter += 1
+    def odom_pose_callback(self, msg: PoseWithCovarianceStamped):
+        self.publish_pose(msg)
+
 
     def compute_heading(self, orientation):
             x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
@@ -195,18 +203,18 @@ class ICPNode(Node):
         
         # Compute normals for Point-to-Plane
         radius = 0.1 # max range for neighbour search
-        max_nn = 15 # max amount of neighbours
+        max_nn = 10 # max amount of neighbours
 
         source_pcd.estimate_normals(search_param = o3d.geometry.KDTreeSearchParamHybrid(radius ,max_nn))  
         self.target_pcd.estimate_normals(search_param = o3d.geometry.KDTreeSearchParamHybrid(radius ,max_nn))  
 
         
         # Algorithm Parameters
-        threshold = 0.1 # Max distance to be a 'match'
+        threshold = 0.05 # Max distance to be a 'match'
         trans_init = self.transform.copy() # Initial transformation estimate
 
         #Convergence Criterias
-        max_iteration, relative_fitness, relative_rmse = 300, 1e-6, 1e-6
+        max_iteration, relative_fitness, relative_rmse = 200, 1e-6, 1e-6
         # Run algorithm 
         result = o3d.pipelines.registration.registration_icp(
             source_pcd, self.target_pcd, threshold, trans_init,
@@ -217,18 +225,59 @@ class ICPNode(Node):
 
         translation = result.transformation[:3, 3]
         dist = np.linalg.norm(translation)
-        if result.fitness > 0.3 and result.inlier_rmse < 0.1: # and dist < 1: 
-            #alpha = 0.3  # Small smoothing factor
-            #self.transform = alpha * result.transformation + (1 - alpha) * self.transform
-            self.ttransform = result.transformation
+        if result.fitness > 0.3 and result.inlier_rmse < 0.035: # and dist < 1: 
+            self.transform = result.transformation
 
-            # self.get_logger().info(f"ICP transform: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
+            self.get_logger().info(f"ICP transform: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
 
-            # end_time = time.time()
-            # self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
+            end_time = time.time()
+            self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
         else: 
-            #self.get_logger().info(f"Ignoring ICP result, fitness: {result.fitness}, Inlier rmse: {result.inlier_rmse}")
-            pass
+            self.get_logger().info(f"Ignoring ICP result, fitness: {result.fitness}, Inlier rmse: {result.inlier_rmse}")
+
+    
+    def publish_pose(self, pose_msg):
+            stamp = pose_msg.header.stamp
+            #time = rclpy.time.Time().from_msg(stamp)
+            time = rclpy.time.Time(seconds = 0)
+            try:
+                tf_future = self.tf_buffer.wait_for_transform_async(
+                target_frame = "map",
+                source_frame = 'odom',
+                time = time
+                )
+            
+                rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
+
+                base_2_odom_tf = self.tf_buffer.lookup_transform(
+                    target_frame = "map", 
+                    source_frame = 'odom', 
+                    time = time,
+                    timeout = rclpy.duration.Duration(seconds=0.1)
+                )
+                
+                map_pose = tf2_geometry_msgs.do_transform_pose(pose_msg.pose.pose, base_2_odom_tf)
+
+                # Pose
+                pose_msg.pose.pose = map_pose
+                pose_msg.header.frame_id = 'map'
+                self.map_pose_pub.publish(pose_msg)
+
+                # Path
+                PathPose = PoseStamped()
+                PathPose.header = pose_msg.header
+                PathPose.pose = pose_msg.pose.pose
+                self.path.poses.append(PathPose) 
+
+                self.path.header.stamp = stamp
+                self.path.header.frame_id = 'map'    
+                self.map_path_pub.publish(self.path)
+
+            except TransformException as ex:
+                self.get_logger().info(
+                    f'Could not transform {'odom'} to {"map"}: {ex}')
+
+
 
     def broadcast_transform(self):
         if not self.stamp:
@@ -241,9 +290,9 @@ class ICPNode(Node):
         t.header.frame_id = 'map' 
         t.child_frame_id = 'odom' 
         
-        t.transform.translation.x = t_icp[0, 3]
-        t.transform.translation.y = t_icp[1, 3]
-        t.transform.translation.z = t_icp[2, 3]
+        t.transform.translation.x = t_icp[0,3]
+        t.transform.translation.y = t_icp[1,3]
+        t.transform.translation.z = t_icp[2,3]
 
         q = quaternion_from_matrix(t_icp)
         q = q / np.linalg.norm(q)
@@ -253,6 +302,8 @@ class ICPNode(Node):
         t.transform.rotation.w = q[3]
         self.tf_broadcaster.sendTransform(t)
 
+
+            
 
 def main():
     rclpy.init()
