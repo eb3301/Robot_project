@@ -22,7 +22,7 @@ class Planner(Node):
     self.costmap_sub = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 1)
 
     # Subscribe to current pose
-    self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/pose', self.pose_callback, 10) # This might need to be restricted
+    self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/ekf_pose', self.pose_callback, 10) # This might need to be restricted
     
     # Subscribe to goal pose
     self.goal_sub = self.create_subscription(Marker, "/goal_marker", self.goal_callback, 1)
