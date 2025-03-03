@@ -9,14 +9,21 @@ from tf2_ros import Buffer, TransformListener
 from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
 from sklearn.neighbors import NearestNeighbors
 from visualization_msgs.msg import Marker
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 
 class OccupancyGridPublisher(Node):
     def __init__(self):
         super().__init__('occupancy_grid')
         
         # Occupancy Grid Publisher
-        self.publisher_ = self.create_publisher(OccupancyGrid, 'map', 10)
-        self.marker_publisher = self.create_publisher(Marker, 'workspace_marker', 10)
+        self.publisher_ = self.create_publisher(OccupancyGrid, '/map', 10)
+
+        # marker_qos = QoSProfile(
+        #     reliability = QoSReliabilityPolicy.RELIABLE,
+        #     durability = QoSDurabilityPolicy.TRANSIENT_LOCAL,
+        #     depth = 1
+        # )
+        self.marker_publisher = self.create_publisher(Marker, '/workspace_marker', 10)
         
         # LiDAR Subscriber
         self.subscription = self.create_subscription(
@@ -34,7 +41,7 @@ class OccupancyGridPublisher(Node):
 
         # Initialize map
         # Adjust grid size based on workspace dimensions
-        self.workspace_coordinates = self.read_workspace_coordinates("/home/kristoffer-germalm/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
+        self.workspace_coordinates = self.read_workspace_coordinates("/home/group1/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
         self.grid_size_x, self.grid_size_y, self.origin_x, self.origin_y = self.calculate_grid_size_and_origin(self.workspace_coordinates)
 
         # Initialize map data
@@ -44,7 +51,9 @@ class OccupancyGridPublisher(Node):
         self.timer = self.create_timer(1.0, self.publish_map)
         self.get_logger().info("Occupancy Grid Node Started")
 
-        self.publish_workspace_marker()  # Add this line to call the function
+        #self.publish_workspace_marker()  # Add this line to call the function
+
+        self.create_timer(1, self.publish_workspace_marker)
 
     def calculate_grid_size_and_origin(self, coordinates):
         """Calculate grid size and origin based on workspace coordinates."""
@@ -191,7 +200,7 @@ class OccupancyGridPublisher(Node):
         marker.color.g = 0.0
         marker.color.b = 1.0
 
-        file_path = "/home/kristoffer-germalm/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
+        file_path = "/home/group1/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
         coordinates = self.read_workspace_coordinates(file_path)
 
         first_point = None
