@@ -97,14 +97,15 @@ class Planner(Node):
         pose_msg.pose.orientation.w = quaternion[3]
         
         message.poses.append(pose_msg)
-      else: # If no path exist, publish empty path
-        self.get_logger().info('Path empty')
+        self.path_pub.publish(message)
+    else: # If no path exist, publish empty path
+      self.get_logger().info('Path empty')
         # pose_msg = PoseStamped()
         # pose_msg.header.stamp = message.header.stamp
         # pose_msg.header.frame_id = message.header.frame_id
         # message.poses.append(pose_msg)
     # print('Publish path')
-    self.path_pub.publish(message)
+    
 
   def pose_callback(self, msg : PoseWithCovarianceStamped):
     # Get position of robot
