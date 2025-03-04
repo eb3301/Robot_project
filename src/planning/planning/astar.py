@@ -38,8 +38,8 @@ class Planner(Node):
     self.path_pub = self.create_publisher(Path, "/planned_path", qos)
 
     # Robot pose coordnates
-    self.x0 = 0.1
-    self.y0 = 0.1
+    self.x0 = 0.0
+    self.y0 = 0.0
     self.theta0 = 0
 
     # Target coordinates

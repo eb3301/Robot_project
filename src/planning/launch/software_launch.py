@@ -13,19 +13,19 @@ def generate_launch_description():
             name='rviz'
         ),
         
-        # Start controller joystick 
-        ExecuteProcess(
-            cmd=['ros2', 'run', 'controller', 'controller'],
-            output='screen',
-            name='controller_node'
-        ),
-
-        # # Start auto control
+        # # Start controller joystick 
         # ExecuteProcess(
-        #     cmd=['ros2', 'run', 'steering', 'auto_control'],
+        #     cmd=['ros2', 'run', 'controller', 'controller'],
         #     output='screen',
-        #     name='auto_control_node'
+        #     name='controller_node'
         # ),
+
+        # Start auto control
+        ExecuteProcess(
+            cmd=['ros2', 'run', 'steering', 'auto_control'],
+            output='screen',
+            name='auto_control_node'
+        ),
         
         # Start costmap
         ExecuteProcess(
