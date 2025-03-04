@@ -128,7 +128,7 @@ def calculate_steering_angle(current_position, current_heading, target_point):
 def main():
     rclpy.init()
     node = AutoControll()
-    _ = input("Press enter to start moving!")
+    # _ = input("Press enter to start moving!")
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
