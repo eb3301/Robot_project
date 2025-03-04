@@ -5,6 +5,7 @@ import rclpy.logging
 import numpy as np
 import time
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
@@ -18,6 +19,12 @@ class Planner(Node):
   def __init__(self):
     super().__init__('Initialize_Planner')
 
+    qos = QoSProfile(
+            reliability = QoSReliabilityPolicy.RELIABLE, # Does not lose msg
+            durability = QoSDurabilityPolicy.TRANSIENT_LOCAL, # New subscribers get msg after pub
+            depth = 1
+        )
+
     # Subscribe to costmap
     self.costmap_sub = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 1)
 
@@ -28,7 +35,7 @@ class Planner(Node):
     self.goal_sub = self.create_subscription(Marker, "/goal_marker", self.goal_callback, 1)
 
     # Publish the planned path
-    self.path_pub = self.create_publisher(Path, "/planned_path", 1)
+    self.path_pub = self.create_publisher(Path, "/planned_path", qos)
 
     # Robot pose coordnates
     self.x0 = 0.1
@@ -51,8 +58,8 @@ class Planner(Node):
 
     if self.planned: # Logic, maybe move out?
       for i in range(len(self.path)):
-        x_index = int(self.path[i][0] // resolution)  # Integer division to get the grid index
-        y_index = int(self.path[i][1] // resolution)  # Integer division to get the grid index
+        x_index = int(self.path[i][0] // resolution)  
+        y_index = int(self.path[i][1] // resolution)
         if map_data[x_index][y_index] == 100:
           self.planned = False
           print('Path obstucted')
