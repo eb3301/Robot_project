@@ -51,7 +51,9 @@ class Planner(Node):
 
     if self.planned: # Logic, maybe move out?
       for i in range(len(self.path)):
-        if map_data[self.path[i][1]][self.path[i][0]] == 100:
+        x_index = int(self.path[i][0] // resolution)  # Integer division to get the grid index
+        y_index = int(self.path[i][1] // resolution)  # Integer division to get the grid index
+        if map_data[x_index][y_index] == 100:
           self.planned = False
           print('Path obstucted')
           break
