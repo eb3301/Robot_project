@@ -35,6 +35,9 @@ class AutoControll(Node):
 
         # Preallocation
         self.lookahead_distance = 3
+        self.current_position = (0.0)
+        self.current_heading = 0
+        self.pose_list = []
 
     def timer_callback(self):
         # Compute the velocity command using the Pure Pursuit algorithm
