@@ -8,7 +8,7 @@ from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
-from tf_transformations import euler_from_quaternion, quaternion_from_euler
+from tf_transformations import quaternion_from_euler
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm
@@ -39,7 +39,9 @@ class Planner(Node):
     self.xt = 0.9
     self.yt = 0.9
 
+    # Path
     self.planned = False
+    self.path = []
 
   def map_callback(self, msg : OccupancyGrid):
     # Get data from message
@@ -47,42 +49,51 @@ class Planner(Node):
     map_data = np.reshape(map_data, (msg.info.height, msg.info.width))
     resolution = msg.info.resolution
 
+    if self.planned: # Logic, maybe move out?
+      for i in range(len(self.path)):
+        if map_data[self.path[i][1]][self.path[i][0]] == 100:
+          self.planned = False
+          print('Path obstucted')
+          break
     if not self.planned:
-      # Path planning algortim
-      path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, resolution)
+      print('Planning new path')
+      self.plan_path(map_data, resolution)
       self.planned = True
-      
-      # Path message
-      message = Path()
-      message.header.stamp = self.get_clock().now().to_msg()
-      message.header.frame_id = 'odom'
-      
-      if path:# If the path exists, publish it
-        for i, pose in enumerate(path):
-          pose_msg = PoseStamped()
-          pose_msg.header.stamp = message.header.stamp
-          pose_msg.header.frame_id = message.header.frame_id
-          # Set the position and orientation 
-          pose_msg.pose.position.x = pose[0]
-          pose_msg.pose.position.y = pose[1]
-          # Convert the orientation from phi (heading) to a quaternion
-          quaternion = quaternion_from_euler(0, 0, pose[2])  # Use phi as the yaw angle
-          pose_msg.pose.orientation.x = quaternion[0]
-          pose_msg.pose.orientation.y = quaternion[1]
-          pose_msg.pose.orientation.z = quaternion[2]
-          pose_msg.pose.orientation.w = quaternion[3]
-          
-          message.poses.append(pose_msg)
-        # else: # If no path exist, publish empty path
-        #   pose_msg = PoseStamped()
-        #   pose_msg.header.stamp = message.header.stamp
-        #   pose_msg.header.frame_id = message.header.frame_id
-        #   message.poses.append(pose_msg)
 
-      print('Publish path')
-      self.path_pub.publish(message)
-    else:
-      pass
+
+  def plan_path(self, map_data, resolution):
+    # Path planning algortim
+    path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, resolution)
+    
+    # Path message
+    message = Path()
+    message.header.stamp = self.get_clock().now().to_msg()
+    message.header.frame_id = 'odom'
+    
+    if path:# If the path exists, publish it
+      for i, pose in enumerate(path):
+        pose_msg = PoseStamped()
+        pose_msg.header.stamp = message.header.stamp
+        pose_msg.header.frame_id = message.header.frame_id
+        # Set the position and orientation 
+        pose_msg.pose.position.x = pose[0]
+        pose_msg.pose.position.y = pose[1]
+        # Convert the orientation from phi (heading) to a quaternion
+        quaternion = quaternion_from_euler(0, 0, pose[2])  # Use phi as the yaw angle
+        pose_msg.pose.orientation.x = quaternion[0]
+        pose_msg.pose.orientation.y = quaternion[1]
+        pose_msg.pose.orientation.z = quaternion[2]
+        pose_msg.pose.orientation.w = quaternion[3]
+        
+        message.poses.append(pose_msg)
+      else: # If no path exist, publish empty path
+        pose_msg = PoseStamped()
+        pose_msg.header.stamp = message.header.stamp
+        pose_msg.header.frame_id = message.header.frame_id
+        message.poses.append(pose_msg)
+    self.path = path
+    print('Publish path')
+    self.path_pub.publish(message)
 
   def pose_callback(self, msg : PoseWithCovarianceStamped):
     # Get position of robot
@@ -118,9 +129,6 @@ def find_cell_index(x, y, resolution):
   # Convert to integers to avoid floating-point precision issues
   x_index = int(x // resolution)  # Integer division to get the grid index
   y_index = int(y // resolution)  # Integer division to get the grid index
-  
-  # # Calculate the 1D index assuming a 2D grid
-  # index = y_index * int(1 / resolution) + x_index
   return (x_index, y_index)
 
 def start_center(x, y, resolution):
