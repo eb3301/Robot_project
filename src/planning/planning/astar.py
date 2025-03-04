@@ -267,8 +267,8 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
           path.append((current_node.x, current_node.y, current_node.theta))
           current_node = current_node.parent
       # path.pop(-1) # The robots position, should be included?
-      x, y, theta = path[-1]
-      path[-1] = (x - 0.5 * resolution, y - 0.5 * resolution, theta)
+      # x, y, theta = path[-1]
+      # path[-1] = (x - 0.5 * resolution, y - 0.5 * resolution, theta)
       return path[::-1]
 
     # For the start, explore all directions
