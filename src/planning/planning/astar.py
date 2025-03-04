@@ -361,18 +361,18 @@ def main2():
 
  
 
-main2()
+# main2()
 
 
-# def main():
-#     rclpy.init()
-#     node = Planner()
-#     try:
-#         rclpy.spin(node)
-#         time.sleep(3)
-#     except KeyboardInterrupt:
-#         pass
-#     rclpy.shutdown()
+def main():
+    rclpy.init()
+    node = Planner()
+    try:
+        rclpy.spin(node)
+        time.sleep(3)
+    except KeyboardInterrupt:
+        pass
+    rclpy.shutdown()
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
