@@ -55,6 +55,7 @@ class Planner(Node):
     map_data = msg.data
     map_data = np.reshape(map_data, (msg.info.height, msg.info.width))
     resolution = msg.info.resolution
+    time = msg.header.stamp
 
     if self.planned: # Logic, maybe move out?
       for i in range(len(self.path)):
@@ -66,18 +67,18 @@ class Planner(Node):
           break
     if not self.planned:
       self.get_logger().info("Planning new path")
-      self.plan_path(map_data, resolution)
+      self.plan_path(map_data, resolution, time)
       self.planned = True
 
 
-  def plan_path(self, map_data, resolution):
+  def plan_path(self, map_data, resolution, time):
     # Path planning algortim
     path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, resolution)
     self.path = path
     
     # Path message
     message = Path()
-    message.header.stamp = self.get_clock().now().to_msg()
+    message.header.stamp = time
     message.header.frame_id = '/odom'
     
     if path:# If the path exists, publish it
