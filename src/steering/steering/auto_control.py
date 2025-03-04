@@ -46,11 +46,11 @@ class AutoControll(Node):
             distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(final_point))
 
             # If the robot is close enough to the final point, stop publishing
-            if distance_to_goal < 0.1:  # You can adjust this threshold
+            if distance_to_goal < 0.1:
                 self.get_logger().info("Goal reached! Stopping.")
-                twist_msg = Twist()  # Publish zero velocity to stop the robot
+                twist_msg = Twist()
                 self.cmd_vel_pub.publish(twist_msg)
-                return  # Stop further processing
+                return 
             
             # Compute the velocity command using the Pure Pursuit algorithm
             twist_msg = pure_pursuit_velocity(self.current_position, self.current_heading, self.pose_list, self.lookahead_distance)
@@ -71,7 +71,6 @@ class AutoControll(Node):
         self.pose_list = []
         
         for pose_msg in msg.poses:
-            
             position = (pose_msg.pose.position.x, pose_msg.pose.position.y)
             self.pose_list.append(position)
 
@@ -109,7 +108,7 @@ def pure_pursuit_velocity(current_position, current_heading, path, lookahead_dis
     base = 0.31 # m
     
     # Maximum velocities
-    max_factor = 1 / 4
+    max_factor = 1 / 8
     max_vel = wheel_radius * max_factor # m/s
     max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
 

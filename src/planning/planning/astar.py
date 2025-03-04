@@ -265,7 +265,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
       while current_node:
           path.append((current_node.x, current_node.y, current_node.theta))
           current_node = current_node.parent
-      path.pop(-1) # The robots position, should be included?
+      # path.pop(-1) # The robots position, should be included?
       return path[::-1]
 
     # For the start, explore all directions
