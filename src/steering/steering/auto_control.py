@@ -40,12 +40,24 @@ class AutoControll(Node):
         self.pose_list = []
 
     def timer_callback(self):
-        # Compute the velocity command using the Pure Pursuit algorithm
-        twist_msg = pure_pursuit_velocity(self.current_position, self.current_heading, self.pose_list, self.lookahead_distance)
-        
-        # Publish the twist message
-        self.cmd_vel_pub.publish(twist_msg)
-        self.get_logger().info(f"Published velocity: linear = {twist_msg.linear.x}, angular = {twist_msg.angular.z}")
+        if self.pose_list:
+            # Calculate the distance to the final point
+            final_point = self.pose_list[-1]
+            distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(final_point))
+
+            # If the robot is close enough to the final point, stop publishing
+            if distance_to_goal < 0.1:  # You can adjust this threshold
+                self.get_logger().info("Goal reached! Stopping.")
+                twist_msg = Twist()  # Publish zero velocity to stop the robot
+                self.cmd_vel_pub.publish(twist_msg)
+                return  # Stop further processing
+            
+            # Compute the velocity command using the Pure Pursuit algorithm
+            twist_msg = pure_pursuit_velocity(self.current_position, self.current_heading, self.pose_list, self.lookahead_distance)
+            
+            # Publish the twist message
+            self.cmd_vel_pub.publish(twist_msg)
+            self.get_logger().info(f"Published velocity: linear = {twist_msg.linear.x}, angular = {twist_msg.angular.z}")
 
     # Get position of robot
     def pose_callback(self, msg : PoseWithCovarianceStamped):
