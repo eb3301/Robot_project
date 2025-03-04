@@ -45,6 +45,7 @@ class Planner(Node):
     # Target coordinates
     self.xt = 0.9
     self.yt = 0.9
+    self.origin = (0,0)
 
     # Path
     self.planned = False
@@ -55,12 +56,16 @@ class Planner(Node):
     map_data = msg.data
     map_data = np.reshape(map_data, (msg.info.height, msg.info.width))
     resolution = msg.info.resolution
+    origin_x = msg.info.origin.position.x
+    origin_y = msg.info.origin.position.y
+    self.origin = (origin_x, origin_y)
     time = msg.header.stamp
 
     if self.planned: # Logic, maybe move out?
+      self.get_logger().info(f"Test {map_data[-1][-1]}")
       for i in range(len(self.path)):
-        x_index = int(self.path[i][0] // resolution)  
-        y_index = int(self.path[i][1] // resolution)
+        x_index = int((self.path[i][0] - origin_x) // resolution)  
+        y_index = int((self.path[i][1] - origin_y) // resolution)
         if map_data[x_index][y_index] == 100:
           self.planned = False
           self.get_logger().info(f"Path obstructed at ({x_index}, {y_index})")
@@ -73,7 +78,7 @@ class Planner(Node):
 
   def plan_path(self, map_data, resolution, time):
     # Path planning algortim
-    path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, resolution)
+    path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, resolution, self.origin)
     self.path = path
     
     # Path message
@@ -104,7 +109,7 @@ class Planner(Node):
         # pose_msg.header.stamp = message.header.stamp
         # pose_msg.header.frame_id = message.header.frame_id
         # message.poses.append(pose_msg)
-    # print('Publish path')
+
     
 
   def pose_callback(self, msg : PoseWithCovarianceStamped):
@@ -137,14 +142,14 @@ def reached_target(x, y, xt, yt, resolution):
     return True
   return False
 
-def find_cell_index(x, y, resolution):
+def find_cell_index(x, y, resolution, origin):
   # Convert to integers to avoid floating-point precision issues
-  x_index = int(x // resolution)  # Integer division to get the grid index
-  y_index = int(y // resolution)  # Integer division to get the grid index
+  x_index = int((x - origin[0]) // resolution)  # Integer division to get the grid index
+  y_index = int((y - origin[1]) // resolution)  # Integer division to get the grid index
   return (x_index, y_index)
 
-def start_center(x, y, resolution):
-  x_index, y_index = find_cell_index(x, y, resolution)
+def start_center(x, y, resolution, origin):
+  x_index, y_index = find_cell_index(x, y, resolution, origin)
   
   # Adjust the coordinates to the center of the grid cell
   x_center = (x_index + 0.5) * resolution
@@ -165,14 +170,14 @@ def step(x, y, theta, phi, resolution):
   return xn, yn, thetan
 
 
-def step_collided_with_obsticale(obsticales, x, y, resolution):
-  x_index, y_index = find_cell_index(x, y, resolution) # Maybe need to be center?
+def step_collided_with_obsticale(obsticales, x, y, resolution, origin):
+  x_index, y_index = find_cell_index(x, y, resolution, origin) # Maybe need to be center?
   if obsticales[x_index, y_index] == 100:
     return True
   return False
     
 
-def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions):
+def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions, origin):
   # Get steering angles, only grid coordinates
   if directions == 4:
     steer_angels = [-np.pi/2, 0, np.pi/2, np.pi]
@@ -190,7 +195,7 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
     for i in range(steps):
       xn, yn, thetan = step(xn, yn, thetan, phi, resolution)
             
-      if step_collided_with_obsticale(obsticales, xn, yn, resolution): # chatgpt fail
+      if step_collided_with_obsticale(obsticales, xn, yn, resolution, origin): # chatgpt fail
         feasible = False
         break
     
@@ -206,7 +211,7 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
       else:
         # Cost functions
         new_node.g = current_node.g + resolution #+ math.sqrt((new_node.x - current_node.x)**2 + (new_node.y - current_node.y)**2) # change to Mahalanobis distance
-        x_index, y_index = find_cell_index(xn, yn, resolution) 
+        x_index, y_index = find_cell_index(xn, yn, resolution, origin) 
         new_node.c = obsticales[x_index, y_index]
         
         # Check if is in the open set and if the cost is smaller?
@@ -228,13 +233,13 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
           open_set[new_node_key] = new_node
 
 
-def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
+def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
   steps = 1
   start = 0
 
   # Ensure grid compatibility
-  x0, y0 = start_center(x0, y0, resolution)
-  xt, yt = start_center(xt, yt, resolution)
+  x0, y0 = start_center(x0, y0, resolution, origin)
+  xt, yt = start_center(xt, yt, resolution, origin)
 
   # Start node
   start_node = Plan_node(x0, y0, theta0) 
@@ -279,7 +284,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution):
       directions = 3
 
     # Get new nodes
-    get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions)
+    get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions, origin)
 
 
 def main2():
@@ -293,8 +298,8 @@ def main2():
 
   x0 = 0.1 # start x position
   y0 = 0.1 # start y position
-  xt = 0.9 # target x position
-  yt = 0.9 # target y position
+  xt = 0.20 # target x position
+  yt = 0.60 # target y position
 
   # Mark the start (x0, y0) and goal (xt, yt) points with green (value 50)
   start_x_index = int(x0 * 100)
@@ -303,10 +308,10 @@ def main2():
   goal_y_index = int(yt * 100)
 
   # Add some custom patterns or corridors
-  # for i in range(0, 60):
-  #   grid[i, 20:30] = 100  # Add vertical wall
-  # for i in range(20, 50):
-  #   grid[70:80, i] = 100  # Add horizontal wall
+  for i in range(0, 60):
+    grid[i, 20:30] = 100  # Add vertical wall
+  for i in range(20, 50):
+    grid[70:80, i] = 100  # Add horizontal wall
 
   # # Add random obstacles inside the room
   # num_obstacles = int((100 * 100) * 0.3)
@@ -318,7 +323,7 @@ def main2():
   #         grid[x, y] = 100
 
   start_time = time.time()
-  path = solution(x0, y0, 0, xt, yt, grid, 1/100)
+  path = solution(x0, y0, 0, xt, yt, grid, 1/100, (0,0))
   end_time = time.time()
   elapsed_time = end_time - start_time
 
@@ -356,18 +361,18 @@ def main2():
 
  
 
-# main2()
+main2()
 
 
-def main():
-    rclpy.init()
-    node = Planner()
-    try:
-        rclpy.spin(node)
-        time.sleep(3)
-    except KeyboardInterrupt:
-        pass
-    rclpy.shutdown()
+# def main():
+#     rclpy.init()
+#     node = Planner()
+#     try:
+#         rclpy.spin(node)
+#         time.sleep(3)
+#     except KeyboardInterrupt:
+#         pass
+#     rclpy.shutdown()
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
