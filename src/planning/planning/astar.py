@@ -274,7 +274,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
       path.pop(-1) # The robots position, should be included?
       # x, y, theta = path[-1]
       # path[-1] = (x - 0.5 * resolution, y - 0.5 * resolution, theta)
-      return path[::-1]
+      return path[::-1]#, closed_set, open_set
 
     # For the start, explore all directions
     if start == 0:
@@ -298,7 +298,7 @@ def main2():
 
   x0 = 0.1 # start x position
   y0 = 0.1 # start y position
-  xt = 0.20 # target x position
+  xt = 0.60 # target x position
   yt = 0.60 # target y position
 
   # Mark the start (x0, y0) and goal (xt, yt) points with green (value 50)
@@ -323,7 +323,7 @@ def main2():
   #         grid[x, y] = 100
 
   start_time = time.time()
-  path = solution(x0, y0, 0, xt, yt, grid, 1/100, (0,0))
+  path, closed_set, open_set = solution(x0, y0, 0, xt, yt, grid, 1/100, (0,0))
   end_time = time.time()
   elapsed_time = end_time - start_time
 
@@ -351,6 +351,18 @@ def main2():
   # Plot start and goal as green points
   plt.scatter(start_y_index, start_x_index, c='green', marker='o', s=50, label=f"Start ({start_x_index}, {start_y_index})")
   plt.scatter(goal_y_index, goal_x_index, c='green', marker='o', s=50, label=f"Goal ({goal_x_index}, {goal_y_index})")
+
+  # for node_key in closed_set:
+  #   node = closed_set[node_key]
+  #   closed_x_index = int(node.x * 100)
+  #   closed_y_index = int(node.y * 100)
+  #   plt.scatter(closed_y_index, closed_x_index, c='red', marker='x', s=10)
+
+  # for node_key in open_set:
+  #   node = open_set[node_key]
+  #   open_x_index = int(node.x * 100)
+  #   open_y_index = int(node.y * 100)
+  #   plt.scatter(open_y_index, open_x_index, c='blue', marker='o', s=20)
 
   plt.gca().invert_yaxis()
   
