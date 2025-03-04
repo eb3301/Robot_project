@@ -20,12 +20,12 @@ def generate_launch_description():
         #     name='controller_node'
         # ),
 
-        # Start auto control
-        ExecuteProcess(
-            cmd=['ros2', 'run', 'steering', 'auto_control'],
-            output='screen',
-            name='auto_control_node'
-        ),
+        # # Start auto control
+        # ExecuteProcess(
+        #     cmd=['ros2', 'run', 'steering', 'auto_control'],
+        #     output='screen',
+        #     name='auto_control_node'
+        # ),
         
         # Start costmap
         ExecuteProcess(
