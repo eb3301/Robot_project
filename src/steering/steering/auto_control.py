@@ -5,6 +5,7 @@ import numpy as np
 import rclpy
 import rclpy.logging
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
 from tf_transformations import euler_from_quaternion
 from nav_msgs.msg import Path
@@ -14,6 +15,12 @@ class AutoControll(Node):
     def __init__(self):
         super().__init__('Auto_Controller')
 
+        qos = QoSProfile(
+            reliability = QoSReliabilityPolicy.RELIABLE, # Does not lose msg
+            durability = QoSDurabilityPolicy.TRANSIENT_LOCAL, # New subscribers get msg after pub
+            depth = 1
+        )
+
         # Init publisher
         self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
 
@@ -21,7 +28,7 @@ class AutoControll(Node):
         self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/ekf_pose', self.pose_callback, 10) # This might need to be restricted
 
         # Subscribe to goal pose
-        self.path_sub = self.create_subscription(Path, "/planned_path", self.path_callback, 1) # latch topic
+        self.path_sub = self.create_subscription(Path, "/planned_path", self.path_callback, qos) # latched topic
 
         # Timer
         self.timer = self.create_timer(0.2, self.timer_callback)

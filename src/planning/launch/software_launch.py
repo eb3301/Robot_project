@@ -6,12 +6,12 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     return LaunchDescription([
-        # #Start Rviz
-        # ExecuteProcess(
-        #     cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/robot//dd2419_ws/src/default.rviz'],
-        #     output='screen',
-        #     name='rviz'
-        # ),
+        #Start Rviz
+        ExecuteProcess(
+            cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/group1//.rviz2/default.rviz'],
+            output='screen',
+            name='rviz'
+        ),
         
         # Start controller joystick 
         ExecuteProcess(
@@ -27,12 +27,12 @@ def generate_launch_description():
         #     name='auto_control_node'
         # ),
         
-        # # Start costmap
-        # ExecuteProcess(
-        #     cmd=['ros2', 'run', 'occupancy_grid', 'occupancy_grid'],
-        #     output='screen',
-        #     name='occupancy_grid_node'
-        # ),
+        # Start costmap
+        ExecuteProcess(
+            cmd=['ros2', 'run', 'occupancy_grid', 'occupancy_grid'],
+            output='screen',
+            name='occupancy_grid_node'
+        ),
 
         # Start wheel control
         ExecuteProcess(
@@ -41,32 +41,11 @@ def generate_launch_description():
             name='wheel_control_node'
         ),
 
-        # # Start camera
-        # ExecuteProcess(
-        #     cmd=['ros2', 'run', 'detection', 'detection'],
-        #     output='screen',
-        #     name='camera_node'
-        # ),
-       
-        # # Start arm
-        # ExecuteProcess(
-        #     cmd=['ros2', 'run', 'micro_ros_agent', 'micro_ros_agent', 'serial', '--dev', '/dev/hiwonder_arm', '-v6'],
-        #     output='screen',
-        #     name='arm_launch'
-        # ),
-        
-        # Arm controller
-        # ExecuteProcess(
-        #     cmd=['ros2', 'run', 'pickup', 'pickup'],
-        #     output='screen',
-        #     name='arm_controller'
-        # ),
-
-        # #Lidar node
-        # ExecuteProcess(
-        #     cmd=['ros2', 'run', 'lidar', 'lidar'],
-        #     output='screen',
-        #     name='lidar_node'
-        # ),
+        # Start path planner
+        ExecuteProcess(
+            cmd=['ros2', 'run', 'planning', 'astar'],
+            output='screen',
+            name='path_plan_node'
+        ),
 
     ])

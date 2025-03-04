@@ -62,10 +62,10 @@ class Planner(Node):
         y_index = int(self.path[i][1] // resolution)
         if map_data[x_index][y_index] == 100:
           self.planned = False
-          print('Path obstucted')
+          self.get_logger().info("Path obstructed")
           break
     if not self.planned:
-      print('Planning new path')
+      self.get_logger().info("Planning new path")
       self.plan_path(map_data, resolution)
       self.planned = True
 
@@ -73,11 +73,12 @@ class Planner(Node):
   def plan_path(self, map_data, resolution):
     # Path planning algortim
     path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, resolution)
+    self.path = path
     
     # Path message
     message = Path()
     message.header.stamp = self.get_clock().now().to_msg()
-    message.header.frame_id = 'odom'
+    message.header.frame_id = '/odom'
     
     if path:# If the path exists, publish it
       for i, pose in enumerate(path):
@@ -96,12 +97,12 @@ class Planner(Node):
         
         message.poses.append(pose_msg)
       else: # If no path exist, publish empty path
-        pose_msg = PoseStamped()
-        pose_msg.header.stamp = message.header.stamp
-        pose_msg.header.frame_id = message.header.frame_id
-        message.poses.append(pose_msg)
-    self.path = path
-    print('Publish path')
+        self.get_logger().info('Path empty')
+        # pose_msg = PoseStamped()
+        # pose_msg.header.stamp = message.header.stamp
+        # pose_msg.header.frame_id = message.header.frame_id
+        # message.poses.append(pose_msg)
+    # print('Publish path')
     self.path_pub.publish(message)
 
   def pose_callback(self, msg : PoseWithCovarianceStamped):

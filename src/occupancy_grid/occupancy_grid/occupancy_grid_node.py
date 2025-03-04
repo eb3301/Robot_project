@@ -172,7 +172,7 @@ class OccupancyGridPublisher(Node):
         msg.data = self.map_data
 
         self.publisher_.publish(msg)
-        self.get_logger().info("Updated Occupancy Grid Published")
+        # self.get_logger().info("Updated Occupancy Grid Published")
 
     def read_workspace_coordinates(self, file_path):
         """Reads workspace coordinates from a file."""
@@ -225,7 +225,7 @@ class OccupancyGridPublisher(Node):
             marker.points.append(first_point)
 
         self.marker_publisher.publish(marker)
-        self.get_logger().info("Published workspace marker from file")
+        # self.get_logger().info("Published workspace marker from file")
 
 
 def main(args=None):
