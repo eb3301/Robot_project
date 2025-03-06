@@ -4,6 +4,7 @@ import numpy as np
 
 import rclpy
 import rclpy.logging
+import time
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
@@ -30,34 +31,14 @@ class AutoControll(Node):
         # Subscribe to goal pose
         self.path_sub = self.create_subscription(Path, "/planned_path", self.path_callback, qos) # latched topic
 
-        # Timer
-        self.timer = self.create_timer(0.2, self.timer_callback)
+        # # Timer
+        # self.timer = self.create_timer(0.2, self.timer_callback)
 
         # Preallocation
         self.lookahead_distance = 3
         self.current_position = (0.0)
         self.current_heading = 0
         self.pose_list = []
-
-    def timer_callback(self):
-        if self.pose_list:
-            # Calculate the distance to the final point
-            final_point = self.pose_list[-1]
-            distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(final_point))
-
-            # If the robot is close enough to the final point, stop publishing
-            if distance_to_goal < 0.1:
-                self.get_logger().info("Goal reached! Stopping.")
-                twist_msg = Twist()
-                self.cmd_vel_pub.publish(twist_msg)
-                return 
-            
-            # Compute the velocity command using the Pure Pursuit algorithm
-            twist_msg = pure_pursuit_velocity(self.current_position, self.current_heading, self.pose_list, self.lookahead_distance)
-            
-            # Publish the twist message
-            self.cmd_vel_pub.publish(twist_msg)
-            self.get_logger().info(f"Published velocity: linear = {twist_msg.linear.x}, angular = {twist_msg.angular.z}")
 
     # Get position of robot
     def pose_callback(self, msg : PoseWithCovarianceStamped):
@@ -74,6 +55,34 @@ class AutoControll(Node):
             position = (pose_msg.pose.position.x, pose_msg.pose.position.y)
             self.pose_list.append(position)
 
+        # Calculate the distance to the final point
+        final_point = self.pose_list[-1]
+        distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(final_point))
+
+        while distance_to_goal < 0.1:
+            start_time = time.time()  # Record the start time
+            
+            # Calcluate distance to goal, maybe move?
+            distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(final_point)) 
+            
+            # Compute the velocity command using the Pure Pursuit algorithm
+            twist_msg = pure_pursuit_velocity(self.current_position, self.current_heading, self.pose_list, self.lookahead_distance)
+            
+            # Publish the twist message
+            self.cmd_vel_pub.publish(twist_msg)
+            self.get_logger().info(f"Published velocity: linear = {twist_msg.linear.x}, angular = {twist_msg.angular.z}")
+            
+            # Wait for 0.2 seconds to ensure the loop runs at 5 Hz
+            elapsed_time = time.time() - start_time
+            sleep_time = max(0.2 - elapsed_time, 0)  # Ensure we don't sleep for negative time
+            time.sleep(sleep_time)
+            
+        
+        self.get_logger().info("Goal reached! Stopping.")
+        # Publish 0, to stop
+        twist_msg = Twist()
+        self.cmd_vel_pub.publish(twist_msg)
+
     # Compute heading from Loke
     def compute_heading(self, orientation):
         x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
@@ -83,7 +92,7 @@ class AutoControll(Node):
         
 def pure_pursuit_velocity(current_position, current_heading, path, lookahead_distance):
     # Convert path to a NumPy array
-    path = np.array(path)
+    path = np.array(path) # move out
 
     # Calculate the vector from the robot to each point in the path
     dx = path[:, 0] - current_position[0]

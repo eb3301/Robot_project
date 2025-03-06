@@ -1,1 +1,1 @@
-/home/group1/dd2419_ws/build/sllidar_ros2/ament_cmake_environment_hooks/local_setup.sh
+/home/robot/dd2419_ws/build/sllidar_ros2/ament_cmake_environment_hooks/local_setup.sh
