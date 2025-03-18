@@ -27,7 +27,7 @@ class Detection(Node):
 
         distances = np.linalg.norm(points[:, :3], axis=1)
         offset = 0.089
-        mask = (distances <= 1) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
+        mask = (distances <= 1.5) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
         filtered_indices = np.where(mask)[0]
         filtered_points = points[mask]
 
@@ -42,11 +42,11 @@ class Detection(Node):
         banana_labels, counts = np.unique(labels, return_counts=True)
 
         # Definisci un limite massimo di punti per cluster
-        max_cluster_size = 6000
+        max_cluster_size = 8000
 
         # Sostituisci i cluster troppo grandi con -1 (rumore)
         filt_labels = np.array([
-            -1 if counts[label] > max_cluster_size else label
+            -1 if counts[label] > max_cluster_size else label   
             for label in labels
         ])
 
@@ -68,14 +68,20 @@ class Detection(Node):
             bbox_min = np.min(cluster_points, axis=0)
             bbox_max = np.max(cluster_points, axis=0)
             bbox_size = bbox_max - bbox_min
+            bbox_center = (bbox_min + bbox_max) / 2
             volume = np.prod(bbox_size)
 
-            # if volume < 0.002:
-            #     self.get_logger().info(f'Detected Objects at {np.mean(cluster_points, axis=0)}')
-            #     classified_labels.append(1)
-            # elif volume < 0.01:
-            #     self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
-            #     classified_labels.append(2)
+            #self.get_logger().info(f'box x: {bbox_min[0],bbox_max[0]}')
+            
+            # Partial cluster removal:
+            # Definisci il workspace globale del robot
+            x_lim=0.36
+            x_min, x_max = -x_lim, x_lim
+
+            # Se il cluster è troppo vicino ai bordi, ignoralo
+            if (bbox_min[0] < x_min or bbox_max[0] > x_max):
+                self.get_logger().info(f"Skipping border cluster at {bbox_center}")
+                continue
 
             if volume < 0.00012:  # Object detected (< 0.002 fluffy + sphere + cube)
                 # Compute curvature
@@ -108,14 +114,14 @@ class Detection(Node):
                 else:
                     obj_type = "Sphere"
 
-                self.get_logger().info(f'Detected {obj_type} at {np.mean(cluster_points, axis=0)}')
+                #self.get_logger().info(f'Detected {obj_type} at {np.mean(cluster_points, axis=0)}')
                 classified_labels.append(1)
 
             elif volume < 0.002:
-                self.get_logger().info(f'Detected Fluffy animal at {np.mean(cluster_points, axis=0)}')
+                #self.get_logger().info(f'Detected Fluffy animal at {np.mean(cluster_points, axis=0)}')
                 classified_labels.append(1)
             elif volume < 0.01:
-                self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
+                #self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
                 classified_labels.append(2)
 
 
