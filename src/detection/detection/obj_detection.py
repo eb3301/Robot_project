@@ -26,8 +26,8 @@ class Detection(Node):
         points = pc2.read_points_numpy(msg, skip_nans=True)[:, :3]
 
         distances = np.linalg.norm(points[:, :3], axis=1)
-        offset = 0.09
-        mask = (distances <= 2) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
+        offset = 0.089
+        mask = (distances <= 1) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
         filtered_indices = np.where(mask)[0]
         filtered_points = points[mask]
 
@@ -35,12 +35,24 @@ class Detection(Node):
             self.get_logger().info("No points after filtering")
             return
 
-        db = DBSCAN(eps=0.35, min_samples=60)
+        db = DBSCAN(eps=0.15, min_samples=70)
         labels = db.fit_predict(filtered_points)
+
+        # Conta il numero di punti per cluster
+        banana_labels, counts = np.unique(labels, return_counts=True)
+
+        # Definisci un limite massimo di punti per cluster
+        max_cluster_size = 6000
+
+        # Sostituisci i cluster troppo grandi con -1 (rumore)
+        filt_labels = np.array([
+            -1 if counts[label] > max_cluster_size else label
+            for label in labels
+        ])
 
         detected_indices = []
         classified_labels = []
-        unique_labels = set(labels)
+        unique_labels = set(filt_labels)
         
         for label in unique_labels:
             if label == -1:
@@ -58,13 +70,55 @@ class Detection(Node):
             bbox_size = bbox_max - bbox_min
             volume = np.prod(bbox_size)
 
-            if volume < 0.002:
-                self.get_logger().info(f'Detected Cube or Sphere at {np.mean(cluster_points, axis=0)}')
+            # if volume < 0.002:
+            #     self.get_logger().info(f'Detected Objects at {np.mean(cluster_points, axis=0)}')
+            #     classified_labels.append(1)
+            # elif volume < 0.01:
+            #     self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
+            #     classified_labels.append(2)
+
+            if volume < 0.00012:  # Object detected (< 0.002 fluffy + sphere + cube)
+                # Compute curvature
+                curvatures = []
+                # Assuming cluster_points is a 2D numpy array with shape (num_points, 3)
+                for p in cluster_points:
+                    # Calculate the covariance matrix for the entire cluster of points
+                    cov_matrix = np.cov(cluster_points.T)  # Transpose to have points as columns
+                    # Check if the covariance matrix is valid (no NaNs or Infs)
+                    if np.any(np.isnan(cov_matrix)) or np.any(np.isinf(cov_matrix)):
+                        continue  # Skip this iteration if covariance is invalid
+
+                    # Compute the eigenvalues of the covariance matrix
+                    eigenvalues, _ = np.linalg.eig(cov_matrix)
+                    
+                    # Calculate curvature: the ratio of the smallest eigenvalue to the sum of eigenvalues
+                    curvature = eigenvalues.min() / np.sum(eigenvalues)
+                    curvatures.append(curvature)
+                    
+                # Avoid empty list when no valid curvature values are found
+                if curvatures:
+                    avg_curvature = np.mean(curvatures)
+                else:
+                    avg_curvature = 0  # Default to 0 if no valid curvature was found
+                #self.get_logger().info(f'Curvature {avg_curvature}')
+                
+                # Object classification based on curvature
+                if avg_curvature > 0.08:
+                    obj_type = "Cube"
+                else:
+                    obj_type = "Sphere"
+
+                self.get_logger().info(f'Detected {obj_type} at {np.mean(cluster_points, axis=0)}')
+                classified_labels.append(1)
+
+            elif volume < 0.002:
+                self.get_logger().info(f'Detected Fluffy animal at {np.mean(cluster_points, axis=0)}')
                 classified_labels.append(1)
             elif volume < 0.01:
                 self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
                 classified_labels.append(2)
-            
+
+
             detected_indices.append(cluster_indices)
 
         self.publish_detected_objects(detected_indices, msg)
