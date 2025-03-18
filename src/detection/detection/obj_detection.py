@@ -18,6 +18,8 @@ class Detection(Node):
         self.create_subscription(PointCloud2,
              '/camera/camera/depth/color/points', self.cloud_callback, 10)
         
+        self.ObjectList = []
+
         self.get_logger().info(f"Node started")
 
     def cloud_callback(self, msg: PointCloud2):
@@ -39,7 +41,7 @@ class Detection(Node):
         labels = db.fit_predict(filtered_points)
 
         # Conta il numero di punti per cluster
-        banana_labels, counts = np.unique(labels, return_counts=True)
+        useless_labels, counts = np.unique(labels, return_counts=True)
 
         # Definisci un limite massimo di punti per cluster
         max_cluster_size = 8000
@@ -53,6 +55,7 @@ class Detection(Node):
         detected_indices = []
         classified_labels = []
         unique_labels = set(filt_labels)
+        obj_type="trash"
         
         for label in unique_labels:
             if label == -1:
@@ -75,12 +78,12 @@ class Detection(Node):
             
             # Partial cluster removal:
             # Definisci il workspace globale del robot
-            x_lim=0.36
+            x_lim=0.35
             x_min, x_max = -x_lim, x_lim
 
             # Se il cluster è troppo vicino ai bordi, ignoralo
             if (bbox_min[0] < x_min or bbox_max[0] > x_max):
-                self.get_logger().info(f"Skipping border cluster at {bbox_center}")
+                #self.get_logger().info(f"Skipping border cluster at {bbox_center}")
                 continue
 
             if volume < 0.00012:  # Object detected (< 0.002 fluffy + sphere + cube)
@@ -111,21 +114,42 @@ class Detection(Node):
                 # Object classification based on curvature
                 if avg_curvature > 0.08:
                     obj_type = "Cube"
+                    classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
                 else:
                     obj_type = "Sphere"
+                    classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
 
                 #self.get_logger().info(f'Detected {obj_type} at {np.mean(cluster_points, axis=0)}')
-                classified_labels.append(1)
+                
 
             elif volume < 0.002:
                 #self.get_logger().info(f'Detected Fluffy animal at {np.mean(cluster_points, axis=0)}')
-                classified_labels.append(1)
+                obj_type = "Fluffy_animal"
+                classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
             elif volume < 0.01:
                 #self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
-                classified_labels.append(2)
+                obj_type = "Box"
+                classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
 
+            if not self.ObjectList:
+                self.ObjectList.append([obj_type, np.mean(cluster_points, axis=0)])
+            else:
+                new_obj_position = np.mean(cluster_points, axis=0)
+                should_add = True
+
+                for obj in self.ObjectList:
+                    obj_position = obj[1]  # Prendi solo la posizione dell'oggetto
+                    if np.linalg.norm(new_obj_position - obj_position) < 0.2:
+                        should_add = False
+                        break
+
+                if should_add:
+                    self.ObjectList.append([obj_type, new_obj_position])
+
+            self.get_logger().info(f'Detected {len(self.ObjectList)} objects from the detection node start')
 
             detected_indices.append(cluster_indices)
+
 
         self.publish_detected_objects(detected_indices, msg)
         self.publish_bounding_boxes(detected_indices, points, msg.header)
