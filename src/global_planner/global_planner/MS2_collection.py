@@ -12,9 +12,10 @@ from ament_index_python import get_package_share_directory
 
 from std_msgs.msg import Header
 from visualization_msgs.msg import Marker
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, PoseWithCovarianceStamped
 
 from tf_transformations import quaternion_from_euler
+import numpy as np
 
 class BehaviourTree(Node):
     def __init__(self):
@@ -28,37 +29,24 @@ class BehaviourTree(Node):
         create_ws = Create_ws(self) # Read workspace and map file
         load_map = Load_Map(self)
 
-        cube_coor = Get_Coor('cube') # Get coordinates from occupancy grid 
-        box_coor = Get_Coor('box') # Get coordinates from occupancy grid 
+        # Get target coordinates
+        '''Mapping: Box:     'B'
+                    Cube:    '1'
+                    Sphere:  '2'
+                    Plushie: '3'
+                    ICP:    'ICP'    '''
+        cube_coor = Get_Coor('ICP', self)
+
+
         drive_to_obj_1 = Drive_to_Obj() # Plan and execute path to coordinates
         drive_to_obj_2 = Drive_to_Obj() # Plan and execute path to coordinates
         pickup = Pickup() # Pickup object
         place = Place() # Place object
 
-        # MS2 collection seqence
-        # pickup_seq = pt.composites.Sequence(name="Pickup Sequence",
-        #                                     memory = bool,
-        #                                     children = [read_files,
-        #                                                 cube_coor,
-        #                                                 drive_to_obj_1,
-        #                                                 pickup])
-
-        # place_seq = pt.composites.Sequence(name = 'Place Sequence',
-        #                                    memory = bool,
-        #                                    children = [box_coor ,
-        #                                                drive_to_obj_2,
-        #                                                place]
-        #                                    )
-        
-        # root_seq = pt.composites.Selector(name = 'MS2 root',
-        #                                   memory = bool,
-        #                                   children = [pickup_seq, place_seq])
-
-        # self.BT = pt.trees.BehaviourTree(root = root_seq)
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          children = [create_ws, load_map]
+                                          children = [create_ws, load_map, cube_coor]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -69,7 +57,6 @@ class BehaviourTree(Node):
     def tick_tree(self):
         '''Ticks the tree and stops if sequence is complete'''
         status = self.BT.tick()
-        
 
 
 class Create_ws(pt.behaviour.Behaviour):
@@ -245,50 +232,79 @@ class Load_Map(pt.behaviour.Behaviour):
             self.marker_pub.publish(marker)
             print(f'Publishing marker ID: {marker.id} at x={marker.pose.position.x}, y={marker.pose.position.y}')
 
-            
-        
-
-
 
 class Get_Coor(pt.behaviour.Behaviour):
     '''Retrieves coordinates '''
-    def __init__(self, object_type: str):
+    def __init__(self, object_type: str, node):
         super().__init__("Retrieving Coordinate")
-    
+        self.node = node
+
+        self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/map_pose', self.pose_callback, 10)
 
         self.blackboard = pt.blackboard.Blackboard()
         self.target = object_type
         print('Initialising Coordinate Retriever...')
 
     def update(self):
+        # Get list of objects
+        #self.blackboard.register_key('objects', access = pt.common.Access.READ_WRITE)
+        objects = self.blackboard.get('objects')
+        print(objects)
         # First time ticking update
         if self.status == pt.common.Status.INVALID:
             print(f"Retrieving coordinate for {self.target}")
             return pt.common.Status.RUNNING
         
-        if self.target == "cube":
-            coor = (-199.0, -116.0)
-            status = pt.common.Status.SUCCESS
-        elif self.target == 'box':
-            coor = (16.0, 122.0)
-            status = pt.common.Status.SUCCESS
-        else:
-            print('Faulty Object Input')
-            return pt.common.Status.FAILURE
+        #Extract boxes and target object
+        boxes = [obj for obj in objects if "B" in obj[0]]
+        targets = [obj for obj in objects if self.target in obj[0]]
+
+        # If target is ICP reference cloud
+        if self.target == 'ICP':
+            coor = (6.7, 3.0)
+            self.blackboard.set('Target', coor)
+            return pt.common.Status.SUCCESS
+
+        # If target is a box: choose closest box
+        if self.target == 'B':
+            closest_box = min(boxes, key=lambda box: np.linalg.norm(np.array([self.x, self.y]) - np.array([box[1], box[2]])) )
+            coor = (closest_box[1], closest_box[2])
+            self.blackboard.set('Target', coor)
+            return pt.common.Status.SUCCESS
+
+        # Determine what object to pick up
+        distances = []
+        for target in targets: 
+            # Distance between robot and target
+            targ_to_robot = np.linalg.norm(np.array([self.x, self.y]) - np.array([target[1], target[2]]))
+
+            # Find box closets to target
+            closest_box = min(boxes, key=lambda box: np.linalg.norm(np.array([target[1], target[2]]) - np.array([box[1], box[2]])) )
+            
+            # Distance from target to closest box
+            closest_box_dist = np.linalg.norm(np.array([target[1], target[2]]) - np.array([closest_box[1], closest_box[2]]))
+
+            distances.append(targ_to_robot + closest_box_dist)
+
+        i = np.argmin(distances)
+        min_targ = targets[i]
+        coor = (min_targ[1], min_targ[2], min_targ)
         
         self.blackboard.set('Target', coor)
-        return status
+        return pt.common.Status.SUCCESS
     
+    def pose_callback(self, msg: PoseWithCovarianceStamped):
+        pose = msg.pose.pose
+        self.x, self.y = pose.position.x, pose.position.y
+
 
 class Drive_to_Obj(pt.behaviour.Behaviour):
     def __init__(self):
         super().__init__('Driving to Object')
         self.target = None
         self.blackboard = pt.blackboard.Blackboard()
-        
         print('Driving behaviour initialised')
         
-
     def update(self):
         # First time ticking update
         if self.status == pt.common.Status.INVALID:
@@ -302,7 +318,6 @@ class Drive_to_Obj(pt.behaviour.Behaviour):
         else: 
             return pt.common.Status.SUCCESS
             # TODO: IMPLEMENT DRIVING!
-        
         
 
 class Pickup(pt.behaviour.Behaviour):
