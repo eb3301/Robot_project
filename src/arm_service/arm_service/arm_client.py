@@ -34,7 +34,7 @@ def main(args=None):
     arm_client = ArmClient()
     response = arm_client.send_request(int(sys.argv[1])) # sys.argv is from terminal
     arm_client.get_logger().info(
-        'These values add up to something larger than 2: ' + str(response.success))
+        'Response from arm is: ' + str(response.success))
 
     arm_client.destroy_node()
     rclpy.shutdown()

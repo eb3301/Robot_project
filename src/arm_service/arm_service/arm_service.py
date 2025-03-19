@@ -7,6 +7,8 @@ from rclpy.node import Node
 
 from std_msgs.msg import String
 from std_msgs.msg import Int16MultiArray
+from sensor_msgs.msg import Image
+from rclpy.qos import QoSProfile, ReliabilityPolicy
 
 import ikpy.chain
 import ikpy.utils.plot as plot_utils
@@ -27,20 +29,22 @@ class MinimalService(Node):
         super().__init__('arm_service')
         self.srv = self.create_service(Arm, 'arm', self.arm_callback)
         self.publisher = self.create_publisher(Int16MultiArray, 'multi_servo_cmd_sub', 10)
+        self.imagesubscriber = self.create_subscription(Image, "/arm_camera/image_raw", self.image_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)) ## frame id is arm_camera_link
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
         self.data_sets = [[12000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
-                    [2000,12000,3000,12000,4000,12000,2000,2000,2000,2000,2000,2000],
+                    [2000,12000,3000,18000,9000,12000,2000,2000,2000,2000,2000,2000],
                     [11000,12000,10000,15000,4000,12000,2000,2000,2000,2000,2000,2000],
                     [2000,12000,8000,16000,10000,12000,2000,2000,2000,2000,2000,2000],
                     [2000,12000,3000,12000,4000,14000,2000,2000,2000,2000,2000,2000]]
         self.arm_length = [0.101,0.094,0.169]
+        self.latest_image = None
 
     def pos_ok_check(self,target_position):
         x, y, z = target_position
         return (
-            (np.all([-0.05 <= y <= 0.15, 0.0 <= x <= 0.18]) or 
+            (np.all([0.1 <= y <= 0.19, -0.12 <= x <= 0.1]) or 
             np.all([-0.15 <= y <= -0.05, -0.1 <= x <= 0.18]))
-            and (0.0 <= z <= 0.1)
+            and (-0.18 <= z <= -0.05)
         )
     
     def transform_to_robot(self,ang): 
@@ -96,7 +100,7 @@ class MinimalService(Node):
                 iktheta = theta
         elif y<0.05:
             self.get_logger().info("too close to robot")
-            return [0,0,0],[]
+            return [1],[]
         elif abs(x)<0.01 and y>0.01:
             iktheta = math.radians(90)
         
@@ -109,7 +113,7 @@ class MinimalService(Node):
         two_joint_dist = math.sqrt(ikz**2+rho**2)
         if a+b < two_joint_dist:
             self.get_logger().info("too far")
-            return [0,0,0],[]
+            return [0],[]
         print(((abs(ikz)**2+rho**2-b**2-a**2)/(-2*b*a)))#%math.pi) # the minus in 2bc is removed below
         phi_2 = math.acos(((abs(ikz)**2+rho**2-a**2-b**2)/(-2*a*b)))#%math.pi) 
 
@@ -139,6 +143,18 @@ class MinimalService(Node):
         y = round(rho*math.sin(angles[5]),4)
         pos = [x,y,z]
         print("rho is: " + str(rho))
+
+        return pos
+    
+    def cam_forward_kinematics(self,angles): #all angles assumed to be 90 while standing straight out from previous link
+        a,b,c = self.arm_length
+        # print("angles are " + str(angles))
+        rho = round(a*math.cos(angles[4])+b*math.cos(angles[4] + angles[3]-math.radians(90))+0.03, 6)
+        z = round(a*math.sin(angles[4])+b*math.sin(angles[4]+angles[3]-math.radians(90))-0.04, 4)
+        x = round(rho*math.cos(angles[5]),4)
+        y = round(rho*math.sin(angles[5]),4)
+        pos = [x,y]
+        print("cam rho is: " + str(rho))
 
         return pos
     
@@ -179,26 +195,62 @@ class MinimalService(Node):
         plt.ylabel("Y Position")
         plt.title("2D Robot Arm Visualization (User Input Angles)")
         plt.show()
-        
 
+    def image_callback(self,image):
+        self.latest_image = image
+
+    def get_obj_pos(self):
+        pos = []
+        image = self.latest_image
+        ## size of what camera can see is around 0.2x0.2 m
+
+        ### run image detection here
+
+        nothing_detected = True
+        if nothing_detected:
+            return []
+        return pos
+    
     def arm_callback(self, request, response):
-        target_position = [ -0.02, 0.19, -0.15] #assuming x right 
+        target_position = [ 0.03, 0.19, -0.16] #assuming x right 
         target_orientation = [0, 0, 0]
+        msg = Int16MultiArray()
+        msg.data = self.data_sets[int(request.xy[0]-1)]
+
+        # self.get_logger().info('moving arm to look')
+        # msg.data = self.data_sets[1]
+        # self.publisher.publish(msg)
+
+        # cam_obj_pos = self.get_obj_pos()
+        # if cam_obj_pos == []:
+        #     response.success = False#"Cannot see object"
+        #     return response
         
+        # obj_pos = self.cam_forward_kinematics() + cam_obj_pos ## this will return a position x,y which the camera sees, should be transformed to arm_base
+        
+        # if not self.pos_ok_check(obj_pos):
+        #     response.success = "Object is not in position to pick"
+        # ## continue with ik here
+
         time_data_set = [2000,2000,2000,2000,2000,2000]
         ang_test = [math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(70)]
         #self.get_logger().info("forward kin test: "+ str(self.forward_kinematics(ang_test)))
         robot_angles, plt_ang = self.inverse_kinematics(target_position)
-        if robot_angles == [0,0,0]:
-            response.success = False
+
+        if robot_angles == [0]:
+            response.success = False#"Too far from object"
             return response
+        elif robot_angles == [1]:
+            response.success = False#"Too close to object"
+            return response
+        
         rob_data_set = np.concatenate((robot_angles,time_data_set))
+        rob_data_set[0] = 2000
         self.get_logger().info("computed sequence is " + str(rob_data_set))
 
         #self.plot_robot_arm(self.arm_length,plt_ang)
 
-        msg = Int16MultiArray()
-        msg.data = self.data_sets[int(request.xy[0]-1)]
+        
 
         # forward_kin = self.forward_kinematics(self.transform_from_robot(self.data_sets[4]))
         # print("forward kinematics test: "+ str(forward_kin))
@@ -230,7 +282,7 @@ class MinimalService(Node):
 
             # call detection to see if object is in gripper.
 
-            # either send success or fail or restart from look.
+            # either send result or fail or restart from look.
 
         elif request.xy[0] == 4: 
             self.get_logger().info('moving arm to drop')
@@ -245,10 +297,16 @@ class MinimalService(Node):
         elif request.xy[0] == 5:
             msg.data = rob_data_set
             self.publisher.publish(msg)
+            time.sleep(2.0)
+            print("sleep")
+            rob_data_set[0]=11000
+            msg.data = rob_data_set
+            self.publisher.publish(msg)
+
         
         
         #self.get_logger().info('Incoming request\na: %d b: %d' % (request.xy[0]))
-        response.success = True
+        response.success = True#"success"
         return response
 
 
