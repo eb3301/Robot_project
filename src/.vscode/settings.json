@@ -50,5 +50,6 @@
         "/home/robot/Project/Robot_project/build/arm_servos_pubs_subs",
         "/home/robot/Project/Robot_project/install/arm_servos_pubs_subs/lib/python3.12/site-packages",
         "/opt/ros/jazzy/lib/python3.12/site-packages"
-    ]
+    ],
+    "ros.distro": "jazzy"
 }
