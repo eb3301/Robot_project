@@ -17,6 +17,10 @@ import math
 import ipywidgets as widgets
 import serial
 
+import matplotlib.pyplot
+from mpl_toolkits.mplot3d import Axes3D
+from robp_interfaces.msg import DutyCycles
+
 
 class MinimalService(Node):
 
@@ -24,71 +28,142 @@ class MinimalService(Node):
         super().__init__('arm_service')
         self.srv = self.create_service(Arm, 'arm', self.arm_callback)
         self.publisher = self.create_publisher(Int16MultiArray, 'multi_servo_cmd_sub', 10)
+        self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
+        self.data_sets = [[12000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
+                    [2000,12000,3000,12000,4000,12000,2000,2000,2000,2000,2000,2000],
+                    [11000,12000,10000,15000,4000,12000,2000,2000,2000,2000,2000,2000],
+                    [2000,12000,8000,16000,10000,12000,2000,2000,2000,2000,2000,2000],
+                    [2000,12000,3000,12000,4000,14000,2000,2000,2000,2000,2000,2000]]
+        self.arm_length = [0.101,0.094,0.169]
 
     def pos_ok_check(self,target_position):
-        # x1_limits = [0.0,0.18] # The limits for two boxes in m
-        # x2_limits = [-0.1,0.0]
-        # y1_limits = [-0.05,0.15]
-        # y2_limits = [-0.15,-0.05]
-        # z_limits = [0.0,0.1]
-        # x = target_position[0]
-        # y = target_position[1]
-        # z = target_position[2]
-        # if y1_limits[0] <= y <= y1_limits[1]:
-        #     if x1_limits[0] <= x <= x1_limits[1]:
-        #         if z_limits[0] <= z <= z_limits[1]:
-        #             return True
-        # elif y2_limits[0] <= y <= y2_limits[1]:
-        #     if x2_limits[0] <= x <= x1_limits[1]:
-        #         if z_limits[0] <= z <= z_limits[1]:
-        #             return True
-        # return False
         x, y, z = target_position
         return (
             (np.all([-0.05 <= y <= 0.15, 0.0 <= x <= 0.18]) or 
             np.all([-0.15 <= y <= -0.05, -0.1 <= x <= 0.18]))
             and (0.0 <= z <= 0.1)
         )
+    
+    def transform_to_robot(self,ang): 
+        # given all angles in radians, we compute with radians then convert and multiply with 100 to make
+        # the messages the right shape to send to the robot
+        rob_ang = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        print("transform to robot ot angles: "+ str(ang))
 
+        rob_ang[0] = round(math.degrees((ang[0] + math.radians(30)))*100) # takes the given angle and adds 30 deg, since 120 is 90
+
+        rob_ang[1] = round(math.degrees((math.radians(210) - ang[1]))*100)
+
+        rob_ang[2] = round(math.degrees((ang[2] + math.radians(30)))*100)
+
+        rob_ang[3] = round(math.degrees((math.radians(210) - ang[3]))*100)  # flipped around, this should give correct angle
+
+        rob_ang[4] = round(math.degrees((ang[4] + math.radians(30)))*100)
+
+        rob_ang[5] = round(math.degrees((ang[5] + math.radians(30)))*100)
+
+        return rob_ang
+
+    def transform_from_robot(self,ang): 
+        # given all angles in radians, we compute with radians then convert and multiply with 100 to make
+        # the messages the right shape to send to the robot
+        rob_ang = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+        rob_ang[0] = math.radians(ang[0]/100-30) # takes the given angle and adds 30 deg, since 120 is 90
+
+        rob_ang[1] = math.radians(210-ang[1]/100)
+
+        rob_ang[2] = math.radians(ang[2]/100-30)
+
+        rob_ang[3] = math.radians(210-ang[3]/100)  # flipped around, this should give correct angle
+
+        rob_ang[4] = math.radians(ang[4]/100-30)
+
+        rob_ang[5] = math.radians(210-ang[5]/100)
+
+        return rob_ang
+
+    def inverse_kinematics(self,target_position):
+        #phi_1 = math.radians(20)
+        a,b,c = self.arm_length
+        x, y, z = target_position # transformed to arm, change to polar and calculate first arm length
+        
+        print("Inverse Kinematics start, x,y is: " + str(x)+ " " + str(y))
+        if abs(x)>=0.01 and y>=0.05:
+            theta = math.atan2(y,abs(x))
+            if x<=0:
+                iktheta = math.radians(180)-theta
+            else:
+                iktheta = theta
+        elif y<0.05:
+            self.get_logger().info("too close to robot")
+            return [0,0,0]
+        elif abs(x)<0.01 and y>0.01:
+            iktheta = math.radians(90)
+        
+        ikx = x #-a*math.cos(iktheta)*math.cos(phi_1) # changes the x and y to account for the first link being decided 
+        iky = y #-a*math.sin(iktheta)*math.cos(phi_1) # we assume that theta is zero in x direction  and phi_1 zero in ground plane
+        ikz = z+c #z-a*math.sin(phi_1) # this sets z to the length of link z above object
+        rho = math.sqrt(ikx**2+iky**2)
+        print("theta, rho, x, y, z is: " +str(iktheta) + ", " + str(rho)+ ", " + str(ikx)+ ", " + str(iky)+ ", " + str(ikz))
+
+        two_joint_dist = math.sqrt(ikz**2+rho**2)
+        if a+b < two_joint_dist:
+            self.get_logger().info("too far")
+            return [0,0,0]
+        print(((abs(ikz)**2+rho**2-b**2-a**2)/(-2*b*a)))#%math.pi) # the minus in 2bc is removed below
+        phi_2 = math.acos(((abs(ikz)**2+rho**2-a**2-b**2)/(-2*a*b)))#%math.pi) 
+
+        if ikz>=0: 
+            sign = 1
+        else:
+            sign = -1
+        phi_1 = sign*math.atan2(abs(ikz),rho)+math.asin((b*math.sin(phi_2))/ two_joint_dist)   #math.asin((math.sqrt(rho**2+ikz**2)*math.sin(phi_3+math.radians(90)))/c)-phi_1
+        my_coords_phi_1 = phi_1 + math.radians(30)
+        my_coords_phi_2 = phi_2 - math.radians(90)
+        print("phi1, phi2: "+ str(my_coords_phi_1)+ ", " + str(phi_2))
+
+        my_coords_phi_3 = -(phi_1-(math.radians(180)-phi_2))
+
+        ang = [math.radians(90), math.radians(90), my_coords_phi_3, my_coords_phi_2, my_coords_phi_1, iktheta] # not sure, theta may be flipped and also phi_2.
+        forward = self.forward_kinematics(ang)
+        print("forward kinematics gives position: "+ str(forward))
+        return self.transform_to_robot(ang)
+    
+    def forward_kinematics(self,angles): #all angles assumed to be 90 while standing straight out from previous link
+        a,b,c = self.arm_length
+        # print("angles are " + str(angles))
+        rho = round(a*math.cos(angles[4])+b*math.cos(angles[4] + angles[3]-math.radians(90))+c*math.cos(angles[4]+angles[3]+angles[2]-math.radians(180)),6)
+        z = round(a*math.sin(angles[4])+b*math.sin(angles[4]+angles[3]-math.radians(90))+c*math.sin(angles[4]+angles[3]+angles[2]-math.radians(180)),4)
+        x = round(rho*math.cos(angles[5]),4)
+        y = round(rho*math.sin(angles[5]),4)
+        pos = [x,y,z]
+        print("rho is: " + str(rho))
+
+        return pos
+    
 
     def arm_callback(self, request, response):
-        # Load the URDF file
-        urdf_file = os.path.join(os.path.dirname(__file__), "armpi_fpv.urdf")
-        my_chain = ikpy.chain.Chain.from_urdf_file(urdf_file,active_links_mask=[True, True, True, True, True, True])
-        
-        target_position = [ 0.1, 0, 0.05]
-        if not self.pos_ok_check(target_position):
-            self.get_logger().info("Position not within limits")
-            response.success = False # should add something like reason for fail maybe
-            return response
-
+        target_position = [ 0.15, 0.1, -0.17] #assuming x right 
         target_orientation = [0, 0, 0]
-
-        ik = my_chain.inverse_kinematics(target_position, target_orientation, orientation_mode="Y")
-        ik_deg = list(map(lambda r:math.degrees(r),ik.tolist()))
-        print("The angles of each joints are : ", ik_deg)
-        print("raw ik: "+ str(ik))
-        computed_data_set = []
-        for ang in ik_deg:
-            new_ang = round(ang*100) + 12000
-            computed_data_set.append(new_ang)
-        print("comp ik: "+ str(computed_data_set))
+        
         time_data_set = [2000,2000,2000,2000,2000,2000]
-        computed_data_set = np.concatenate((computed_data_set,time_data_set))
-        print(" send: " + str(computed_data_set))
-        self.get_logger().info("Computed data set is: " + str(computed_data_set))
+        ang_test = [math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(70)]
+        #self.get_logger().info("forward kin test: "+ str(self.forward_kinematics(ang_test)))
+        robot_angles = self.inverse_kinematics(target_position)
+        if robot_angles == [0,0,0]:
+            response.success = False
+            return response
+        rob_data_set = np.concatenate((robot_angles,time_data_set))
+        self.get_logger().info("computed sequence is " + str(rob_data_set))
 
-        computed_position = my_chain.forward_kinematics(ik)
-        print("Computed position: %s, original position : %s" % (computed_position[:3, 3], target_position))
-        print("Computed position (readable) : %s" % [ '%.2f' % elem for elem in computed_position[:3, 3] ])
 
-
-        data_sets = [[12000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
-                    [2000,12000,3000,12000,4000,12000,2000,2000,2000,2000,2000,2000],
-                    [11000,12000,10000,15000,4000,12000,2000,2000,2000,2000,2000,2000],
-                    [2000,12000,8000,16000,10000,12000,2000,2000,2000,2000,2000,2000]]
+        
         msg = Int16MultiArray()
-        msg.data = data_sets[int(request.xy[0]-1)]
+        msg.data = self.data_sets[int(request.xy[0]-1)]
+
+        # forward_kin = self.forward_kinematics(self.transform_from_robot(self.data_sets[4]))
+        # print("forward kinematics test: "+ str(forward_kin))
 
         if request.xy[0] == 1: # this is command from client
             self.get_logger().info('moving arm to top')
@@ -96,15 +171,38 @@ class MinimalService(Node):
         elif request.xy[0] == 2:
             self.get_logger().info('moving arm to look')
             self.publisher.publish(msg)
+            #move arm to look
+            # check if any object is detected
+            # change theta and look again
+            # if nothing found send error to planner
+            # if object found, call grab function.
         elif request.xy[0] == 3: 
             self.get_logger().info('moving arm to grab')
             self.publisher.publish(msg)
+
+            # find inverse kinematics (if ik used)
+            # otherwise convert values to command for planner or perform driving 
+
+            #Publish the grab message
+
+            #Publish arm top message
+
+            # call detection to see if object is in gripper.
+
+            # either send success or fail or restart from look.
+
         elif request.xy[0] == 4: 
             self.get_logger().info('moving arm to drop')
             self.publisher.publish(msg)
-        elif request.xy[0] == 5:
-            msg.data = computed_data_set
-            self.publisher.publish(msg)
+
+            # either keep as is and make sure planner is good enough
+            # otherwise, move arm to look for box
+            # move if needed
+            # Move object to drop
+            # open gripper
+        # elif request.xy[0] == 5:
+        #     msg.data = computed_data_set
+        #     self.publisher.publish(msg)
         
         
         #self.get_logger().info('Incoming request\na: %d b: %d' % (request.xy[0]))
@@ -124,3 +222,9 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
+    # to do:
+    # decide if we use planner or move by ourselves
+    # create the math needed to move or send message
+    # test the drop function MemoryError
+    # implement
