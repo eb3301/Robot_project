@@ -3,6 +3,7 @@ from arm_interface.srv import Arm
 import os
 import time
 import cv2 as cv
+from cv_bridge import CvBridge
 import rclpy
 from rclpy.node import Node
 
@@ -202,22 +203,26 @@ class MinimalService(Node):
 
     def get_obj_pos(self):
         pos = []
-        image_path = "/home/robot/Project/Robot_project/src/arm_service/arm_service/mine.jpg"
-        #print("Current Working Directory:", os.getcwd())
-        #print(cv.getBuildInformation())
+        image = self.latest_image
+        bridge = CvBridge()
+        # Convert ROS Image message to OpenCV format
+        image = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
+        # image_path = "/home/group1/dd2419_ws/src/arm_service/arm_service/mine.jpg"
+        # #print("Current Working Directory:", os.getcwd())
+        # #print(cv.getBuildInformation())
 
-        if not os.path.exists(image_path):
-            print(f"Error: The file '{image_path}' does not exist.")
-        else:
-            image = cv.imread(image_path, cv.IMREAD_GRAYSCALE)#self.latest_image
+        # if not os.path.exists(image_path):
+        #     print(f"Error: The file '{image_path}' does not exist.")
+        # else:
+        #     image = cv.imread(image_path, cv.IMREAD_GRAYSCALE)#
         ## size of what camera can see is around 0.2x0.2 m
 
         ### run image detection here
 
-        height, width = image.shape[:2]
-        res = cv.resize(image,(2*width, 2*height), interpolation = cv.INTER_CUBIC)    
-        plt.imshow(image)
-        plt.show()
+        #height, width = image.shape[:2]
+        #res = cv.resize(image,(2*width, 2*height), interpolation = cv.INTER_CUBIC)    
+        #plt.imshow(image)
+        #plt.show()
 
 
 
