@@ -2,6 +2,7 @@ from arm_interface.srv import Arm
 
 import os
 import time
+import cv2 as cv
 import rclpy
 from rclpy.node import Node
 
@@ -201,10 +202,24 @@ class MinimalService(Node):
 
     def get_obj_pos(self):
         pos = []
-        image = self.latest_image
+        image_path = "/home/robot/Project/Robot_project/src/arm_service/arm_service/mine.jpg"
+        #print("Current Working Directory:", os.getcwd())
+        #print(cv.getBuildInformation())
+
+        if not os.path.exists(image_path):
+            print(f"Error: The file '{image_path}' does not exist.")
+        else:
+            image = cv.imread(image_path, cv.IMREAD_GRAYSCALE)#self.latest_image
         ## size of what camera can see is around 0.2x0.2 m
 
         ### run image detection here
+
+        height, width = image.shape[:2]
+        res = cv.resize(image,(2*width, 2*height), interpolation = cv.INTER_CUBIC)    
+        plt.imshow(image)
+        plt.show()
+
+
 
         nothing_detected = True
         if nothing_detected:
@@ -221,7 +236,7 @@ class MinimalService(Node):
         # msg.data = self.data_sets[1]
         # self.publisher.publish(msg)
 
-        # cam_obj_pos = self.get_obj_pos()
+        cam_obj_pos = self.get_obj_pos()
         # if cam_obj_pos == []:
         #     response.success = False#"Cannot see object"
         #     return response
