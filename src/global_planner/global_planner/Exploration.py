@@ -3,12 +3,16 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSDurabilityPolicy, QoSReliabilityPolicy
 import os
 
+import numpy as np
+
 import py_trees as pt
 import py_trees_ros as ptr
 
 from ament_index_python import get_package_share_directory
+
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point, PoseWithCovarianceStamped
+from nav_msgs.msg import OccupancyGrid
 
 class BehaviourTree(Node):
     def __init__(self):
@@ -121,9 +125,21 @@ class Create_ws(pt.behaviour.Behaviour):
 
 class Sample_Waypoints(pt.behaviour.Behaviour):
     '''Samples waypoints over the workspace to be used for exploration'''
-    def __init__(self):
+    def __init__(self, node, start_x, start_y):
         super().__init__('Sample Waypoints')
         self.blackboard = pt.blackboard.Blackboard()
+        
+        self.grid_sub = node.create_subscription(OccupancyGrid, '/map', self.grid_callback, 10)
+
+        # Grid Variables
+        self.ws_grid = None
+        self.grid_res = None
+        self.grid_origin_x = None
+        self.grid_origin_y = None
+
+        self.start_x = start_x
+        self.start_y = start_y
+        self.waypoints = []
         
 
     def update(self):
@@ -131,11 +147,33 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
             print('Sampling Waypoints...')
             return pt.common.Status.RUNNING
 
-        ws = self.blackboard.get('workspace') # List with workspace boundary coordinates
-        start = (0, 0)
+
+        start_x = int((0 - self.grid_origin_x) / self.grid_res)
+        start_y = int((0 - self.grid_origin_y ) / self.grid_res)
+
+        n = 5 # Sample every n:th cell (cell size = 5cm)
+        for gy in range(start_y, self.ws_grid.shape[0], n):
+            for gx in range(start_x, self.ws_grid.shape[1], n):
+                if self.ws_grid[gx, gy] == 0: # workspace (free space)
+                    self.waypoints.append((gx, gy))
+
         # Sampling on the grid is probably a lot easier than this... 
         return pt.common.Status.SUCCESS
 
+    def grid_callback(self, msg):
+        '''Extract the part of the grid inside the workspace (free space)'''
+
+        # Convert grid data to a numpy array
+        grid = np.array(msg.data).reshape((msg.info.height, msg.info.width))
+
+        self.grid_res = msg.info.resolution
+        self.grid_origin_x = msg.info.origin.x
+        self.grid_origin_y = msg.info.origin.y
+
+        # Cells are marked 100 for obstacles and 0 for free space (workspace)
+        self.ws_grid = np.where(grid == 0, grid, -1)  # np.array where 0 represents free space and -1 obstacles
+
+        print('Extracted workspace grid')
 
 
 
