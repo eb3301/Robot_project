@@ -11,6 +11,7 @@ from std_msgs.msg import String
 from std_msgs.msg import Int16MultiArray
 from sensor_msgs.msg import Image
 from rclpy.qos import QoSProfile, ReliabilityPolicy
+import argparse
 
 import ikpy.chain
 import ikpy.utils.plot as plot_utils
@@ -203,18 +204,18 @@ class MinimalService(Node):
 
     def get_obj_pos(self):
         pos = []
-        image = self.latest_image
-        bridge = CvBridge()
+        # image = self.latest_image
+        # bridge = CvBridge()
         # Convert ROS Image message to OpenCV format
-        frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
-        # image_path = "/home/group1/dd2419_ws/src/arm_service/arm_service/mine.jpg"
-        # #print("Current Working Directory:", os.getcwd())
-        # #print(cv.getBuildInformation())
+        #frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
+        image_path = os.getcwd() + "/src/arm_service/arm_service/cube.jpg"
+        print("Current Working Directory:", os.getcwd())
 
-        # if not os.path.exists(image_path):
-        #     print(f"Error: The file '{image_path}' does not exist.")
-        # else:
-        #     image = cv.imread(image_path, cv.IMREAD_GRAYSCALE)#
+        if not os.path.exists(image_path):
+            print(f"Error: The file '{image_path}' does not exist.")
+        else:
+            frame = cv.imread(image_path, cv.IMREAD_GRAYSCALE)
+            frame = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
         ## size of what camera can see is around 0.2x0.2 m
 
         ### run image detection here
@@ -225,74 +226,94 @@ class MinimalService(Node):
         #plt.show()
 
         ########################
+        # plt.imshow(frame)
+        # plt.show()
 
-        #cap = cv.VideoCapture(0)
-        #while True:
-            #ret, frame = cap.read()
-            #if not ret:
-                #break    # Process frame to find the white sphere
-        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-        lower_white = np.array([0, 0, 200])
-        upper_white = np.array([180, 30, 255])
-        mask = cv.inRange(hsv, lower_white, upper_white)
-        contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)    
-        if contours:
-            c = max(contours, key=cv.contourArea)
-            M = cv.moments(c)
-            if M["m00"] != 0:
-                cx = int(M["m10"] / M["m00"])
-                cy = int(M["m01"] / M["m00"])
-                cv.drawContours(frame, [c], -1, (0, 255, 0), 2)
-                cv.circle(frame, (cx, cy), 5, (255, 0, 0), -1)
-                coord_text = f"Centroide: x={cx}, y={cy}"
-                cv.putText(frame, coord_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)            # Send coordinates to Simulink
-                data = np.array([cx, cy], dtype=np.float32).tobytes()
-        print("x,y is " + str(cx) + " " + str(cy))
-        plt.imshow(frame)    
-        plt.show()
+        # hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+        # lower_white = np.array([0, 50, 110])
+        # upper_white = np.array([180, 190, 210])
+        # mask = cv.inRange(hsv, lower_white, upper_white)
+        # contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)    
+        # if contours:plt.imshow(frame)
+        # plt.show()
 
-            #if cv.waitKey(1) & 0xFF == ord('q'):
-                #break # Release resources
-        #cap.release()
+        # hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+        # lower_white = np.array([0, 50, 110])
+        # upper_white = np.array([180, 190, 210])
+        # mask = cv.inRange(hsv, lower_white, upper_white)
+        # contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)    
+        # if contours:
+        #     c = max(contours, key=cv.contourArea)
+        #     M = cv.moments(c)
+        #     if M["m00"] != 0:
+        #         cx = int(M["m10"] / M["m00"])
+        #         cy = int(M["m01"] / M["m00"])
+        #         cv.drawContours(frame, [c], -1, (0, 255, 0), 2)
+        #         cv.circle(frame, (cx, cy), 5, (255, 0, 0), -1)
+        #         coord_text = f"Centroide: x={cx}, y={cy}"
+        #         cv.putText(frame, coord_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)            # Send coordinates to Simulink
+        #         data = np.array([cx, cy], dtype=np.float32).tobytes()
+        # print("x,y is " + str(cx) + " " + str(cy))
+        # plt.imshow(frame)    
+        # plt.show()
+        #     c = max(contours, key=cv.contourArea)
+        #     M = cv.moments(c)
+        #     if M["m00"] != 0:
+        #         cx = int(M["m10"] / M["m00"])
+        #         cy = int(M["m01"] / M["m00"])
+        #         cv.drawContours(frame, [c], -1, (0, 255, 0), 2)
+        #         cv.circle(frame, (cx, cy), 5, (255, 0, 0), -1)
+        #         coord_text = f"Centroide: x={cx}, y={cy}"
+        #         cv.putText(frame, coord_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)            # Send coordinates to Simulink
+        #         data = np.array([cx, cy], dtype=np.float32).tobytes()
+        # print("x,y is " + str(cx) + " " + str(cy))
+        # plt.imshow(frame)    
+        # plt.show()
         #cv.destroyAllWindows()
 
         ##############################
+        src = frame
+        source_window = "Cube Image"
+        corners_window = 'Corners detected'
+        max_thresh = 255
+        def cornerHarris_demo(val,src_gray):
+            thresh = val    # Detector parameters
+            blockSize = 2
+            apertureSize = 3
+            k = 0.04    # Detecting corners
+            dst = cv.cornerHarris(src_gray, blockSize, apertureSize, k)    # Normalizing
+            dst_norm = np.empty(dst.shape, dtype=np.float32)
+            cv.normalize(dst, dst_norm, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
+            dst_norm_scaled = cv.convertScaleAbs(dst_norm)    # Drawing a circle around corners
 
-        # from __future__ import print_function
-        # import cv2 as cv
-        # import numpy as np
-        # import argparsesource_window = 'Source image'
-        # corners_window = 'Corners detected'
-        # max_thresh = 255
-        # def cornerHarris_demo(val):
-        #     thresh = val    # Detector parameters
-        #     blockSize = 2
-        #     apertureSize = 3
-        #     k = 0.04    # Detecting corners
-        #     dst = cv.cornerHarris(src_gray, blockSize, apertureSize, k)    # Normalizing
-        #     dst_norm = np.empty(dst.shape, dtype=np.float32)
-        #     cv.normalize(dst, dst_norm, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
-        #     dst_norm_scaled = cv.convertScaleAbs(dst_norm)    # Drawing a circle around corners
-        #     for i in range(dst_norm.shape[0]):
-        #         for j in range(dst_norm.shape[1]):
-        #             if int(dst_norm[i,j]) > thresh:
-        #                 cv.circle(dst_norm_scaled, (j,i), 5, (0), 2)    # Showing the result
-        #     cv.namedWindow(corners_window)
-        #     cv.imshow(corners_window, dst_norm_scaled)# Load source image and convert it to gray
-        # parser = argparse.ArgumentParser(description='Code for Harris corner detector tutorial.')
-        # parser.add_argument('--input', help='Path to input image.', default='building.jpg')
-        # args = parser.parse_args()
-        # src = cv.imread(cv.samples.findFile(args.input))
-        # if src is None:
-        #     print('Could not open or find the image:', args.input)
-        #     exit(0)
-        #     src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)# Create a window and a trackbar
-        # cv.namedWindow(source_window)
-        # thresh = 200 # initial threshold
-        # cv.createTrackbar('Threshold: ', source_window, thresh, max_thresh, cornerHarris_demo)
-        # cv.imshow(source_window, src)
-        # cornerHarris_demo(thresh)
-        # cv.waitKey()
+            for i in range(dst_norm.shape[0]):
+                for j in range(dst_norm.shape[1]):
+                    if int(dst_norm[i,j]) > thresh:
+                        cv.circle(dst_norm_scaled, (j,i), 5, (0), 2)    # Showing the result
+            #cv.namedWindow(corners_window)
+            #cv.imshow(corners_window, dst_norm_scaled)# Load source image and convert it to gray
+            return dst_norm_scaled
+        parser = argparse.ArgumentParser(description='Code for Harris corner detector tutorial.')
+        parser.add_argument('--input', help='Path to input image.', default=image_path)
+        args = parser.parse_args()
+        src = cv.imread(args.input)
+        if src is None:
+            print('Could not open or find the image:', args.input)
+            exit(1)
+        src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)# Create a window and a trackbar
+        #cv.namedWindow(source_window)
+        thresh = 200 # initial threshold
+        #cv.createTrackbar('Threshold: ', source_window, thresh, max_thresh, cornerHarris_demo)
+        #plt.imshow(src)#source_window, src)
+        #cornerHarris_demo(thresh,src_gray)
+        result = cornerHarris_demo(src_gray, thresh)
+
+        # Display using matplotlib (safe for headless)
+        plt.imshow(result, cmap='gray')
+        plt.title("Corners Detected")
+        plt.axis('off')
+        plt.show()
+        cv.waitKey()
 
         ################
 
