@@ -34,8 +34,8 @@ class MinimalService(Node):
         self.publisher = self.create_publisher(Int16MultiArray, 'multi_servo_cmd_sub', 10)
         self.imagesubscriber = self.create_subscription(Image, "/arm_camera/image_raw", self.image_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)) ## frame id is arm_camera_link
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
-        self.data_sets = [[12000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
-                    [2000,12000,3000,18000,9000,12000,2000,2000,2000,2000,2000,2000],
+        self.data_sets = [[11000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
+                    [2000,12000,4000,18000,9000,12000,2000,2000,2000,2000,2000,2000],
                     [11000,12000,10000,15000,4000,12000,2000,2000,2000,2000,2000,2000],
                     [2000,12000,8000,16000,10000,12000,2000,2000,2000,2000,2000,2000],
                     [2000,12000,3000,12000,4000,14000,2000,2000,2000,2000,2000,2000]]
@@ -85,7 +85,7 @@ class MinimalService(Node):
 
         rob_ang[4] = math.radians(ang[4]/100-30)
 
-        rob_ang[5] = math.radians(210-ang[5]/100)
+        rob_ang[5] = math.radians(ang[5]/100-30)
 
         return rob_ang
 
@@ -204,18 +204,20 @@ class MinimalService(Node):
 
     def get_obj_pos(self):
         pos = []
-        # image = self.latest_image
-        # bridge = CvBridge()
-        # Convert ROS Image message to OpenCV format
-        #frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
-        image_path = os.getcwd() + "/src/arm_service/arm_service/cube.jpg"
-        print("Current Working Directory:", os.getcwd())
+        image = self.latest_image
+        bridge = CvBridge()
+        #Convert ROS Image message to OpenCV format
+        frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
+        N = 44 # pixels to remove from bottom
+        cropped_frame = frame[:frame.shape[0] - N, :]
+        # image_path = os.getcwd() + "/src/arm_service/arm_service/cube.jpg"
+        # print("Current Working Directory:", os.getcwd())
 
-        if not os.path.exists(image_path):
-            print(f"Error: The file '{image_path}' does not exist.")
-        else:
-            frame = cv.imread(image_path, cv.IMREAD_GRAYSCALE)
-            frame = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
+        # if not os.path.exists(image_path):
+        #     print(f"Error: The file '{image_path}' does not exist.")
+        # else:
+        #     frame = cv.imread(image_path, cv.IMREAD_GRAYSCALE)
+        #     frame = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
         ## size of what camera can see is around 0.2x0.2 m
 
         ### run image detection here
@@ -267,20 +269,56 @@ class MinimalService(Node):
         #         cv.putText(frame, coord_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)            # Send coordinates to Simulink
         #         data = np.array([cx, cy], dtype=np.float32).tobytes()
         # print("x,y is " + str(cx) + " " + str(cy))
-        # plt.imshow(frame)    
-        # plt.show()
+        plt.imshow(cropped_frame)    
+        #plt.show()
         #cv.destroyAllWindows()
 
         ##############################
-        src = frame
+        src = cropped_frame
         source_window = "Cube Image"
         corners_window = 'Corners detected'
         max_thresh = 255
-        def cornerHarris_demo(val,src_gray):
+        
+        # parser = argparse.ArgumentParser(description='Code for Harris corner detector tutorial.')
+        # parser.add_argument('--input', help='Path to input image.', default=frame)
+        # args = parser.parse_args()
+        # src = cv.imread(args.input)
+        if src is None:
+            print('Could not open or find the image:')#, args.input)
+            exit(1)
+        src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)# Create a window and a trackbar
+        #cv.namedWindow(source_window)
+        thresh = 200 # initial threshold
+        #cv.createTrackbar('Threshold: ', source_window, thresh, max_thresh, cornerHarris_demo)
+        #plt.imshow(src)#source_window, src)
+        #cornerHarris_demo(thresh,src_gray)
+        src_gray = src_gray.astype(np.uint8)
+
+        print(f"src_gray shape: {src_gray.shape}, dtype: {src_gray.dtype}")
+
+
+        result = self.cornerHarris_demo( thresh,src_gray)
+        print(result[0])
+
+        # Display using matplotlib (safe for headless)
+        plt.imshow(result, cmap='gray')
+        plt.title("Corners Detected")
+        plt.axis('off')
+        plt.show()
+        #cv.waitKey()
+
+        ################
+
+        nothing_detected = True
+        if nothing_detected:
+            return [0,0]
+        return pos
+    
+    def cornerHarris_demo(self,val,src_gray):
             thresh = val    # Detector parameters
             blockSize = 2
             apertureSize = 3
-            k = 0.04    # Detecting corners
+            k = 0.05    # Detecting corners
             dst = cv.cornerHarris(src_gray, blockSize, apertureSize, k)    # Normalizing
             dst_norm = np.empty(dst.shape, dtype=np.float32)
             cv.normalize(dst, dst_norm, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
@@ -293,40 +331,13 @@ class MinimalService(Node):
             #cv.namedWindow(corners_window)
             #cv.imshow(corners_window, dst_norm_scaled)# Load source image and convert it to gray
             return dst_norm_scaled
-        parser = argparse.ArgumentParser(description='Code for Harris corner detector tutorial.')
-        parser.add_argument('--input', help='Path to input image.', default=image_path)
-        args = parser.parse_args()
-        src = cv.imread(args.input)
-        if src is None:
-            print('Could not open or find the image:', args.input)
-            exit(1)
-        src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)# Create a window and a trackbar
-        #cv.namedWindow(source_window)
-        thresh = 200 # initial threshold
-        #cv.createTrackbar('Threshold: ', source_window, thresh, max_thresh, cornerHarris_demo)
-        #plt.imshow(src)#source_window, src)
-        #cornerHarris_demo(thresh,src_gray)
-        result = cornerHarris_demo(src_gray, thresh)
 
-        # Display using matplotlib (safe for headless)
-        plt.imshow(result, cmap='gray')
-        plt.title("Corners Detected")
-        plt.axis('off')
-        plt.show()
-        cv.waitKey()
-
-        ################
-
-        nothing_detected = True
-        if nothing_detected:
-            return []
-        return pos
-    
     def arm_callback(self, request, response):
+        time_data_set = [2000,2000,2000,2000,2000,2000]
         target_position = [ 0.03, 0.19, -0.16] #assuming x right 
         target_orientation = [0, 0, 0]
         msg = Int16MultiArray()
-        msg.data = self.data_sets[int(request.xy[0]-1)]
+        #msg.data = self.data_sets[int(request.xy[0]-1)]
 
         # self.get_logger().info('moving arm to look')
         # msg.data = self.data_sets[1]
@@ -337,13 +348,20 @@ class MinimalService(Node):
         #     response.success = False#"Cannot see object"
         #     return response
         
-        # obj_pos = self.cam_forward_kinematics() + cam_obj_pos ## this will return a position x,y which the camera sees, should be transformed to arm_base
-        
+        obj_pos = self.cam_forward_kinematics(self.transform_from_robot(self.data_sets[1]))# + cam_obj_pos ## this will return a position x,y which the camera sees, should be transformed to arm_base
+        obj_pos.append(-0.16)
+        print(obj_pos)
+        cam_angles, garbage = self.inverse_kinematics(obj_pos)
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
+        print(cam_angles)
+        cam_data_set = np.concatenate((cam_angles,time_data_set))
+        cam_data_set[0] = 2000
+        self.get_logger().info("computed cam sequence is " + str(cam_data_set))
         # if not self.pos_ok_check(obj_pos):
         #     response.success = "Object is not in position to pick"
         # ## continue with ik here
 
-        time_data_set = [2000,2000,2000,2000,2000,2000]
+        
         ang_test = [math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(70)]
         #self.get_logger().info("forward kin test: "+ str(self.forward_kinematics(ang_test)))
         robot_angles, plt_ang = self.inverse_kinematics(target_position)
@@ -412,6 +430,17 @@ class MinimalService(Node):
             print("sleep")
             rob_data_set[0]=11000
             msg.data = rob_data_set
+            self.publisher.publish(msg)
+        elif request.xy[0] == 6:
+            msg.data = cam_data_set
+            self.publisher.publish(msg)
+            time.sleep(4.0)
+            print("sleep")
+            cam_data_set[0]=11000
+            msg.data = cam_data_set
+            self.publisher.publish(msg)
+            time.sleep(4.0)
+            msg.data = self.data_sets[0]
             self.publisher.publish(msg)
 
         
