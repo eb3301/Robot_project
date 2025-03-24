@@ -38,14 +38,8 @@ class EKF_Algorithm(Node):
 
 
         # EKF Parameters
-<<<<<<< HEAD
-        self.ekf = EKF(dim_x =3, dim_z = 1) # x: state, z: measurement 
-        self.ekf.x = np.array([0.0, 0.0, 0.0]) # Initial state
-        self.ekf.P = np.diag([1e-4, 1e-4, 1e-4]) # Initial Uncertainty
-=======
         self.ekf_x = np.array([0.0, 0.0, 0.0]) # Initial state
         self.ekf_cov = np.diag([1e-4, 1e-4, 1e-4]) # Initial Uncertainty (Covariannce matrix)
->>>>>>> e23fb42380f30c8008895c2c3a786ef2f38ff977
 
         # Paths
         self.ekf_path = Path()
@@ -87,26 +81,6 @@ class EKF_Algorithm(Node):
         w = wheel_radius / base * (K * delta_ticks_right - K * delta_ticks_left)
 
         if dt > 0:
-<<<<<<< HEAD
-            yaw = self.ekf.x[2]
-
-            # # Update states
-            self.ekf.x[0] += v*np.cos(yaw) 
-            self.ekf.x[1] += v*np.sin(yaw) 
-            self.ekf.x[2] += w 
-
-            self.time = t
-            
-            # Set noise to 1% of distance traveled
-            self.ekf.Q = np.diag([0.01 * v**2, 0.01 * v**2, 0.01 * w**2])
-
-            # Update step
-            #self.imu_update(self.imu_yaw)
-
-
-            self.broadcast_transform(t, self.ekf.x[0], self.ekf.x[1], self.ekf.x[2])
-            self.publish_pose(self.ekf.x[0], self.ekf.x[1], self.ekf.x[2])
-=======
             x, y, yaw = self.ekf_x.flatten()
             # # Update states
             x_bar = x +  v*np.cos(yaw) 
@@ -142,22 +116,10 @@ class EKF_Algorithm(Node):
             yaw = self.normalize_angle(yaw)
             self.broadcast_transform(t, x, y, yaw)
             self.publish_pose(x, y, yaw)
->>>>>>> e23fb42380f30c8008895c2c3a786ef2f38ff977
 
 
     def imu_callback(self, msg: Imu):
         '''Run update step using IMU orientaiton. Imu publishes with freq 250 hz'''   
-<<<<<<< HEAD
-        #Change freq to 50 hz       
-        # if self.imu_counter != 5:
-        #     self.imu_counter += 1 
-        #     return
-        # self.imu_counter= 0
-        '''Process imu data and perform update step '''
-
-        # Orientation and corresponding covariance
-        q = msg.orientation
-=======
         # Change freq to 50 hz       
         if self.imu_counter < 4:
             self.imu_counter += 1 
@@ -165,7 +127,6 @@ class EKF_Algorithm(Node):
         self.imu_counter= 0
         '''Process imu data and perform update step '''
 
->>>>>>> e23fb42380f30c8008895c2c3a786ef2f38ff977
 
         # Transform data to correct orientation
         q = np.array([msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w])
@@ -182,41 +143,6 @@ class EKF_Algorithm(Node):
 
         # Transform to quarternion
         final_q = q2_rot.as_quat()
-<<<<<<< HEAD
-
-        # Calculate imu offset
-        if self.yaw_offset is None:
-            self.yaw_offset = self.compute_heading(final_q)
-
-        self.imu_yaw = self.compute_heading(final_q) - self.yaw_offset
-        
-        #self.imu_update(self.imu_yaw)
-
-    def imu_update(self, yaw):
-        
-        z_obs = np.array([yaw]) # Measured pose
-
-        R_imu = np.array([[0.01]]) # Noise -- Adapt
-    
-        self.ekf.update(z_obs, # measurement
-                        HJacobian = self.imu_jacobian, # measurement jacobian
-                        Hx = self.imu_model, # Prediction
-                        R = R_imu, # Noise model
-                        residual = self.angle_residual) # residual function(z_obs - z_pred)
-        
-
-    def imu_model(self, x):
-        return np.array([self.ekf.x[2]])
-    
-    def imu_jacobian(self, x):
-        H = np.zeros((1,3))
-        H[0, 2] = 1
-        return H
-    
-    def angle_residual(self, a, b):
-        res = a - b
-        return (res + np.pi) % (2 * np.pi) - np.pi
-=======
         
         # Calculate imu offset
         if self.yaw_offset is None:
@@ -224,7 +150,6 @@ class EKF_Algorithm(Node):
         
         self.imu_yaw = self.compute_heading(final_q) - self.yaw_offset
         self.imu_yaw = self.normalize_angle(self.imu_yaw)
->>>>>>> e23fb42380f30c8008895c2c3a786ef2f38ff977
 
 
     def publish_pose(self, x, y, theta):
@@ -232,11 +157,6 @@ class EKF_Algorithm(Node):
         if self.time is None:
             return
 
-<<<<<<< HEAD
-        # Current pose
-        x, y, theta = self.ekf.x[0], self.ekf.x[1], self.ekf.x[2]
-=======
->>>>>>> e23fb42380f30c8008895c2c3a786ef2f38ff977
         
         # Create message
         pose_msg = PoseWithCovarianceStamped()
@@ -257,19 +177,11 @@ class EKF_Algorithm(Node):
         
         # Set Covariance
         pose_msg.pose.covariance = [0] * 36 # Flat 6x6 matrix
-<<<<<<< HEAD
-        pose_msg.pose.covariance[0]  = self.ekf.P[0, 0]
-        pose_msg.pose.covariance[1]  = self.ekf.P[0, 1]
-        pose_msg.pose.covariance[6]  = self.ekf.P[1, 0]
-        pose_msg.pose.covariance[7]  = self.ekf.P[1, 1]
-        pose_msg.pose.covariance[35] = self.ekf.P[2, 2]
-=======
         pose_msg.pose.covariance[0]  = self.ekf_cov[0, 0]
         pose_msg.pose.covariance[1]  = self.ekf_cov[0, 1]
         pose_msg.pose.covariance[6]  = self.ekf_cov[1, 0]
         pose_msg.pose.covariance[7]  = self.ekf_cov[1, 1]
         pose_msg.pose.covariance[35] = self.ekf_cov[2, 2]
->>>>>>> e23fb42380f30c8008895c2c3a786ef2f38ff977
 
         PathPose = PoseStamped()
         PathPose.header = pose_msg.header
@@ -320,12 +232,9 @@ class EKF_Algorithm(Node):
             return yaw
 
 
-<<<<<<< HEAD
-=======
     def normalize_angle(self, angle):
         """Normalize angle to be within [-pi, pi] range."""
         return (angle + np.pi) % (2 * np.pi) - np.pi
->>>>>>> e23fb42380f30c8008895c2c3a786ef2f38ff977
 
 def main():
     rclpy.init()
