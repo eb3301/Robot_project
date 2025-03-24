@@ -35,8 +35,8 @@ class MinimalService(Node):
         self.imagesubscriber = self.create_subscription(Image, "/arm_camera/image_raw", self.image_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)) ## frame id is arm_camera_link
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
         self.data_sets = [[11000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
-                    [2000,12000,3000,20000,11500,12000,2000,2000,2000,2000,2000,2000],
-                    [11000,12000,10000,15000,4000,12000,2000,2000,2000,2000,2000,2000],
+                    [3000,12000,3000,19000,10500,12000,2000,2000,2000,2000,2000,2000],
+                    [11000,12000,3000,12000,4000,12000,2000,2000,2000,2000,2000,2000],
                     [2000,12000,8000,16000,10000,12000,2000,2000,2000,2000,2000,2000],
                     [2000,12000,3000,12000,4000,14000,2000,2000,2000,2000,2000,2000]]
         self.arm_length = [0.101,0.094,0.169]
@@ -54,7 +54,7 @@ class MinimalService(Node):
         # given all angles in radians, we compute with radians then convert and multiply with 100 to make
         # the messages the right shape to send to the robot
         rob_ang = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        print("transform to robot ot angles: "+ str(ang))
+        
 
         rob_ang[0] = round(math.degrees((ang[0] + math.radians(30)))*100) # takes the given angle and adds 30 deg, since 120 is 90
 
@@ -64,7 +64,7 @@ class MinimalService(Node):
 
         rob_ang[3] = round(math.degrees((math.radians(210) - ang[3]))*100)  # flipped around, this should give correct angle
 
-        rob_ang[4] = round(math.degrees((ang[4] + math.radians(30)))*100)
+        rob_ang[4] = round(math.degrees((ang[4] + math.radians(25)))*100)
 
         rob_ang[5] = round(math.degrees((ang[5] + math.radians(30)))*100)
 
@@ -94,7 +94,7 @@ class MinimalService(Node):
         a,b,c = self.arm_length
         x, y, z = target_position # transformed to arm, change to polar and calculate first arm length
         
-        print("Inverse Kinematics start, x,y is: " + str(x)+ " " + str(y))
+        #print("Inverse Kinematics start, x,y is: " + str(x)+ " " + str(y))
         if abs(x)>=0.01 and y>=0.05:
             theta = math.atan2(y,abs(x))
             if x<=0:
@@ -114,10 +114,11 @@ class MinimalService(Node):
         print("theta, rho, x, y, z is: " +str(iktheta) + ", " + str(rho)+ ", " + str(ikx)+ ", " + str(iky)+ ", " + str(ikz))
 
         two_joint_dist = math.sqrt(ikz**2+rho**2)
-        if a+b < two_joint_dist:
-            self.get_logger().info("too far")
+        if a+b <= two_joint_dist:
+            self.get_logger().info("a + b = " + str(a+b))
+            self.get_logger().info("too far: " + str(two_joint_dist))
             return [0],[]
-        print(((abs(ikz)**2+rho**2-b**2-a**2)/(-2*b*a)))#%math.pi) # the minus in 2bc is removed below
+        #print(((abs(ikz)**2+rho**2-b**2-a**2)/(-2*b*a)))#%math.pi) # the minus in 2bc is removed below
         phi_2 = math.acos(((abs(ikz)**2+rho**2-a**2-b**2)/(-2*a*b)))#%math.pi) 
 
         if ikz>=0: 
@@ -127,14 +128,14 @@ class MinimalService(Node):
         phi_1 = sign*math.atan2(abs(ikz),rho) + math.asin((b*math.sin(phi_2))/ two_joint_dist)   #math.asin((math.sqrt(rho**2+ikz**2)*math.sin(phi_3+math.radians(90)))/c)-phi_1
         my_coords_phi_1 = phi_1 #+ math.radians(30)
         my_coords_phi_2 = phi_2 - math.radians(90)
-        print("phi1, phi2: "+ str(my_coords_phi_1)+ ", " + str(phi_2))
+        #print("phi1, phi2: "+ str(my_coords_phi_1)+ ", " + str(phi_2))
 
         my_coords_phi_3 = -(my_coords_phi_1+my_coords_phi_2-math.radians(90))
 
         ang = [math.radians(90), math.radians(90), my_coords_phi_3, my_coords_phi_2, my_coords_phi_1, iktheta] # not sure, theta may be flipped and also phi_2.
         plt_ang = [my_coords_phi_1, my_coords_phi_2, my_coords_phi_3]
         forward = self.forward_kinematics(ang)
-        print("forward kinematics gives position: "+ str(forward))
+        #print("forward kinematics gives position: "+ str(forward))
         return self.transform_to_robot(ang), plt_ang
     
     def forward_kinematics(self,angles): #all angles assumed to be 90 while standing straight out from previous link
@@ -145,18 +146,21 @@ class MinimalService(Node):
         x = round(rho*math.cos(angles[5]),4)
         y = round(rho*math.sin(angles[5]),4)
         pos = [x,y,z]
-        print("rho is: " + str(rho))
 
         return pos
     
     def cam_forward_kinematics(self,angles): #all angles assumed to be 90 while standing straight out from previous link
         a,b,c = self.arm_length
+        phi1 = angles[4]-math.radians(5)
+        phi2 = angles[3]+math.radians(5)
+        print("phi: " + str(phi1))
         # print("angles are " + str(angles))
-        rho = round(a*math.cos(angles[4])+b*math.cos(angles[4] + angles[3]-math.radians(90))+0.03, 6)
-        z = round(a*math.sin(angles[4])+b*math.sin(angles[4]+angles[3]-math.radians(90))-0.04, 4)
+        rho = round(a*math.cos(phi1)+b*math.cos(phi1 + phi2-math.radians(90))+0.045, 6)
+        z = round(a*math.sin(phi1)+b*math.sin(phi1+phi2-math.radians(90))-0.04, 4)
         x = round(rho*math.cos(angles[5]),4)
         y = round(rho*math.sin(angles[5]),4)
         pos = [x,y]
+        print(angles)
         print("cam rho is: " + str(rho))
 
         return pos
@@ -286,28 +290,33 @@ class MinimalService(Node):
                 centers.append([cx,cy])
         
         merged_centers = self.merge_centers(centers, distance_threshold=120)
-        print(merged_centers)
+        print("merged centers: "+ str(merged_centers))
         cntr_pos = []
         for cntr in merged_centers:
             cv.circle(cropped_frame,cntr,5,(0,0,255),-1)
-            tmpx = round((cntr[0]/640-0.5)*40,3)
-            tmpy = round(((1-cntr[1]/430)-0.5)*38-1,3)
+            tmpx = round((cntr[0]/640-0.5)*40,3)/100
+            tmpy = round(((1-cntr[1]/430)-0.5)*38,3)/100
             cntr_pos.append([tmpx,tmpy])
-            if math.sqrt(tmpx**2+tmpy**2)< 5:
+            #print("x,y: "+str(tmpx) + " " + str(tmpy))
+            if math.sqrt(tmpx**2+tmpy**2)<= 0.1:
+                # plt.subplot(1,2,1)
+                # plt.imshow(cropped_frame)
+                # plt.subplot(1,2,2)
+                # plt.imshow(edges,cmap='gray')
+                # plt.show()
                 return [tmpx,tmpy]
 
-        print("cntr pos: " + str(cntr_pos))
+        # print("cntr pos: " + str(cntr_pos))
+        # plt.subplot(1,2,1)
+        # plt.imshow(cropped_frame)
+        # plt.subplot(1,2,2)
+        # plt.imshow(edges,cmap='gray')
+        # plt.show()
         return cntr_pos
 
         
 
-        plt.subplot(2,2,1)
-        plt.imshow(cropped_frame)
-        plt.subplot(2,2,2)
-        plt.imshow(edges,cmap='gray')
-        # plt.subplot(2,2,3)
-        # plt.imshow(frame)
-        plt.show()
+        
 
         ##############################
         src = cropped_frame
@@ -475,7 +484,7 @@ class MinimalService(Node):
             self.publisher.publish(msg)
         elif request.xy[0] == 6:
             cam_obj_pos = self.get_obj_pos()
-            print(cam_obj_pos)
+            print("cam obj pos :" + str(cam_obj_pos))
             # if cam_obj_pos == []:
             #     response.success = False#"Cannot see object"
             #     return response
@@ -483,8 +492,8 @@ class MinimalService(Node):
             obj_pos = self.cam_forward_kinematics(self.transform_from_robot(self.data_sets[1]))
             obj_pos[0] += cam_obj_pos[0]
             obj_pos[0] += cam_obj_pos[1] ## this will return a position x,y which the camera sees, should be transformed to arm_base
-            obj_pos.append(-0.16)
-            print(obj_pos)
+            obj_pos.append(-0.14)
+            print("obj pos: " + str(obj_pos))
             cam_angles, garbage = self.inverse_kinematics(obj_pos)
             if cam_angles != [0]:
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
