@@ -208,10 +208,11 @@ class MinimalService(Node):
         bridge = CvBridge()
         #Convert ROS Image message to OpenCV format
         frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
-        N = 44 # pixels to remove from bottom
+        N = 50 # pixels to remove from bottom
         cropped_frame = frame[:frame.shape[0] - N, :]
         # image_path = os.getcwd() + "/src/arm_service/arm_service/cube.jpg"
         # print("Current Working Directory:", os.getcwd())
+        print(cropped_frame.shape)
 
         # if not os.path.exists(image_path):
         #     print(f"Error: The file '{image_path}' does not exist.")
@@ -269,9 +270,44 @@ class MinimalService(Node):
         #         cv.putText(frame, coord_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)            # Send coordinates to Simulink
         #         data = np.array([cx, cy], dtype=np.float32).tobytes()
         # print("x,y is " + str(cx) + " " + str(cy))
-        plt.imshow(cropped_frame)    
+        #plt.imshow(cropped_frame)    
         #plt.show()
         #cv.destroyAllWindows()
+        edges = cv.Canny(cropped_frame,150,250)
+        contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        centers = []
+        for cnt in contours:
+            M = cv.moments(cnt)
+            if M['m00'] != 0:
+                cx = int(M['m10'] / M['m00'])
+                cy = int(M['m01'] / M['m00'])
+                # Draw center
+                #cv.circle(frame, (cx, cy), 5, (0, 0, 255), -1)
+                centers.append([cx,cy])
+        
+        merged_centers = self.merge_centers(centers, distance_threshold=120)
+        print(merged_centers)
+        cntr_pos = []
+        for cntr in merged_centers:
+            cv.circle(cropped_frame,cntr,5,(0,0,255),-1)
+            tmpx = round((cntr[0]/640-0.5)*40,3)
+            tmpy = round(((1-cntr[1]/430)-0.5)*38-1,3)
+            cntr_pos.append([tmpx,tmpy])
+            if math.sqrt(tmpx**2+tmpy**2)< 5:
+                return [tmpx,tmpy]
+
+        print("cntr pos: " + str(cntr_pos))
+        return cntr_pos
+
+        
+
+        plt.subplot(2,2,1)
+        plt.imshow(cropped_frame)
+        plt.subplot(2,2,2)
+        plt.imshow(edges,cmap='gray')
+        # plt.subplot(2,2,3)
+        # plt.imshow(frame)
+        plt.show()
 
         ##############################
         src = cropped_frame
@@ -298,14 +334,14 @@ class MinimalService(Node):
 
 
         result = self.cornerHarris_demo( thresh,src_gray)
-        print(result[0])
+        #print(result[0])
 
-        # Display using matplotlib (safe for headless)
-        plt.imshow(result, cmap='gray')
-        plt.title("Corners Detected")
-        plt.axis('off')
-        plt.show()
-        #cv.waitKey()
+        # # Display using matplotlib (safe for headless)
+        # plt.imshow(result, cmap='gray')
+        # plt.title("Corners Detected")
+        # plt.axis('off')
+        # plt.show()
+        # #cv.waitKey()
 
         ################
 
@@ -332,6 +368,26 @@ class MinimalService(Node):
             #cv.imshow(corners_window, dst_norm_scaled)# Load source image and convert it to gray
             return dst_norm_scaled
 
+    def merge_centers(self,centers, distance_threshold=30):
+        merged = []
+        used = [False] * len(centers)
+
+        for i in range(len(centers)):
+            if used[i]:
+                continue
+            group = [centers[i]]
+            used[i] = True
+            for j in range(i + 1, len(centers)):
+                if not used[j]:
+                    dist = np.linalg.norm(np.array(centers[i]) - np.array(centers[j]))
+                    if dist < distance_threshold:
+                        group.append(centers[j])
+                        used[j] = True
+            # Average the group
+            avg = tuple(np.mean(group, axis=0).astype(int))
+            merged.append(avg)
+        return merged
+
     def arm_callback(self, request, response):
         time_data_set = [2000,2000,2000,2000,2000,2000]
         target_position = [ 0.03, 0.19, -0.16] #assuming x right 
@@ -343,20 +399,6 @@ class MinimalService(Node):
         # msg.data = self.data_sets[1]
         # self.publisher.publish(msg)
 
-        cam_obj_pos = self.get_obj_pos()
-        # if cam_obj_pos == []:
-        #     response.success = False#"Cannot see object"
-        #     return response
-        
-        obj_pos = self.cam_forward_kinematics(self.transform_from_robot(self.data_sets[1]))# + cam_obj_pos ## this will return a position x,y which the camera sees, should be transformed to arm_base
-        obj_pos.append(-0.16)
-        print(obj_pos)
-        cam_angles, garbage = self.inverse_kinematics(obj_pos)
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
-        print(cam_angles)
-        cam_data_set = np.concatenate((cam_angles,time_data_set))
-        cam_data_set[0] = 2000
-        self.get_logger().info("computed cam sequence is " + str(cam_data_set))
         # if not self.pos_ok_check(obj_pos):
         #     response.success = "Object is not in position to pick"
         # ## continue with ik here
@@ -432,6 +474,25 @@ class MinimalService(Node):
             msg.data = rob_data_set
             self.publisher.publish(msg)
         elif request.xy[0] == 6:
+            cam_obj_pos = self.get_obj_pos()
+            print(cam_obj_pos)
+            # if cam_obj_pos == []:
+            #     response.success = False#"Cannot see object"
+            #     return response
+            
+            obj_pos = self.cam_forward_kinematics(self.transform_from_robot(self.data_sets[1]))
+            obj_pos[0] += cam_obj_pos[0]
+            obj_pos[0] += cam_obj_pos[1] ## this will return a position x,y which the camera sees, should be transformed to arm_base
+            obj_pos.append(-0.16)
+            print(obj_pos)
+            cam_angles, garbage = self.inverse_kinematics(obj_pos)
+            if cam_angles != [0]:
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
+                print(cam_angles)
+                cam_data_set = np.concatenate((cam_angles,time_data_set))
+                cam_data_set[0] = 2000
+                self.get_logger().info("computed cam sequence is " + str(cam_data_set))
+
             msg.data = cam_data_set
             self.publisher.publish(msg)
             time.sleep(4.0)
