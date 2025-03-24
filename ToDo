@@ -1,0 +1,15 @@
+Exploration: 
+how do we choose points and how do we decide which points to explore
+how do we define objects and borders (occupancy grid or separate file)
+what is limit for detection distance
+how do we handle duplicates
+how do we publish the objects
+how do we handle colission avoidance
+
+Collection:
+How to decide what object to pick first
+how do we know when to stop (when rgbd does not see?)
+how do we update grid when stuff is picked or found in wrong place
+how to handle when two objects are next to eachother
+how do we handle when an object is not where we expect it to be
+

@@ -175,7 +175,7 @@ class Load_Map(pt.behaviour.Behaviour):
         with open(map_path, 'r') as file:
             for item in file:
                 obj = item.strip().split()
-                obj_tuple = (str(obj[0]), float(obj[1])/100, float(obj[2])/100, float(obj[3])/100)
+                obj_tuple = (str(obj[0]), float(obj[1])/100, float(obj[2])/100, float(obj[3]))
                 objects.append(obj_tuple)
         self.blackboard.set('objects', objects)
         self.publish_objects(objects)
