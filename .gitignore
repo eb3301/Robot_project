@@ -23,6 +23,10 @@ launch/log/
 dd2419_ws/build/
 dd2419_ws/install/
 dd2419_ws/log/
+dd2419_ws/src/build/
+dd2419_ws/src/install/
+dd2419_ws/src/log/
+
 
 # Ignore robp_robot
 src/robp_robot/
