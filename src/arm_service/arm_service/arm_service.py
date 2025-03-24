@@ -35,7 +35,7 @@ class MinimalService(Node):
         self.imagesubscriber = self.create_subscription(Image, "/arm_camera/image_raw", self.image_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)) ## frame id is arm_camera_link
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
         self.data_sets = [[11000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
-                    [2000,12000,4000,18000,9000,12000,2000,2000,2000,2000,2000,2000],
+                    [2000,12000,3000,20000,11500,12000,2000,2000,2000,2000,2000,2000],
                     [11000,12000,10000,15000,4000,12000,2000,2000,2000,2000,2000,2000],
                     [2000,12000,8000,16000,10000,12000,2000,2000,2000,2000,2000,2000],
                     [2000,12000,3000,12000,4000,14000,2000,2000,2000,2000,2000,2000]]
