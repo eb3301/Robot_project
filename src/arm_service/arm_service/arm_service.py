@@ -418,10 +418,12 @@ class MinimalService(Node):
         robot_angles, plt_ang = self.inverse_kinematics(target_position)
 
         if robot_angles == [0]:
-            response.success = False#"Too far from object"
+            response.success = False
+            response.message = "object too far from robot"
             return response
         elif robot_angles == [1]:
-            response.success = False#"Too close to object"
+            response.success = False
+            response.message = "object too close to robot"
             return response
         
         rob_data_set = np.concatenate((robot_angles,time_data_set))
@@ -441,6 +443,7 @@ class MinimalService(Node):
             self.publisher.publish(msg)
         elif request.xy[0] == 2:
             self.get_logger().info('moving arm to look')
+            print(int(request.xy[0]-1))
             msg.data = self.data_sets[int(request.xy[0]-1)]
             self.publisher.publish(msg)
             #move arm to look
@@ -483,15 +486,20 @@ class MinimalService(Node):
             msg.data = rob_data_set
             self.publisher.publish(msg)
         elif request.xy[0] == 6:
+            self.get_logger().info('moving arm to look')
+            msg.data = self.data_sets[1]
+            self.publisher.publish(msg)
+            time.sleep(1.0)
             cam_obj_pos = self.get_obj_pos()
             print("cam obj pos :" + str(cam_obj_pos))
-            # if cam_obj_pos == []:
-            #     response.success = False#"Cannot see object"
-            #     return response
+            if cam_obj_pos == []:
+                response.success = False#"Cannot see object"
+                response.message = "No object detected"
+                return response
             
             obj_pos = self.cam_forward_kinematics(self.transform_from_robot(self.data_sets[1]))
-            obj_pos[0] += cam_obj_pos[0]
-            obj_pos[0] += cam_obj_pos[1] ## this will return a position x,y which the camera sees, should be transformed to arm_base
+            obj_pos[0] += float(cam_obj_pos[0])
+            obj_pos[1] += float(cam_obj_pos[1]) ## this will return a position x,y which the camera sees, should be transformed to arm_base
             obj_pos.append(-0.14)
             print("obj pos: " + str(obj_pos))
             cam_angles, garbage = self.inverse_kinematics(obj_pos)
@@ -501,22 +509,24 @@ class MinimalService(Node):
                 cam_data_set = np.concatenate((cam_angles,time_data_set))
                 cam_data_set[0] = 2000
                 self.get_logger().info("computed cam sequence is " + str(cam_data_set))
+            self.get_logger().info("Pickup has ran !!!!!!!!!!!!!!!!!!!!!")
 
-            msg.data = cam_data_set
-            self.publisher.publish(msg)
-            time.sleep(4.0)
-            print("sleep")
-            cam_data_set[0]=11000
-            msg.data = cam_data_set
-            self.publisher.publish(msg)
-            time.sleep(4.0)
-            msg.data = self.data_sets[0]
-            self.publisher.publish(msg)
+            # msg.data = cam_data_set
+            # self.publisher.publish(msg)
+            # time.sleep(4.0)
+            # print("sleep")
+            # cam_data_set[0]=11000
+            # msg.data = cam_data_set
+            # self.publisher.publish(msg)
+            # time.sleep(4.0)
+            # msg.data = self.data_sets[0]
+            # self.publisher.publish(msg)
 
         
         
         #self.get_logger().info('Incoming request\na: %d b: %d' % (request.xy[0]))
         response.success = True#"success"
+        response.message = 'successful'
         return response
 
 

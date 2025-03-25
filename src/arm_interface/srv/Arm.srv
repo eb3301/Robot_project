@@ -4,3 +4,4 @@ string obj_class
 ---
 # result
 bool success
+string message

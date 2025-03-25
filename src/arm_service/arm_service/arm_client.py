@@ -34,7 +34,7 @@ def main(args=None):
     arm_client = ArmClient()
     response = arm_client.send_request(int(sys.argv[1])) # sys.argv is from terminal
     arm_client.get_logger().info(
-        'Response from arm is: ' + str(response.success))
+        'Response from arm is: ' + str(response.success) + " and " + response.message)
 
     arm_client.destroy_node()
     rclpy.shutdown()

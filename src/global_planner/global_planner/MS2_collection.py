@@ -16,6 +16,8 @@ from geometry_msgs.msg import Point, PoseWithCovarianceStamped
 
 from tf_transformations import quaternion_from_euler
 import numpy as np
+from arm_interface.srv import Arm
+from arm_service.arm_client import call_arm_client
 
 class BehaviourTree(Node):
     def __init__(self):
@@ -40,13 +42,13 @@ class BehaviourTree(Node):
 
         drive_to_obj_1 = Drive_to_Obj() # Plan and execute path to coordinates
         drive_to_obj_2 = Drive_to_Obj() # Plan and execute path to coordinates
-        pickup = Pickup() # Pickup object
+        pickup = Pickup(self) # Pickup object
         place = Place() # Place object
 
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          children = [create_ws, load_map, cube_coor]
+                                          children = [create_ws, load_map, cube_coor, pickup]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -322,10 +324,72 @@ class Drive_to_Obj(pt.behaviour.Behaviour):
         
 
 class Pickup(pt.behaviour.Behaviour):
-    def __init__(self):
+    def __init__(self,node):
         super().__init__("Pickup")
+        self.node = node
+        self.cli = self.node.create_client(Arm, 'arm')
+        while not self.cli.wait_for_service(timeout_sec=1.0):
+            self.node.get_logger().info('service not available, waiting again...')
+        self.req = Arm.Request()
+        self.blackboard = pt.blackboard.Blackboard()
+        self.request_sent = False
+        self.response = None
+    
+    def initialise(self):
+        self.request_sent = False
+        self.response = None
+        self.req.xy[0] = 6 #  
+        self.req.obj_class = '1' #self.blackboard.get('pickup_obj_class')[0]
+        self.future = self.cli.call_async(self.req)
+        return self.future.result()
+        rclpy.spin_until_future_complete(self, self.future)
+        #return self.future.result()
+
     def update(self):
+
+        obj_class = '1'#self.blackboard.get('pickup_obj_class')[0]
+        if obj_class is None:
+            self.node.get_logger().error("No object class specified on blackboard.")
+            return pt.common.Status.FAILURE
+
+        # Send pickup request once
+        if not self.request_sent:
+            try:
+                self.req = Arm.Request()
+                self.req.xy[0] = 2 # sending a look command
+                self.req.obj_class = obj_class
+                self.future = self.cli.call_async(self.req)
+                rclpy.spin_until_future_complete(self, self.future)
+                # req.object_id = target  # or whatever field your service requires
+                # self.response = self.client.call(req)
+                self.request_sent = True
+            except: #rclpy.ServiceException as e:
+                self.node.get_logger().error(f"Service call failed:")# {e}")
+                return pt.common.Status.FAILURE
+
+        # Process the response
+        if self.response.success:
+            self.node.get_logger().info("Pickup successful.")
+            return pt.common.Status.SUCCESS
+        else:
+            self.node.get_logger().error("Pickup failed, " + self.response.message)
+            return pt.common.Status.FAILURE
         pass
+
+    
+    
+    def send_request(self, command, obj_class):
+        self.req.xy[0] = command
+        self.req.obj_class = obj_class
+        self.future = self.cli.call_async(self.req)
+        rclpy.spin_until_future_complete(self, self.future)
+        return self.future.result()
+    
+    def pickup(self,obj='1'): # cube
+        response = self.send_request(2,obj)
+        self.node.get_logger().info('Response from arm is: ' + str(response.success))
+        
+    
 
 class Place(pt.behaviour.Behaviour):
     def __init__(self):
