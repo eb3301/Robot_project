@@ -354,27 +354,32 @@ class Pickup(pt.behaviour.Behaviour):
 
         # Send pickup request once
         if not self.request_sent:
-            try:
-                self.req = Arm.Request()
-                self.req.xy[0] = 2 # sending a look command
-                self.req.obj_class = obj_class
-                self.future = self.cli.call_async(self.req)
-                rclpy.spin_until_future_complete(self, self.future)
-                # req.object_id = target  # or whatever field your service requires
-                # self.response = self.client.call(req)
-                self.request_sent = True
-            except: #rclpy.ServiceException as e:
+            
+            self.req = Arm.Request()
+            self.req.xy[0] = 2 # sending a look command
+            self.req.obj_class = obj_class
+            self.future = self.cli.call_async(self.req)
+            self.request_sent = True
+
+            #rclpy.spin_until_future_complete(self.node, self.node.future)
+            # req.object_id = target  # or whatever field your service requires
+            # self.response = self.client.call(req)
+
+        if self.future.done():
+            if self.future.result() is not None:
+                response = self.future.result()
+                if response.success:
+                    self.node.get_logger().info("pickup successful")
+                    return pt.common.Status.SUCCESS
+                else:
+                    self.node.get_logger().info("pickup failed: " + response.message)
+                    return pt.common.Status.FAILURE
+            else:
                 self.node.get_logger().error(f"Service call failed:")# {e}")
                 return pt.common.Status.FAILURE
-
-        # Process the response
-        if self.response.success:
-            self.node.get_logger().info("Pickup successful.")
-            return pt.common.Status.SUCCESS
-        else:
-            self.node.get_logger().error("Pickup failed, " + self.response.message)
-            return pt.common.Status.FAILURE
-        pass
+        
+        # waiting
+        return pt.common.Status.RUNNING
 
     
     

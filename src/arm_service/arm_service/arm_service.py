@@ -155,9 +155,9 @@ class MinimalService(Node):
         phi2 = angles[3]+math.radians(5)
         print("phi: " + str(phi1))
         # print("angles are " + str(angles))
-        rho = round(a*math.cos(phi1)+b*math.cos(phi1 + phi2-math.radians(90))+0.045, 6)
+        rho = round(a*math.cos(phi1)+b*math.cos(phi1 + phi2-math.radians(90))+0.070, 6)
         z = round(a*math.sin(phi1)+b*math.sin(phi1+phi2-math.radians(90))-0.04, 4)
-        x = round(rho*math.cos(angles[5]),4)
+        x = round(rho*math.cos(angles[5])-0.01,4)
         y = round(rho*math.sin(angles[5]),4)
         pos = [x,y]
         print(angles)
@@ -446,6 +446,11 @@ class MinimalService(Node):
             print(int(request.xy[0]-1))
             msg.data = self.data_sets[int(request.xy[0]-1)]
             self.publisher.publish(msg)
+
+            response.success = True #"success"
+            response.message = 'successful'
+            return response
+
             #move arm to look
             # check if any object is detected
             # change theta and look again
@@ -511,16 +516,16 @@ class MinimalService(Node):
                 self.get_logger().info("computed cam sequence is " + str(cam_data_set))
             self.get_logger().info("Pickup has ran !!!!!!!!!!!!!!!!!!!!!")
 
-            # msg.data = cam_data_set
-            # self.publisher.publish(msg)
-            # time.sleep(4.0)
-            # print("sleep")
-            # cam_data_set[0]=11000
-            # msg.data = cam_data_set
-            # self.publisher.publish(msg)
-            # time.sleep(4.0)
-            # msg.data = self.data_sets[0]
-            # self.publisher.publish(msg)
+            msg.data = cam_data_set
+            self.publisher.publish(msg)
+            time.sleep(4.0)
+            print("sleep")
+            cam_data_set[0]=11000
+            msg.data = cam_data_set
+            self.publisher.publish(msg)
+            time.sleep(4.0)
+            msg.data = self.data_sets[0]
+            self.publisher.publish(msg)
 
         
         
