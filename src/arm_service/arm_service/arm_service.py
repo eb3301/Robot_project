@@ -44,11 +44,21 @@ class MinimalService(Node):
 
     def pos_ok_check(self,target_position):
         x, y, z = target_position
+        print("check: " + str(target_position))
         return (
-            (np.all([0.1 <= y <= 0.19, -0.12 <= x <= 0.1]) or 
+            (np.all([0.13 <= y <= 0.22, -0.12 <= x <= 0.1]) or 
             np.all([-0.15 <= y <= -0.05, -0.1 <= x <= 0.18]))
-            and (-0.18 <= z <= -0.05)
+            and (0.01 <= z <= 0.05)
         )
+
+    def safepublish(self,arr):
+        if self.pos_ok_check(self.forward_kinematics(self.transform_from_robot(arr[0:6]))):
+            print("safe to grip")
+            msg = Int16MultiArray()
+            msg.data = arr
+            self.publisher.publish(msg)
+        else:
+            print("bas pos")
     
     def transform_to_robot(self,ang): 
         # given all angles in radians, we compute with radians then convert and multiply with 100 to make
@@ -60,11 +70,11 @@ class MinimalService(Node):
 
         rob_ang[1] = round(math.degrees((math.radians(210) - ang[1]))*100)
 
-        rob_ang[2] = round(math.degrees((ang[2] + math.radians(30)))*100)
+        rob_ang[2] = round(math.degrees((ang[2] + math.radians(35)))*100)
 
         rob_ang[3] = round(math.degrees((math.radians(210) - ang[3]))*100)  # flipped around, this should give correct angle
 
-        rob_ang[4] = round(math.degrees((ang[4] + math.radians(25)))*100)
+        rob_ang[4] = round(math.degrees((ang[4] + math.radians(35)))*100)
 
         rob_ang[5] = round(math.degrees((ang[5] + math.radians(30)))*100)
 
@@ -130,7 +140,7 @@ class MinimalService(Node):
         my_coords_phi_2 = phi_2 - math.radians(90)
         #print("phi1, phi2: "+ str(my_coords_phi_1)+ ", " + str(phi_2))
 
-        my_coords_phi_3 = -(my_coords_phi_1+my_coords_phi_2-math.radians(90))
+        my_coords_phi_3 = -(my_coords_phi_1+math.radians(5)+my_coords_phi_2-math.radians(90))
 
         ang = [math.radians(90), math.radians(90), my_coords_phi_3, my_coords_phi_2, my_coords_phi_1, iktheta] # not sure, theta may be flipped and also phi_2.
         plt_ang = [my_coords_phi_1, my_coords_phi_2, my_coords_phi_3]
@@ -141,8 +151,8 @@ class MinimalService(Node):
     def forward_kinematics(self,angles): #all angles assumed to be 90 while standing straight out from previous link
         a,b,c = self.arm_length
         # print("angles are " + str(angles))
-        rho = round(a*math.cos(angles[4])+b*math.cos(angles[4] + angles[3]-math.radians(90))+c*math.cos(angles[4]+angles[3]+angles[2]-math.radians(180)),6)
-        z = round(a*math.sin(angles[4])+b*math.sin(angles[4]+angles[3]-math.radians(90))+c*math.sin(angles[4]+angles[3]+angles[2]-math.radians(180)),4)
+        rho = round(a*math.cos(angles[4])+b*math.cos(angles[4] + angles[3]-math.radians(90)),6) #+c*math.cos(angles[4]+angles[3]+angles[2]-math.radians(180)),6)
+        z = round(a*math.sin(angles[4])+b*math.sin(angles[4]+angles[3]-math.radians(90)),4) #+c*math.sin(angles[4]+angles[3]+angles[2]-math.radians(180)),4)
         x = round(rho*math.cos(angles[5]),4)
         y = round(rho*math.sin(angles[5]),4)
         pos = [x,y,z]
@@ -152,16 +162,16 @@ class MinimalService(Node):
     def cam_forward_kinematics(self,angles): #all angles assumed to be 90 while standing straight out from previous link
         a,b,c = self.arm_length
         phi1 = angles[4]-math.radians(5)
-        phi2 = angles[3]+math.radians(5)
+        phi2 = angles[3]-math.radians(5)
         print("phi: " + str(phi1))
         # print("angles are " + str(angles))
-        rho = round(a*math.cos(phi1)+b*math.cos(phi1 + phi2-math.radians(90))+0.070, 6)
+        rho = round(a*math.cos(phi1)+b*math.cos(phi1 + phi2-math.radians(90))+0.045, 6)
         z = round(a*math.sin(phi1)+b*math.sin(phi1+phi2-math.radians(90))-0.04, 4)
-        x = round(rho*math.cos(angles[5])-0.01,4)
+        x = round(rho*math.cos(angles[5]),4)
         y = round(rho*math.sin(angles[5]),4)
         pos = [x,y]
         print(angles)
-        print("cam rho is: " + str(rho))
+        print("cam rho, x, y is: " + str(rho) + ", " +str(x) + ", " + str(y))
 
         return pos
     
@@ -214,11 +224,13 @@ class MinimalService(Node):
         frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
         N = 50 # pixels to remove from bottom
         cropped_frame = frame[:frame.shape[0] - N, :]
+        #cropped_frame = frame[95:335, 170:470]   
         # image_path = os.getcwd() + "/src/arm_service/arm_service/cube.jpg"
         # print("Current Working Directory:", os.getcwd())
         print(cropped_frame.shape)
 
-        # if not os.path.exists(image_path):
+        '''# if not os.path.exists(image_path):
+
         #     print(f"Error: The file '{image_path}' does not exist.")
         # else:
         #     frame = cv.imread(image_path, cv.IMREAD_GRAYSCALE)
@@ -276,9 +288,11 @@ class MinimalService(Node):
         # print("x,y is " + str(cx) + " " + str(cy))
         #plt.imshow(cropped_frame)    
         #plt.show()
-        #cv.destroyAllWindows()
-        edges = cv.Canny(cropped_frame,150,250)
+        #cv.destroyAllWindows()'''
+        
+        edges = cv.Canny(cropped_frame,200,500)
         contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        
         centers = []
         for cnt in contours:
             M = cv.moments(cnt)
@@ -286,24 +300,37 @@ class MinimalService(Node):
                 cx = int(M['m10'] / M['m00'])
                 cy = int(M['m01'] / M['m00'])
                 # Draw center
-                #cv.circle(frame, (cx, cy), 5, (0, 0, 255), -1)
+                cv.circle(frame, (cx, cy), 5, (0, 0, 255), -1)
                 centers.append([cx,cy])
+        # for cnt in contours:
+        #     if cv.contourArea(cnt) > 50:  # Filter out tiny noise
+        #         cx, cy, x, y, w, h= self.get_center_from_bounding_rect(cnt)
+        #         centers.append((cx, cy))
         
-        merged_centers = self.merge_centers(centers, distance_threshold=120)
+        #         cv.rectangle(cropped_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        #         cv.circle(cropped_frame, (cx, cy), 5, (0, 0, 255), -1)
+        
+        for cnt in contours:
+            for pt in cnt:
+                x, y = pt[0]
+                cv.circle(cropped_frame, (x, y), 1, (0, 255, 0), -1)
+
+        merged_centers = self.merge_centers(centers, distance_threshold=110)
         print("merged centers: "+ str(merged_centers))
         cntr_pos = []
         for cntr in merged_centers:
-            cv.circle(cropped_frame,cntr,5,(0,0,255),-1)
-            tmpx = round((cntr[0]/640-0.5)*40,3)/100
-            tmpy = round(((1-cntr[1]/430)-0.5)*38,3)/100
+            #cv.circle(cropped_frame,cntr,5,(0,0,255),-1)
+            tmpx = round((cntr[0]/300-0.5)*15,3)/100#round((cntr[0]/640-0.5)*30,3)/100
+            tmpy = round(((1-cntr[1]/240)-0.5)*12+0.01,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
             cntr_pos.append([tmpx,tmpy])
-            #print("x,y: "+str(tmpx) + " " + str(tmpy))
+            print("x,y: "+str(tmpx) + " " + str(tmpy))
             if math.sqrt(tmpx**2+tmpy**2)<= 0.1:
-                # plt.subplot(1,2,1)
-                # plt.imshow(cropped_frame)
-                # plt.subplot(1,2,2)
-                # plt.imshow(edges,cmap='gray')
-                # plt.show()
+                
+                plt.subplot(1,2,1)
+                plt.imshow(cropped_frame)
+                plt.subplot(1,2,2)
+                plt.imshow(edges,cmap='gray')
+                plt.show()
                 return [tmpx,tmpy]
 
         # print("cntr pos: " + str(cntr_pos))
@@ -313,11 +340,8 @@ class MinimalService(Node):
         # plt.imshow(edges,cmap='gray')
         # plt.show()
         return cntr_pos
-
-        
-
-        
-
+           
+        '''
         ##############################
         src = cropped_frame
         source_window = "Cube Image"
@@ -352,13 +376,21 @@ class MinimalService(Node):
         # plt.show()
         # #cv.waitKey()
 
-        ################
+        ################'''
 
         nothing_detected = True
         if nothing_detected:
             return [0,0]
         return pos
     
+    def get_center_from_bounding_rect(self, contour):
+        x, y, w, h = cv.boundingRect(contour)
+        cx = x + w // 2
+        cy = y + h // 2
+
+        
+
+        return (cx, cy, x, y, w, h)
     def cornerHarris_demo(self,val,src_gray):
             thresh = val    # Detector parameters
             blockSize = 2
@@ -402,20 +434,16 @@ class MinimalService(Node):
         target_position = [ 0.03, 0.19, -0.16] #assuming x right 
         target_orientation = [0, 0, 0]
         msg = Int16MultiArray()
-        #msg.data = self.data_sets[int(request.xy[0]-1)]
-
-        # self.get_logger().info('moving arm to look')
-        # msg.data = self.data_sets[1]
-        # self.publisher.publish(msg)
 
         # if not self.pos_ok_check(obj_pos):
         #     response.success = "Object is not in position to pick"
         # ## continue with ik here
 
         
-        ang_test = [math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(70)]
+        #ang_test = [math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(70)]
         #self.get_logger().info("forward kin test: "+ str(self.forward_kinematics(ang_test)))
-        robot_angles, plt_ang = self.inverse_kinematics(target_position)
+        
+        '''robot_angles, plt_ang = self.inverse_kinematics(target_position)
 
         if robot_angles == [0]:
             response.success = False
@@ -430,12 +458,9 @@ class MinimalService(Node):
         rob_data_set[0] = 2000
         self.get_logger().info("computed sequence is " + str(rob_data_set))
 
-        #self.plot_robot_arm(self.arm_length,plt_ang)
+        #self.plot_robot_arm(self.arm_length,plt_ang)'''
 
-        
 
-        # forward_kin = self.forward_kinematics(self.transform_from_robot(self.data_sets[4]))
-        # print("forward kinematics test: "+ str(forward_kin))
 
         if request.xy[0] == 1: # this is command from client
             self.get_logger().info('moving arm to top')
@@ -450,12 +475,7 @@ class MinimalService(Node):
             response.success = True #"success"
             response.message = 'successful'
             return response
-
-            #move arm to look
-            # check if any object is detected
-            # change theta and look again
-            # if nothing found send error to planner
-            # if object found, call grab function.
+        
         elif request.xy[0] == 3: 
             self.get_logger().info('moving arm to grab')
             msg.data = self.data_sets[int(request.xy[0]-1)]
@@ -494,18 +514,18 @@ class MinimalService(Node):
             self.get_logger().info('moving arm to look')
             msg.data = self.data_sets[1]
             self.publisher.publish(msg)
-            time.sleep(1.0)
+            time.sleep(4.0)
             cam_obj_pos = self.get_obj_pos()
             print("cam obj pos :" + str(cam_obj_pos))
             if cam_obj_pos == []:
-                response.success = False#"Cannot see object"
+                response.success = False 
                 response.message = "No object detected"
                 return response
             
             obj_pos = self.cam_forward_kinematics(self.transform_from_robot(self.data_sets[1]))
             obj_pos[0] += float(cam_obj_pos[0])
             obj_pos[1] += float(cam_obj_pos[1]) ## this will return a position x,y which the camera sees, should be transformed to arm_base
-            obj_pos.append(-0.14)
+            obj_pos.append(-0.16)
             print("obj pos: " + str(obj_pos))
             cam_angles, garbage = self.inverse_kinematics(obj_pos)
             if cam_angles != [0]:
@@ -515,9 +535,10 @@ class MinimalService(Node):
                 cam_data_set[0] = 2000
                 self.get_logger().info("computed cam sequence is " + str(cam_data_set))
             self.get_logger().info("Pickup has ran !!!!!!!!!!!!!!!!!!!!!")
-
-            msg.data = cam_data_set
-            self.publisher.publish(msg)
+            
+            #msg.data = cam_data_set
+            #self.publisher.publish(msg)
+            self.safepublish(cam_data_set)
             time.sleep(4.0)
             print("sleep")
             cam_data_set[0]=11000
