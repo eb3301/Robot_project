@@ -1,30 +1,85 @@
-import math
 import numpy as np
-import struct
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import PointCloud2, PointField
+from sensor_msgs.msg import PointCloud2
 import sensor_msgs_py.point_cloud2 as pc2
 from sklearn.cluster import DBSCAN
 from visualization_msgs.msg import Marker, MarkerArray
+from geometry_msgs.msg import Point
+from detect_interfaces.srv import DetectObjects
+from std_srvs.srv import SetBool, Trigger
+
+
 
 class Detection(Node):
     def __init__(self):
         super().__init__('detection')
 
+        # Publishers
         self._pub = self.create_publisher(PointCloud2, '/detected_objects', 10)
         self._marker_pub = self.create_publisher(MarkerArray, '/bounding_boxes', 10)
         
-        self.create_subscription(PointCloud2,
-             '/camera/camera/depth/color/points', self.cloud_callback, 10)
-        
-        self.ObjectList = []
+        # Service definition
+        self.srv = self.create_service(DetectObjects, 'detect_objects', self.detect_objects_callback)
 
-        self.get_logger().info(f"Node started")
+        # Subscriber to the point cloud topic
+        self._sub = self.create_subscription(
+            PointCloud2,
+            '/camera/camera/depth/color/points',
+            self.cloud_callback,
+            10
+        )
+
+        self.latest_cloud = None
+        self.ObjectList = []  # Stores detected objects
+
+        self.active = False  # Nodo inattivo finché non viene avviato
+
+        # Servizi per attivare/disattivare detection
+        self.create_service(SetBool, 'start_detection', self.start_detection_callback)
+        self.create_service(SetBool, 'stop_detection', self.stop_detection_callback)
+        self.create_service(Trigger, 'reset_detected_objects', self.reset_callback)
+
+
+
+        self.get_logger().info("Node started and service ready")
+
+    def detect_objects_callback(self, request, response):
+        """Service callback that returns the detected objects and their positions."""
+        self.get_logger().info("Detecting objects...")
+
+        if not self.ObjectList:
+            self.get_logger().warn("No detected objects available.")
+            return response  # Return empty response if no objects detected
+
+        # Populate response with object types and positions
+        response.object_types = []
+        response.object_positions = []
+
+        for obj in self.ObjectList:
+            obj_type, obj_position = obj
+            response.object_types.append(obj_type)
+
+            # position = Point()
+            # position.x, position.y, position.z = obj_position
+            position = Point()
+            position.x = float(obj_position[0])
+            position.y = float(obj_position[1])
+            position.z = float(obj_position[2])
+
+            response.object_positions.append(position)
+
+        return response
 
     def cloud_callback(self, msg: PointCloud2):
-        """Detects objects using DBSCAN clustering, volume and shape detection, and publishes bounding boxes."""
-        header = msg.header
+        """
+        Processes the latest point cloud and stores detected objects.
+        Detects objects using DBSCAN clustering, volume and shape detection, and publishes bounding boxes.
+        """
+        if not self.active:
+            return  # Ignora frame se il nodo è disattivato
+
+        self.latest_cloud = msg  # Store latest cloud
         points = pc2.read_points_numpy(msg, skip_nans=True)[:, :3]
 
         distances = np.linalg.norm(points[:, :3], axis=1)
@@ -40,21 +95,16 @@ class Detection(Node):
         db = DBSCAN(eps=0.15, min_samples=70)
         labels = db.fit_predict(filtered_points)
 
-        ## Remove clusters too big
-        # Count the number of points in each cluster
         _, counts = np.unique(labels, return_counts=True)
         max_cluster_size = 8000
-        # Sostituisci i cluster troppo grandi con -1 (rumore)
         filt_labels = np.array([
             -1 if counts[label] > max_cluster_size else label   
             for label in labels
         ])
 
         detected_indices = []
-        classified_labels = []
         unique_labels = set(filt_labels)
-        obj_type="trash"
-        
+
         for label in unique_labels:
             if label == -1:
                 continue
@@ -72,63 +122,36 @@ class Detection(Node):
             bbox_center = (bbox_min + bbox_max) / 2
             volume = np.prod(bbox_size)
 
-            #self.get_logger().info(f'box x: {bbox_min[0],bbox_max[0]}')
-            
-            # Partial cluster removal:
-            # Definisci il workspace globale del robot
-            x_lim=0.35
+            x_lim = 0.35
             x_min, x_max = -x_lim, x_lim
-
-            # Se il cluster è troppo vicino ai bordi, ignoralo
             if (bbox_min[0] < x_min or bbox_max[0] > x_max):
-                #self.get_logger().info(f"Skipping border cluster at {bbox_center}")
                 continue
 
-            if volume < 0.00012:  # Object detected (< 0.002 fluffy + sphere + cube)
-                # Compute curvature
-                curvatures = []
-                # Assuming cluster_points is a 2D numpy array with shape (num_points, 3)
-                for p in cluster_points:
-                    # Calculate the covariance matrix for the entire cluster of points
-                    cov_matrix = np.cov(cluster_points.T)  # Transpose to have points as columns
-                    # Check if the covariance matrix is valid (no NaNs or Infs)
-                    if np.any(np.isnan(cov_matrix)) or np.any(np.isinf(cov_matrix)):
-                        continue  # Skip this iteration if covariance is invalid
+            obj_type = "trash"  # Default category
 
-                    # Compute the eigenvalues of the covariance matrix
+            if volume < 0.00012:  # Small objects (cube, sphere)
+                curvatures = []
+                for p in cluster_points:
+                    cov_matrix = np.cov(cluster_points.T)
+                    if np.any(np.isnan(cov_matrix)) or np.any(np.isinf(cov_matrix)):
+                        continue
                     eigenvalues, _ = np.linalg.eig(cov_matrix)
-                    
-                    # Calculate curvature: the ratio of the smallest eigenvalue to the sum of eigenvalues
                     curvature = eigenvalues.min() / np.sum(eigenvalues)
                     curvatures.append(curvature)
-                    
-                # Avoid empty list when no valid curvature values are found
-                if curvatures:
-                    avg_curvature = np.mean(curvatures)
-                else:
-                    avg_curvature = 0  # Default to 0 if no valid curvature was found
-                #self.get_logger().info(f'Curvature {avg_curvature}')
-                
-                # Object classification based on curvature
+
+                avg_curvature = np.mean(curvatures) if curvatures else 0
+
                 if avg_curvature > 0.08:
                     obj_type = "Cube"
-                    classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
                 else:
                     obj_type = "Sphere"
-                    classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
-
-                #self.get_logger().info(f'Detected {obj_type} at {np.mean(cluster_points, axis=0)}')
-                
 
             elif volume < 0.002:
-                #self.get_logger().info(f'Detected Fluffy animal at {np.mean(cluster_points, axis=0)}')
                 obj_type = "Fluffy_animal"
-                classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
             elif volume < 0.01:
-                #self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
                 obj_type = "Box"
-                classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
 
+            # Store detected object
             if not self.ObjectList:
                 self.ObjectList.append([obj_type, np.mean(cluster_points, axis=0)])
             else:
@@ -143,17 +166,15 @@ class Detection(Node):
 
                 if should_add:
                     self.ObjectList.append([obj_type, new_obj_position])
-
             self.get_logger().info(f'Detected {len(self.ObjectList)} objects from the detection node start')
 
             detected_indices.append(cluster_indices)
-
 
         self.publish_detected_objects(detected_indices, msg)
         self.publish_bounding_boxes(detected_indices, points, msg.header)
 
     def publish_detected_objects(self, clusters, original_msg):
-        """Publishes detected objects as PointCloud2 using original indices."""
+        """Publishes detected objects as PointCloud2."""
         if not clusters:
             return
 
@@ -211,6 +232,26 @@ class Detection(Node):
 
         self._marker_pub.publish(marker_array)
 
+    def start_detection_callback(self, request, response):
+        self.active = True
+        #self.ObjectList = []  # Riparti pulito se vuoi
+        self.get_logger().info("Detection attivata.")
+        response.success = True
+        response.message = "Detection avviata."
+        return response
+
+    def stop_detection_callback(self, request, response):
+            self.active = False
+            self.get_logger().info("Detection disattivata.")
+            response.success = True
+            response.message = "Detection fermata."
+            return response
+    
+    def reset_callback(self, request, response):
+            self.ObjectList = []
+            response.success = True
+            response.message = "Lista oggetti rilevati svuotata."
+            return response
 
 def main():
     rclpy.init()

@@ -1,0 +1,85 @@
+import rclpy
+from rclpy.node import Node
+from std_srvs.srv import SetBool
+from detect_interfaces.srv import DetectObjects
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist
+import math
+
+class DetectionManager(Node):
+    def __init__(self):
+        super().__init__('detection_manager')
+
+        # Stato corrente del robot
+        self.angular_velocity = 0.0
+        self.linear_velocity = 0.0
+        self.detection_active = False  # stato interno
+
+        # Subscriber a /odom
+        self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
+
+        # Client dei servizi
+        self.start_client = self.create_client(SetBool, '/start_detection')
+        self.stop_client = self.create_client(SetBool, '/stop_detection')
+        self.detect_client = self.create_client(DetectObjects, '/detect_objects')
+
+        # Timer per aggiornare ogni secondo
+        self.create_timer(1.0, self.timer_callback)
+
+        self.get_logger().info("Detection manager avviato")
+
+    def odom_callback(self, msg: Odometry):
+        twist: Twist = msg.twist.twist
+        self.linear_velocity = math.hypot(twist.linear.x, twist.linear.y)
+        self.angular_velocity = abs(twist.angular.z)
+
+        # Soglia minima per considerare rotazione (per evitare falsi positivi)
+        rot_threshold = 0.05
+
+        if self.angular_velocity > rot_threshold:
+            if self.detection_active:
+                self.get_logger().info("🛑 Robot in rotazione: fermo la detection.")
+                self.call_set_bool(self.stop_client, False)
+                self.detection_active = False
+        else:
+            if not self.detection_active:
+                self.get_logger().info("✅ Robot fermo o in moto lineare: avvio la detection.")
+                self.call_set_bool(self.start_client, True)
+                self.detection_active = True
+
+    def timer_callback(self):
+        # Ogni secondo leggi la lista oggetti rilevati
+        if not self.detect_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn("Servizio detect_objects non disponibile")
+            return
+
+        req = DetectObjects.Request()
+        future = self.detect_client.call_async(req)
+        future.add_done_callback(self.handle_detect_response)
+
+    def handle_detect_response(self, future):
+        try:
+            res = future.result()
+            self.get_logger().info(f"📦 Oggetti rilevati: {len(res.object_types)}")
+            for i, (obj_type, pos) in enumerate(zip(res.object_types, res.object_positions)):
+                self.get_logger().info(f"  #{i+1}: {obj_type} @ ({pos.x:.2f}, {pos.y:.2f}, {pos.z:.2f})")
+        except Exception as e:
+            self.get_logger().error(f"Errore nella risposta detect_objects: {e}")
+
+    def call_set_bool(self, client, value: bool):
+        if not client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn("Servizio non disponibile")
+            return
+        req = SetBool.Request()
+        req.data = value
+        client.call_async(req)
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = DetectionManager()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
