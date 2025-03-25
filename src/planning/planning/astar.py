@@ -43,8 +43,8 @@ class Planner(Node):
     self.theta0 = 0
 
     # Target coordinates
-    self.xt = 0.9
-    self.yt = 0.9
+    self.xt = 1.0
+    self.yt = 0.0
     self.origin = (0,0)
 
     # Path
@@ -84,7 +84,7 @@ class Planner(Node):
     # Path message
     message = Path()
     message.header.stamp = time
-    message.header.frame_id = '/odom'
+    message.header.frame_id = '/map'
     
     if path:# If the path exists, publish it
       for i, pose in enumerate(path):
@@ -287,6 +287,23 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
     get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions, origin)
 
 
+# def smooth(path):
+#   for i in range(1, len(path)):
+#     current_pose = path[i][:2]
+#     current_theta = path[i][2]
+#     next_pose = path[i+1][:2]
+#     next_theta = path[i+1][2]
+#     next_next_pose = path[i+2][:2]
+#     next_next_theta = path[i+2][2]
+#     if next_theta == current_theta + np.pi/2 and next_next_theta == current_theta:
+#       print(2)
+#     elif next_theta == current_theta - np.pi/2 and next_next_theta == current_theta:
+#       print(1)
+    
+    
+#     delta = (current_pose[0] - next_pose[0], current_pose[1] - next_pose[1])
+#   pass
+
 def main2():
   grid = np.zeros((100, 100), dtype=int)
   
@@ -307,11 +324,11 @@ def main2():
   goal_x_index = int(xt * 100)
   goal_y_index = int(yt * 100)
 
-  # Add some custom patterns or corridors
-  for i in range(0, 60):
-    grid[i, 20:30] = 100  # Add vertical wall
-  for i in range(20, 50):
-    grid[70:80, i] = 100  # Add horizontal wall
+  # # Add some custom patterns or corridors
+  # for i in range(0, 60):
+  #   grid[i, 20:30] = 100  # Add vertical wall
+  # for i in range(20, 50):
+  #   grid[70:80, i] = 100  # Add horizontal wall
 
   # # Add random obstacles inside the room
   # num_obstacles = int((100 * 100) * 0.3)
@@ -323,7 +340,7 @@ def main2():
   #         grid[x, y] = 100
 
   start_time = time.time()
-  path, closed_set, open_set = solution(x0, y0, 0, xt, yt, grid, 1/100, (0,0))
+  path = solution(x0, y0, 0, xt, yt, grid, 1/100, (0,0)) # , closed_set, open_set
   end_time = time.time()
   elapsed_time = end_time - start_time
 
@@ -373,18 +390,18 @@ def main2():
 
  
 
-# main2()
+main2()
 
 
-def main():
-    rclpy.init()
-    node = Planner()
-    try:
-        rclpy.spin(node)
-        time.sleep(3)
-    except KeyboardInterrupt:
-        pass
-    rclpy.shutdown()
+# def main():
+#     rclpy.init()
+#     node = Planner()
+#     try:
+#         rclpy.spin(node)
+#         time.sleep(3)
+#     except KeyboardInterrupt:
+#         pass
+#     rclpy.shutdown()
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

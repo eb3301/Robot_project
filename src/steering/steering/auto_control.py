@@ -31,11 +31,7 @@ class AutoControll(Node):
         # Subscribe to goal pose
         self.path_sub = self.create_subscription(Path, "/planned_path", self.path_callback, qos) # latched topic
 
-        # # Timer
-        # self.timer = self.create_timer(0.2, self.timer_callback)
-
         # Preallocation
-        self.lookahead_distance = 3
         self.current_position = (0.0)
         self.current_heading = 0
         self.pose_list = []
@@ -59,14 +55,17 @@ class AutoControll(Node):
         final_point = self.pose_list[-1]
         distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(final_point))
 
-        while distance_to_goal < 0.1:
+        # Calculate the lookahead distance
+        lookahead_distance = 2*np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
+
+        while distance_to_goal < 2*lookahead_distance: # Change later
             start_time = time.time()  # Record the start time
             
             # Calcluate distance to goal, maybe move?
             distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(final_point)) 
             
             # Compute the velocity command using the Pure Pursuit algorithm
-            twist_msg = pure_pursuit_velocity(self.current_position, self.current_heading, self.pose_list, self.lookahead_distance)
+            twist_msg = pure_pursuit_velocity(self.current_position, self.current_heading, self.pose_list, lookahead_distance)
             
             # Publish the twist message
             self.cmd_vel_pub.publish(twist_msg)
