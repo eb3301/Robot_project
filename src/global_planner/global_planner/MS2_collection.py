@@ -40,15 +40,24 @@ class BehaviourTree(Node):
         cube_coor = Get_Coor('ICP', self)
 
 
-        drive_to_obj_1 = Drive_to_Obj() # Plan and execute path to coordinates
-        drive_to_obj_2 = Drive_to_Obj() # Plan and execute path to coordinates
+        drive_to_obj_1 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this to obj
+        drive_to_obj_2 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this one to box?
         pickup = Pickup(self) # Pickup object
         place = Place() # Place object
+        detection = Detection()
 
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          children = [create_ws, load_map, cube_coor, pickup]
+                                          children = [create_ws, load_map, drive_parallell, pickup]
+                                          )
+        drive_parallell = pt.composites.Parallel(name='Drive parallell',
+                                                 policy=pt.common.ParallelPolicy.SuccessOnSelected(drive_to_obj_1),
+                                                 children=[collect_seq, detection]
+                                                 )
+        collect_seq = pt.composites.Sequence(name = 'Collection Sequence', 
+                                          memory = bool,
+                                          children = [cube_coor, drive_to_obj_1, pickup, drive_to_obj_2, place]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -401,6 +410,13 @@ class Place(pt.behaviour.Behaviour):
         super().__init__("Pickup")
     def update(self):
         pass
+
+class Detection(pt.behaviour.Behaviour):
+    def __init__(self):
+        super().__init__("Detection")
+    def update(self):
+        pass
+
 
 def main():
     rclpy.init()
