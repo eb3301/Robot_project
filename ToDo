@@ -1,5 +1,6 @@
 Exploration: 
 how do we choose points and how do we decide which points to explore
+Johan: sample points in free space close to unknown and clear bit for bit
 how do we define objects and borders (occupancy grid or separate file)
 what is limit for detection distance
 how do we handle duplicates

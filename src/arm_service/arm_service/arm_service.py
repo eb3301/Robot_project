@@ -223,8 +223,8 @@ class MinimalService(Node):
         #Convert ROS Image message to OpenCV format
         frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
         N = 50 # pixels to remove from bottom
-        cropped_frame = frame[:frame.shape[0] - N, :]
-        #cropped_frame = frame[95:335, 170:470]   
+        #cropped_frame = frame[:frame.shape[0] - N, :]
+        cropped_frame = frame[90:340, 160:480]   
         # image_path = os.getcwd() + "/src/arm_service/arm_service/cube.jpg"
         # print("Current Working Directory:", os.getcwd())
         print(cropped_frame.shape)
@@ -293,15 +293,20 @@ class MinimalService(Node):
         edges = cv.Canny(cropped_frame,200,500)
         contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         
-        centers = []
-        for cnt in contours:
-            M = cv.moments(cnt)
-            if M['m00'] != 0:
-                cx = int(M['m10'] / M['m00'])
-                cy = int(M['m01'] / M['m00'])
-                # Draw center
-                cv.circle(frame, (cx, cy), 5, (0, 0, 255), -1)
-                centers.append([cx,cy])
+        c = max(contours, key=cv.contourArea)
+        Mc = cv.moments(c)
+        if Mc['m00'] != 0:
+            cx = int(Mc['m10'] / Mc['m00'])
+            cy = int(Mc['m01'] / Mc['m00'])
+        centers = [cx,cy]
+        # for cnt in contours:
+        #     M = cv.moments(cnt)
+        #     if M['m00'] != 0:
+        #         cx = int(M['m10'] / M['m00'])
+        #         cy = int(M['m01'] / M['m00'])
+        #         # Draw center
+        #         cv.circle(frame, (cx, cy), 5, (0, 0, 255), -1)
+        #         centers.append([cx,cy])
         # for cnt in contours:
         #     if cv.contourArea(cnt) > 50:  # Filter out tiny noise
         #         cx, cy, x, y, w, h= self.get_center_from_bounding_rect(cnt)
@@ -310,28 +315,43 @@ class MinimalService(Node):
         #         cv.rectangle(cropped_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
         #         cv.circle(cropped_frame, (cx, cy), 5, (0, 0, 255), -1)
         
-        for cnt in contours:
-            for pt in cnt:
-                x, y = pt[0]
-                cv.circle(cropped_frame, (x, y), 1, (0, 255, 0), -1)
+        # for cnt in contours:
+        #     for pt in cnt:
+        #         x, y = pt[0]
+        #         cv.circle(cropped_frame, (x, y), 1, (0, 255, 0), -1)
+        cv.drawContours(cropped_frame,[c], -1, (0,255,0),3)
+        cv.circle(cropped_frame, (cx, cy), 5, (0, 0, 255), -1)
 
-        merged_centers = self.merge_centers(centers, distance_threshold=110)
-        print("merged centers: "+ str(merged_centers))
-        cntr_pos = []
-        for cntr in merged_centers:
-            #cv.circle(cropped_frame,cntr,5,(0,0,255),-1)
-            tmpx = round((cntr[0]/300-0.5)*15,3)/100#round((cntr[0]/640-0.5)*30,3)/100
-            tmpy = round(((1-cntr[1]/240)-0.5)*12+0.01,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
-            cntr_pos.append([tmpx,tmpy])
-            print("x,y: "+str(tmpx) + " " + str(tmpy))
-            if math.sqrt(tmpx**2+tmpy**2)<= 0.1:
+        # merged_centers = self.merge_centers(centers, distance_threshold=110)
+        # print("merged centers: "+ str(merged_centers))
+        # cntr_pos = []
+        # for cntr in merged_centers:
+        #     #cv.circle(cropped_frame,cntr,5,(0,0,255),-1)
+        #     tmpx = round((cntr[0]/300-0.5)*15,3)/100#round((cntr[0]/640-0.5)*30,3)/100
+        #     tmpy = round(((1-cntr[1]/240)-0.5)*12+0.01,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
+        #     cntr_pos.append([tmpx,tmpy])
+        #     print("x,y: "+str(tmpx) + " " + str(tmpy))
+        #     if math.sqrt(tmpx**2+tmpy**2)<= 0.1:
                 
-                plt.subplot(1,2,1)
-                plt.imshow(cropped_frame)
-                plt.subplot(1,2,2)
-                plt.imshow(edges,cmap='gray')
-                plt.show()
-                return [tmpx,tmpy]
+        #         plt.subplot(1,2,1)
+        #         plt.imshow(cropped_frame)
+        #         plt.subplot(1,2,2)
+        #         plt.imshow(edges,cmap='gray')
+        #         plt.show()
+        #         return [tmpx,tmpy]
+
+        tmpx = round((centers[0]/310-0.5)*9.45,3)/100#round((cntr[0]/640-0.5)*30,3)/100
+        tmpy = round(((1-centers[1]/260)-0.5)*9.45+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
+        #cntr_pos.append([tmpx,tmpy])
+        print("x,y: "+str(tmpx) + " " + str(tmpy))
+        if math.sqrt(tmpx**2+tmpy**2)<= 0.1:
+            
+            plt.subplot(1,2,1)
+            plt.imshow(cropped_frame)
+            plt.subplot(1,2,2)
+            plt.imshow(edges,cmap='gray')
+            plt.show()
+            return [tmpx,tmpy]
 
         # print("cntr pos: " + str(cntr_pos))
         # plt.subplot(1,2,1)
@@ -339,7 +359,7 @@ class MinimalService(Node):
         # plt.subplot(1,2,2)
         # plt.imshow(edges,cmap='gray')
         # plt.show()
-        return cntr_pos
+        #return cntr_pos
            
         '''
         ##############################
@@ -514,7 +534,7 @@ class MinimalService(Node):
             self.get_logger().info('moving arm to look')
             msg.data = self.data_sets[1]
             self.publisher.publish(msg)
-            time.sleep(4.0)
+            #time.sleep(0.1)
             cam_obj_pos = self.get_obj_pos()
             print("cam obj pos :" + str(cam_obj_pos))
             if cam_obj_pos == []:
