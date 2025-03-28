@@ -4,6 +4,7 @@ from rclpy.qos import QoSProfile, QoSDurabilityPolicy, QoSReliabilityPolicy
 import os
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 import py_trees as pt
 import py_trees_ros as ptr
@@ -11,6 +12,7 @@ import py_trees_ros as ptr
 from ament_index_python import get_package_share_directory
 
 from visualization_msgs.msg import Marker
+from std_msgs.msg import Header
 from geometry_msgs.msg import Point, PoseWithCovarianceStamped
 from nav_msgs.msg import OccupancyGrid
 
@@ -24,11 +26,12 @@ class BehaviourTree(Node):
 
         # Initialise Behaviours
         create_ws = Create_ws(self)
-        waypoints = Sample_Waypoints()
+        waypoints = Sample_Waypoints(self)
+        explore = Explore(self)
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          children = [create_ws, waypoints]
+                                          children = [create_ws, waypoints, explore]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -57,7 +60,6 @@ class Create_ws(pt.behaviour.Behaviour):
 
         self.ws_pub = self.node.create_publisher(Marker, '/Workspace', qos)
         print('Initialised Read Files Behaviour')
-        
 
     def update(self):
         if self.done:
@@ -120,61 +122,158 @@ class Create_ws(pt.behaviour.Behaviour):
             marker.points.append(first_point)
 
         self.ws_pub.publish(marker)
-        print("Published workspace marker from file")
+        #print("Published workspace marker from file")
 
 
 class Sample_Waypoints(pt.behaviour.Behaviour):
     '''Samples waypoints over the workspace to be used for exploration'''
-    def __init__(self, node, start_x, start_y):
+    def __init__(self, node):
         super().__init__('Sample Waypoints')
+        self.node = node
         self.blackboard = pt.blackboard.Blackboard()
-        
-        self.grid_sub = node.create_subscription(OccupancyGrid, '/map', self.grid_callback, 10)
-
-        # Grid Variables
-        self.ws_grid = None
-        self.grid_res = None
-        self.grid_origin_x = None
-        self.grid_origin_y = None
-
-        self.start_x = start_x
-        self.start_y = start_y
         self.waypoints = []
         
 
     def update(self):
         if self.status == pt.common.Status.INVALID:
+            self.ws = self.blackboard.get('workspace')
             print('Sampling Waypoints...')
             return pt.common.Status.RUNNING
+        
+        if not self.ws:
+            print('No workspace loaded...')
+            return pt.common.Status.FAILURE
+
+        # Find 'center' of workspace
+        x_cords = [point[0] for point in self.ws]
+        y_cords = [point[1] for point in self.ws]
+        center = (np.mean(x_cords), np.mean(y_cords))
 
 
-        start_x = int((0 - self.grid_origin_x) / self.grid_res)
-        start_y = int((0 - self.grid_origin_y ) / self.grid_res)
+        for idx, corner in enumerate(self.ws):
+            # Sample every corner and add offset to move it towards center
+            # if idx == len(self.ws) - 1:
+            #     next_corner = self.ws[0]
+            # else:
+            #     next_corner = self.ws[idx + 1]
+            
+            # dx, dy = next_corner[0] - corner[0], next_corner[1] - corner[1] 
+            # orthogonal = (dx, -dy) / np.linalg.norm(np.array([dx, -dy])) + (dx/2, dy/2)
 
-        n = 5 # Sample every n:th cell (cell size = 5cm)
-        for gy in range(start_y, self.ws_grid.shape[0], n):
-            for gx in range(start_x, self.ws_grid.shape[1], n):
-                if self.ws_grid[gx, gy] == 0: # workspace (free space)
-                    self.waypoints.append((gx, gy))
+            # sampled_point = (orthogonal[0] - corner[0], orthogonal[1] - corner[1])
+            # self.waypoints.append(tuple(sampled_point))
 
-        # Sampling on the grid is probably a lot easier than this... 
+            offset = np.array(center) - np.array(corner) 
+            offset /= np.linalg.norm(offset) # Normalise to 1m
+            sampled_point = np.array(corner) + offset * 0.5
+            self.waypoints.append(tuple(sampled_point))
+
+        self.plot_workspace()
+        # Save waypoints
+        self.blackboard.set('waypoints', self.waypoints)
         return pt.common.Status.SUCCESS
+    
 
-    def grid_callback(self, msg):
-        '''Extract the part of the grid inside the workspace (free space)'''
+    def plot_workspace(self):
+        '''Plots the workspace boundary and sampled waypoints'''
+        if not self.ws:
+            print("No workspace to plot.")
+            return
+        
+        # Extract coordinates
+        x_vals, y_vals = zip(*self.ws + [self.ws[0]])  # Close the shape
+        way_x, way_y = zip(*self.waypoints) if self.waypoints else ([], [])
+        
+        # Plot
+        plt.figure(figsize=(6,6))
+        plt.plot(x_vals, y_vals, marker='o', linestyle='-', color='b', label='Workspace Boundary')
+        plt.scatter(way_x, way_y, color='r', marker='x', label='Sampled Waypoints')
+        plt.xlabel("X-axis")
+        plt.ylabel("Y-axis")
+        plt.title("Workspace and Sampled Waypoints")
+        plt.grid(True, linestyle="--", linewidth=0.5)
+        plt.legend()
+        plt.show()
 
-        # Convert grid data to a numpy array
-        grid = np.array(msg.data).reshape((msg.info.height, msg.info.width))
 
-        self.grid_res = msg.info.resolution
-        self.grid_origin_x = msg.info.origin.x
-        self.grid_origin_y = msg.info.origin.y
 
-        # Cells are marked 100 for obstacles and 0 for free space (workspace)
-        self.ws_grid = np.where(grid == 0, grid, -1)  # np.array where 0 represents free space and -1 obstacles
+class Explore(pt.behaviour.Behaviour):
+    '''Explores waypoints'''
+    def __init__(self, node):
+        super().__init__('Exploration')
+        self.node = node
+        self.blackboard = pt.blackboard.Blackboard
 
-        print('Extracted workspace grid')
+        qos = QoSProfile(
+                        reliability=QoSReliabilityPolicy.RELIABLE,  # Ensures message delivery
+                        durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  # Keeps the last message for new subscribers
+                        depth=10  # Stores up to 10 messages in queue
+                        )
+        
+        self.target_pub = self.node.create_publisher(Marker, '/goal_marker', qos)
+        self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, 'map_pose', self.pose_callback, 10)
+        self.target = None
 
+    def update(self):
+        if self.status == pt.common.Status.INVALID:
+            self.waypoints = self.blackboard.get('waypoints')
+            if not self.waypoints:
+                print("No waypoints sampled...")
+                return pt.common.Status.FAILURE
+            else:
+                print('Exploring lots!')
+                return pt.common.Status.RUNNING
+
+        if len(self.waypoints) == 0:
+            print("All waypoints have been visited!")
+            return pt.common.Status.SUCCESS
+
+        # Pick out target
+        if self.target is None:
+            self.target = self.waypoints.pop(0)
+            self.blackboard.set('waypoints', self.waypoints)
+            self.pub_goal_marker()
+
+        # Publish target to path planner as a marker
+        
+        return pt.common.Status.RUNNING
+    
+    
+    def pose_callback(self, msg: PoseWithCovarianceStamped):
+        x, y = msg.pose.pose.position.x, msg.pose.pose.position.y
+        
+        dx, dy = np.abs(self.target[0] - x), np.abs(self.target[1] - y)
+        dist = np.linalg.norm(np.array([dx, dy]))
+
+        if dist < 0.1:
+            print('Arrived at target!')
+            self.target = None        
+
+    def pub_goal_marker(self):
+        marker = Marker()
+        marker.header = Header()
+        marker.header.stamp = self.node.get_clock().now().to_msg()
+        marker.header.frame_id = "map"
+        marker.ns = "Target_Marker"
+        marker.id = 0
+        marker.type = Marker.SPHERE  # Use sphere to represent the goal
+        marker.action = Marker.ADD
+        marker.pose.position.x = self.target[0]
+        marker.pose.position.y = self.target[1]
+        marker.pose.position.z = 0.0
+        marker.pose.orientation.x = 0.0
+        marker.pose.orientation.y = 0.0
+        marker.pose.orientation.z = 0.0
+        marker.pose.orientation.w = 1.0
+        marker.scale.x = 0.2  # Radius of the sphere
+        marker.scale.y = 0.2
+        marker.scale.z = 0.2
+        marker.color.a = 1.0  # Alpha
+        marker.color.r = 1.0  # Red
+        marker.color.g = 0.0
+        marker.color.b = 0.0
+        #print('Published goal marker')
+        self.target_pub.publish(marker)
 
 
 def main():
