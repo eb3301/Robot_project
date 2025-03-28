@@ -34,7 +34,7 @@ class OccupancyGridPublisher(Node):
 
         # Initialize map
         # Adjust grid size based on workspace dimensions
-        self.workspace_coordinates = self.read_workspace_coordinates("/home/group1/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
+        self.workspace_coordinates = self.read_workspace_coordinates("/home/robot/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
         self.grid_size_x, self.grid_size_y, self.origin_x, self.origin_y = self.calculate_grid_size_and_origin(self.workspace_coordinates)
 
         # Initialize map data
@@ -172,7 +172,7 @@ class OccupancyGridPublisher(Node):
         msg.data = self.map_data
 
         self.publisher_.publish(msg)
-        self.get_logger().info("Updated Occupancy Grid Published")
+        #self.get_logger().info("Updated Occupancy Grid Published")
 
     def read_workspace_coordinates(self, file_path):
         """Reads workspace coordinates from a file."""
@@ -204,7 +204,7 @@ class OccupancyGridPublisher(Node):
         marker.color.g = 0.0
         marker.color.b = 1.0
 
-        file_path = "/home/group1/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
+        file_path = "/home/robot/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
         coordinates = self.read_workspace_coordinates(file_path)
 
         first_point = None
@@ -225,7 +225,7 @@ class OccupancyGridPublisher(Node):
             marker.points.append(first_point)
 
         self.marker_publisher.publish(marker)
-        self.get_logger().info("Published workspace marker from file")
+        #self.get_logger().info("Published workspace marker from file")
 
 
 def main(args=None):

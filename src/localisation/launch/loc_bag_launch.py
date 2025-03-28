@@ -74,4 +74,18 @@ def generate_launch_description():
             output='screen',
             name='ICP_Node'
         ),
+
+        #Occupancy grid node
+        ExecuteProcess(
+            cmd=['ros2', 'run', 'occupancy_grid', 'occupancy_grid'],
+            output='screen',
+            name='Occupancy_Grid'
+        ),
+
+        # Mapping node
+        ExecuteProcess(
+            cmd=['ros2', 'run', 'mapping', 'mapping'],
+            output='screen',
+            name='Mapping_Node'
+        )
     ])

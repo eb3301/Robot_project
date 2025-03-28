@@ -27,11 +27,12 @@ class BehaviourTree(Node):
         # Initialise Behaviours
         create_ws = Create_ws(self)
         waypoints = Sample_Waypoints(self)
-        explore = Explore(self)
+        explore_samples = ExploreSamples(self)
+        explore_unknown = ExploreUknownSpace((self)) 
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          children = [create_ws, waypoints, explore]
+                                          children = [create_ws, waypoints, explore_samples, explore_unknown]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -197,10 +198,10 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
 
 
 
-class Explore(pt.behaviour.Behaviour):
+class ExploreSamples(pt.behaviour.Behaviour):
     '''Explores waypoints'''
     def __init__(self, node):
-        super().__init__('Exploration')
+        super().__init__('Explore Pre-Sampled Points')
         self.node = node
         self.blackboard = pt.blackboard.Blackboard
 
@@ -234,20 +235,20 @@ class Explore(pt.behaviour.Behaviour):
             self.blackboard.set('waypoints', self.waypoints)
             self.pub_goal_marker()
 
-        # Publish target to path planner as a marker
-        
+        print('Exploring...')        
         return pt.common.Status.RUNNING
     
     
     def pose_callback(self, msg: PoseWithCovarianceStamped):
-        x, y = msg.pose.pose.position.x, msg.pose.pose.position.y
-        
-        dx, dy = np.abs(self.target[0] - x), np.abs(self.target[1] - y)
-        dist = np.linalg.norm(np.array([dx, dy]))
+        if self.target:
+            x, y = msg.pose.pose.position.x, msg.pose.pose.position.y
+            
+            dx, dy = np.abs(self.target[0] - x), np.abs(self.target[1] - y)
+            dist = np.linalg.norm(np.array([dx, dy]))
 
-        if dist < 0.1:
-            print('Arrived at target!')
-            self.target = None        
+            if dist < 0.1:
+                print('Arrived at target!')
+                self.target = None        
 
     def pub_goal_marker(self):
         marker = Marker()
@@ -274,6 +275,139 @@ class Explore(pt.behaviour.Behaviour):
         marker.color.b = 0.0
         #print('Published goal marker')
         self.target_pub.publish(marker)
+
+
+class ExploreUknownSpace(pt.behaviour.Behaviour):
+    '''Check if there is remaining unknown space and explore it'''
+    def __init__(self, node):
+        super().__init__('Explore Unknown Space')
+        self.node = node
+        self.blackboard = pt.blackboard.Blackboard
+        
+        self.grid = None
+        self.resolution = None
+        self.origin_x = None
+        self.origin_y = None
+
+        self.pose = None
+        self.target = None
+
+        self.unknown = 1 # Initialise as 100% unknown space
+
+    def update(self):
+        # Check if it is first time running 
+        if self.status == pt.common.Status.INVALID:
+            qos = QoSProfile(
+            reliability=QoSReliabilityPolicy.RELIABLE, 
+            durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  
+            depth=10        ) 
+            self.grid_sub = self.node.create_subscription(OccupancyGrid, '/map', self.grid_callback, 10)
+            self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/map_pose', self.pose_callback, 10)
+            self.target_pub = self.node.create_publisher(Marker, '/goal_marker', qos)
+            print('Exploring Remaining unknown space')
+            return pt.common.Status.RUNNING
+        
+        # Check if everything is explored
+        if self.unknown < 0.05: # 5%
+            print("Good job! The entire workspace has been explored :)")
+            return pt.common.Status.SUCCESS
+
+        # Check if grid as been recieved
+        if self.grid is None:
+            print('No grid recieved')
+            return pt.common.Status.RUNNING # Idk maybe return failre instead?
+    
+        if not self.pose:
+            print('No current pose recieved...')
+            return pt.common.Status.RUNNING
+        
+        if self.target is not None:
+            print('No target...')
+            return pt.common.Status.RUNNING
+
+        # Sample closest unknown space
+        unknown_coords = []
+        for gy in range(self.grid.shape[0]):
+            for gx in range(self.grid.shape[1]):
+                if self.grid[gy, gx] == 0:
+                    # Convert from cell index to world coordinates
+                    wx = self.origin_x + gx * self.resolution
+                    wy = self.origin_y + gy * self.resolution
+
+                    unknown_coords.append([wx, wy])
+        unknown_coords = np.array(unknown_coords)
+        pose = np.array(self.pose)
+
+        dist_array = unknown_coords - pose
+        min_dist_idx = np.argmin(np.linalg.norm(dist_array, axis = 1))
+        
+        self.target = tuple(unknown_coords[min_dist_idx])
+        self.pub_goal_marker()
+        return pt.common.Status.RUNNING
+    
+
+    def grid_callback(self, msg: OccupancyGrid):
+        width = msg.info.width
+        height = msg.info.height
+        data = np.array(msg.data, dtype=np.int8)  
+        self.resolution = msg.info.resolution
+        self.origin_x = msg.info.origin.position.x
+        self.origin_y = msg.info.origin.position.y
+
+        # 2D np.array(). Unknown space = -1, free space  = 0, occupied = 100
+        self.grid = data.reshape((height, width))  
+
+
+    def pose_callback(self, msg: PoseWithCovarianceStamped):
+        x, y = msg.pose.pose.position.x, msg.pose.pose.position.y
+        self.pose = (x, y)
+
+        if self.target:
+            dx, dy = np.abs(self.target[0] - x), np.abs(self.target[1] - y)
+            dist = np.linalg.norm(np.array([dx, dy]))
+
+            if dist < 0.1:
+                print('Arrived at target!')
+                self.target = None 
+    
+    def check_uknown_space(self):
+        # Count cells in grid
+        n_free_cells = sum(1 for cell in self.grid if cell == 0)
+        n_unknown_cells = sum(1 for cell in self.grid if cell == -1)
+        n_total = n_free_cells + n_unknown_cells
+
+        # Calculate percentage unknown cells
+        self.unknown = n_unknown_cells / n_total
+
+        
+    def pub_goal_marker(self):
+        marker = Marker()
+        marker.header = Header()
+        marker.header.stamp = self.node.get_clock().now().to_msg()
+        marker.header.frame_id = "map"
+        marker.ns = "Target_Marker"
+        marker.id = 0
+        marker.type = Marker.SPHERE  # Use sphere to represent the goal
+        marker.action = Marker.ADD
+        marker.pose.position.x = self.target[0]
+        marker.pose.position.y = self.target[1]
+        marker.pose.position.z = 0.0
+        marker.pose.orientation.x = 0.0
+        marker.pose.orientation.y = 0.0
+        marker.pose.orientation.z = 0.0
+        marker.pose.orientation.w = 1.0
+        marker.scale.x = 0.2  # Radius of the sphere
+        marker.scale.y = 0.2
+        marker.scale.z = 0.2
+        marker.color.a = 1.0  # Alpha
+        marker.color.r = 1.0  # Red
+        marker.color.g = 0.0
+        marker.color.b = 0.0
+        #print('Published goal marker')
+        self.target_pub.publish(marker)
+           
+        
+        
 
 
 def main():
