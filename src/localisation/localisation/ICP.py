@@ -88,7 +88,7 @@ class ICPNode(Node):
         self.create_ref = True
         self.accumulated_scans = []
         self.pub_ref = True
-
+        self.fitness_counter = 0
 
         self.stamp = None
         self.rotating = False
@@ -105,6 +105,7 @@ class ICPNode(Node):
         self.path = Path()
 
         self.n_ref_clouds = 0
+
         self.get_logger().info("Initialised ICP node...")
         
 
@@ -152,10 +153,12 @@ class ICPNode(Node):
                 f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')     
             return
         
-        # Filter out scans too close
-        min_range = 0.25
-        msg.ranges = [r if r >= min_range else float('nan') for r in msg.ranges]
-        
+        # Filter scans based on range
+        min_range, max_range = 0.25, 3
+        msg.ranges = [r if max_range >= r >= min_range else float('nan') for r in msg.ranges]
+
+
+
         # Project lidar to point cloud
         cloud = self.proj.projectLaser(msg)
 
@@ -165,35 +168,29 @@ class ICPNode(Node):
         # Extract points 
         points = pc2.read_points_numpy(cloud_out, field_names=("x", "y", "z"), skip_nans=True)
 
+        # If it is time to create a reference cloud
         if self.pub_ref:
-            self.ref_counter = 0
-            self.create_ref = True
-            self.pub_ref = False
-
-        # Create reference pointcloud for ICP
-        if self.ref_counter <= 1:
-            self.accumulated_scans.append(points)
-            self.ref_counter += 1
-            self.ref_cloud_pub.publish(cloud_out)
-            
-            if self.create_ref:
-                ref_time = time.time() - self.start_time
-                self.create_ref = False
-                merged_points = np.vstack(self.accumulated_scans)
-                merged_ref = pc2.create_cloud_xyz32(cloud_out.header, merged_points)
-                self.target_pcd_list.append( (self.pointcloud_2_open3d(merged_ref), self.pose) )
-                self.get_logger().info(f"Reference cloud accumulated in {ref_time} seconds")
-                
+            if not self.rotating:
+            # Create reference pointcloud for ICP 
+            # First reference cloud it accumulates N scans. Other clouds it uses only 1
+                if self.ref_counter == 10:
+                    merged_points = np.vstack(self.accumulated_scans)
+                    merged_ref = pc2.create_cloud_xyz32(cloud_out.header, merged_points)
+                    self.target_pcd_list.append( (self.pointcloud_2_open3d(merged_ref), self.pose) )
+                    self.pub_ref = False
+                    self.ref_counter = 8
+                else:
+                    self.ref_counter += 1
+                    self.accumulated_scans.append(points)
+                    self.ref_cloud_pub.publish(cloud_out)
         else:
             if self.counter % 2 == 0:
                 self.counter += 1
-                if not self.rotating:
-                    self.lidar_pub.publish(cloud_out)
-                    source_pcd = self.pointcloud_2_open3d(cloud_out)
-                    self.ICP(source_pcd)
+                self.lidar_pub.publish(cloud_out)
+                source_pcd = self.pointcloud_2_open3d(cloud_out)
+                self.ICP(source_pcd)
             else:
                 self.counter += 1
-        
 
     def ref_msg_callback(self, msg):
         self.pub_ref = True
@@ -245,9 +242,13 @@ class ICPNode(Node):
 
             target_pcd = self.target_pcd_list[closest_index][0]             
 
+        # Downsample clouds using Voxel Filter
+        # voxel_size = 0.02  
+        # source_pcd = source_pcd.voxel_down_sample(voxel_size)
+        # target_pcd = target_pcd.voxel_down_sample(voxel_size)
 
         # Compute normals for Point-to-Plane
-        radius = 0.15 # max range for neighbour search
+        radius = 0.10 # max range for neighbour search
         max_nn = 10 # max amount of neighbours
 
         source_pcd.estimate_normals(search_param = o3d.geometry.KDTreeSearchParamHybrid(radius, max_nn))  
@@ -269,16 +270,39 @@ class ICPNode(Node):
 
         translation = result.transformation[:3, 3]
         dist = np.linalg.norm(translation)
-        if result.fitness > 0.3 and result.inlier_rmse < 0.04 and dist < 0.2: 
+        if result.fitness > 0.2 and result.inlier_rmse < 0.04 and dist < 0.5: 
+            self.fitness_counter = 0
             self.transform = result.transformation
 
-            #self.get_logger().info(f"ICP transform: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
+            self.get_logger().info(f"RUNNING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
 
             end_time = time.time()
             #self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
-        else: 
-            #self.get_logger().info(f"Ignoring ICP result \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} \n Distance moved: {dist}")
-            pass
+        else:
+            self.get_logger().info(f"IGNORING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} ") 
+            self.fitness_counter += 1
+            
+            if self.fitness_counter == 3:
+                min_distance = float('inf')
+                curr_pos = np.array([self.pose.position.x, self.pose.position.y])
+
+                # Check distance to all reference clouds
+                for _, cloud_pose in self.target_pcd_list:
+                    cloud_pos = np.array([cloud_pose.position.x, cloud_pose.position.y])
+                    dist = np.linalg.norm(curr_pos - cloud_pos)
+                    min_distance = min(min_distance, dist)
+
+                if min_distance < 1.5:  # Adjust threshold as needed
+                    self.get_logger().info(f"Skipping new reference cloud: closest existing cloud is {min_distance:.2f}m away")
+                else:
+                    self.pub_ref = True
+                    self.get_logger().info(f"Creating new reference cloud: nearest cloud was {min_distance:.2f}m away")
+
+                self.fitness_counter = 0
+
+
+
+
     
     def publish_pose(self, pose_msg):
             stamp = pose_msg.header.stamp
