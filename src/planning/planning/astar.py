@@ -71,6 +71,12 @@ class Planner(Node):
 
       # Logic for replan
       if self.planned: 
+        try:
+          if not self.path:
+            self.get_logger().info(f"Path is empty")
+        except:
+          self.get_logger().info(f"Path is empty")
+
         for i in range(len(self.path)):
           x_index = int((self.path[i][0] - origin_x) // resolution)  
           y_index = int((self.path[i][1] - origin_y) // resolution)
@@ -79,6 +85,7 @@ class Planner(Node):
             self.get_logger().info(f"Path obstructed at ({x_index}, {y_index})")
             break
         #self.get_logger().info(f"Path is good")
+        
       if not self.planned:
         self.get_logger().info("Planning new path")
         self.plan_path(map_data, resolution, time)
@@ -389,8 +396,8 @@ def main2():
   plt.imshow(grid, cmap=cmap, norm=norm, interpolation='nearest')
 
   # Plot start and goal as green points
-  plt.scatter(start_x_index, start_y_index, c='green', marker='o', s=50, label=f"Start ({start_x_index}, {start_y_index})")
-  plt.scatter(goal_x_index, goal_y_index, c='green', marker='o', s=50, label=f"Goal ({goal_x_index}, {goal_y_index})")
+  plt.scatter(start_y_index, start_x_index, c='green', marker='o', s=50, label=f"Start ({start_x_index}, {start_y_index})")
+  plt.scatter(goal_y_index, goal_x_index, c='green', marker='o', s=50, label=f"Goal ({goal_x_index}, {goal_y_index})")
   
   # print('Path is ' + str(len(path)))
   # print('Closed set is ' + str(len(closed_set)))
