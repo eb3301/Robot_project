@@ -257,7 +257,7 @@ class ICPNode(Node):
 
         translation = result.transformation[:3, 3]
         dist = np.linalg.norm(translation)
-        if result.fitness > 0.3 and result.inlier_rmse < 0.035 and dist < 0.4: 
+        if result.fitness > 0.3 and result.inlier_rmse < 0.04 and dist < 0.3: 
             self.transform = result.transformation
 
             self.get_logger().info(f"ICP transform: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
