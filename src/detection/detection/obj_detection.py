@@ -3,13 +3,11 @@ import numpy as np
 import struct
 import rclpy
 from rclpy.node import Node
+from nav_msgs.msg import OccupancyGrid
 from sensor_msgs.msg import PointCloud2, PointField
 import sensor_msgs_py.point_cloud2 as pc2
 from sklearn.cluster import DBSCAN
 from visualization_msgs.msg import Marker, MarkerArray
-from custom_msgs.msg import DetectedObject
-from custom_msgs.msg import DetectedObjects
-from collections import deque
 
 class Detection(Node):
     def __init__(self):
@@ -17,23 +15,23 @@ class Detection(Node):
 
         self._pub = self.create_publisher(PointCloud2, '/detected_objects', 10)
         self._marker_pub = self.create_publisher(MarkerArray, '/bounding_boxes', 10)
-        self._detected_object_pub = self.create_publisher(DetectedObject, '/detected_object_info', 10)
+        self._occupancy_grid_pub = self.create_publisher(OccupancyGrid, 'map', 10)
         
         self.create_subscription(PointCloud2,
              '/camera/camera/depth/color/points', self.cloud_callback, 10)
         
+        self.ObjectList = []
+
         self.get_logger().info(f"Node started")
 
-        self.object_history = {}  # Dictionary to track previous classifications
-
     def cloud_callback(self, msg: PointCloud2):
-        """Detects objects using DBSCAN clustering and publishes bounding boxes."""
+        """Detects objects using DBSCAN clustering, volume and shape detection, and publishes bounding boxes."""
         header = msg.header
         points = pc2.read_points_numpy(msg, skip_nans=True)[:, :3]
 
         distances = np.linalg.norm(points[:, :3], axis=1)
         offset = 0.089
-        mask = (distances <= 1) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
+        mask = (distances <= 1.5) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
         filtered_indices = np.where(mask)[0]
         filtered_points = points[mask]
 
@@ -41,14 +39,23 @@ class Detection(Node):
             self.get_logger().info("No points after filtering")
             return
 
-        db = DBSCAN(eps=0.2, min_samples=70)
+        db = DBSCAN(eps=0.15, min_samples=70)
         labels = db.fit_predict(filtered_points)
+
+        ## Remove clusters too big
+        # Count the number of points in each cluster
+        _, counts = np.unique(labels, return_counts=True)
+        max_cluster_size = 8000
+        # Sostituisci i cluster troppo grandi con -1 (rumore)
+        filt_labels = np.array([
+            -1 if counts[label] > max_cluster_size else label   
+            for label in labels
+        ])
 
         detected_indices = []
         classified_labels = []
-        unique_labels = set(labels)
-
-        detected_object = DetectedObject()  # Initialize the detected_object here
+        unique_labels = set(filt_labels)
+        obj_type="trash"
         
         for label in unique_labels:
             if label == -1:
@@ -65,27 +72,20 @@ class Detection(Node):
             bbox_max = np.max(cluster_points, axis=0)
             bbox_size = bbox_max - bbox_min
             bbox_center = (bbox_min + bbox_max) / 2
-
-            # Compute width, height, and depth
-            width = bbox_max[0] - bbox_min[0]  # Difference in x (or y, depending on orientation)
-            depth = bbox_max[1] - bbox_min[1]  # Difference in y (side view width)
-            height = bbox_max[2] - bbox_min[2]  # Difference in z (vertical height)
             volume = np.prod(bbox_size)
 
-            normalized_width = width / np.mean(cluster_points[:, 2])
-            normalized_height = height / np.mean(cluster_points[:, 2])
-            normalized_depth = depth / np.mean(cluster_points[:, 2])
+            #self.get_logger().info(f'box x: {bbox_min[0],bbox_max[0]}')
+            
+            # Partial cluster removal:
+            # Definisci il workspace globale del robot
+            x_lim=0.35
+            x_min, x_max = -x_lim, x_lim
 
+            # Se il cluster è troppo vicino ai bordi, ignoralo
+            if (bbox_min[0] < x_min or bbox_max[0] > x_max):
+                #self.get_logger().info(f"Skipping border cluster at {bbox_center}")
+                continue
 
-
-
-
-
-
-
-
-
-            obj_type = ""
             if volume < 0.00012:  # Object detected (< 0.002 fluffy + sphere + cube)
                 # Compute curvature
                 curvatures = []
@@ -114,31 +114,42 @@ class Detection(Node):
                 # Object classification based on curvature
                 if avg_curvature > 0.08:
                     obj_type = "Cube"
+                    classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
                 else:
                     obj_type = "Sphere"
+                    classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
 
-                self.get_logger().info(f'Detected {obj_type} at {np.mean(cluster_points, axis=0)}')
-                classified_labels.append(1)
+                #self.get_logger().info(f'Detected {obj_type} at {np.mean(cluster_points, axis=0)}')
+                
 
             elif volume < 0.002:
-                self.get_logger().info(f'Detected Fluffy animal at {np.mean(cluster_points, axis=0)}')
-                obj_type = "Fluffy animal"
-                classified_labels.append(1)
-
+                #self.get_logger().info(f'Detected Fluffy animal at {np.mean(cluster_points, axis=0)}')
+                obj_type = "Fluffy_animal"
+                classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
             elif volume < 0.01:
-                self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
-                obj_type = "Large box"
-                classified_labels.append(2)
+                #self.get_logger().info(f'Detected Large Box at {np.mean(cluster_points, axis=0)}')
+                obj_type = "Box"
+                classified_labels.append([obj_type,np.mean(cluster_points, axis=0)])
 
-            center = np.mean(cluster_points, axis=0)
+            if not self.ObjectList:
+                self.ObjectList.append([obj_type, np.mean(cluster_points, axis=0)])
+            else:
+                new_obj_position = np.mean(cluster_points, axis=0)
+                should_add = True
 
-            detected_object.x = float(center[0])  
-            detected_object.y = float(center[1])  
-            detected_object.z = float(center[2])  
-            detected_object.label = obj_type  # This should be a string
-            self._detected_object_pub.publish(detected_object)
-            
+                for obj in self.ObjectList:
+                    obj_position = obj[1]  # Prendi solo la posizione dell'oggetto
+                    if np.linalg.norm(new_obj_position - obj_position) < 0.2:
+                        should_add = False
+                        break
+
+                if should_add:
+                    self.ObjectList.append([obj_type, new_obj_position])
+
+            self.get_logger().info(f'Detected {len(self.ObjectList)} objects from the detection node start')
+
             detected_indices.append(cluster_indices)
+
 
         self.publish_detected_objects(detected_indices, msg)
         self.publish_bounding_boxes(detected_indices, points, msg.header)

@@ -11,11 +11,32 @@ cd ~/dd2419_ws
 colcon build --symlink-install
 source install/setup.bash
 
-
-
 RUN THESE LATEST FILE:
 ros2 run rviz2 rviz2 -d /home/kristoffer-germalm/dd2419_ws/my_config.rviz
 ros2 run occupancy_grid occupancy_grid
 ros2 run mapping mapping_key
 ros2 launch localisation loc_bag_launch.py
 ros2 bag play --read-ahead-queue-size 100 -r 1.0 --start-paused /home/kristoffer-germalm/dd2419_ws/bags/realistic
+
+
+LATEST
+ros2 run rviz2 rviz2 -d /home/kristoffer-germalm/dd2419_ws/my_config.rviz
+ros2 run occupancy_grid occupancy_grid
+ros2 run py_srvcli detection_service
+ros2 bag play --read-ahead-queue-size 100 -r 1.0 --start-paused /home/kristoffer-germalm/dd2419_ws/bags/DetectionBag
+
+
+
+
+
+
+
+DetectionBag
+1. Wood cube
+2. Box
+3. Red cube
+4. Green sphere
+5. Flyffy animal
+6. Green cube
+7. Blue sphere
+8. Fluffy animal

@@ -16,8 +16,6 @@ from robp_interfaces.msg import Encoders
 from nav_msgs.msg import Path
 
 import numpy as np
-#from filterpy.kalman import ExtendedKalmanFilter as EKF
-
 from scipy.spatial.transform import Rotation as R
 
 class EKF_Algorithm(Node):
@@ -151,10 +149,12 @@ class EKF_Algorithm(Node):
         self.imu_yaw = self.compute_heading(final_q) - self.yaw_offset
         self.imu_yaw = self.normalize_angle(self.imu_yaw)
 
+
     def publish_pose(self, x, y, theta):
         '''Publish estimated pose with corresponding covariance'''
         if self.time is None:
             return
+
         
         # Create message
         pose_msg = PoseWithCovarianceStamped()

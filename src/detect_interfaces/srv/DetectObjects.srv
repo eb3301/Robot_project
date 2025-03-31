@@ -1,0 +1,6 @@
+# Request
+---
+# Response
+string[] object_types
+geometry_msgs/Point[] object_positions
+

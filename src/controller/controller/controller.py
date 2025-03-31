@@ -46,6 +46,8 @@ class Controller(Node):
         #Create DutyCycles msg
         duty_cycles_msg = DutyCycles()
 
+
+
         duty_cycles_msg.header = header
 
         if joy_rot > 0.05:

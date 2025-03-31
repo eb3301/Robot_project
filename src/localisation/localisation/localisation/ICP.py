@@ -14,12 +14,12 @@ import sensor_msgs_py.point_cloud2 as pc2
 from laser_geometry import LaserProjection
 from robp_interfaces.msg import Encoders
 from nav_msgs.msg import Path
+from std_msgs.msg import String
 
-from tf_transformations import quaternion_from_euler, euler_from_quaternion, quaternion_from_matrix
+from tf_transformations import euler_from_quaternion, quaternion_from_matrix
 from geometry_msgs.msg import TransformStamped, PoseStamped, PoseWithCovarianceStamped
 from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
 from tf2_ros.transform_listener import TransformListener
-
 
 import numpy as np
 import open3d as o3d
@@ -51,7 +51,9 @@ class ICPNode(Node):
         self.lidar_pub = self.create_publisher(PointCloud2, '/lidar', lidar_qos)
         self.ref_cloud_pub = self.create_publisher(PointCloud2, 'reference_PointCloud', ref_qos)
         self.encoder_sub = self.create_subscription(Encoders, '/motor/encoders', self.encoder_callback, scan_qos)
-        
+        self.ref_msg_sub = self.create_subscription(String, '/ref_msg', self.ref_msg_callback, 1)
+
+
         # Map Pose
         odom_pose_qos = QoSProfile(
             reliability = QoSReliabilityPolicy.BEST_EFFORT,
@@ -73,7 +75,7 @@ class ICPNode(Node):
         self.broadcast_timer = self.create_timer(0.05, self.broadcast_transform)
 
         # Initialise Cloud Variables
-        self.target_pcd = None  
+        self.target_pcd_list = []  
 
         self.transform = np.identity(4)
 
@@ -84,12 +86,16 @@ class ICPNode(Node):
         self.start_time = None
         self.create_ref = True
         self.accumulated_scans = []
+        self.pub_ref = True
+
 
         self.stamp = None
-        self.rotating  = False
+        self.rotating = False
         
+        self.pose = None
         self.path = Path()
 
+        self.n_ref_clouds = 0
         self.get_logger().info("Initialised ICP node...")
         
 
@@ -111,6 +117,7 @@ class ICPNode(Node):
             self.rotating = True
         else:
             self.rotating = False
+
 
     def scan_callback(self, msg: LaserScan):
         self.stamp = msg.header.stamp
@@ -149,6 +156,11 @@ class ICPNode(Node):
         # Extract points 
         points = pc2.read_points_numpy(cloud_out, field_names=("x", "y", "z"), skip_nans=True)
 
+        if self.pub_ref:
+            self.ref_counter = 0
+            self.create_ref = True
+            self.pub_ref = False
+
         # Create reference pointcloud for ICP
         if self.ref_counter <= 5:
             self.accumulated_scans.append(points)
@@ -160,11 +172,11 @@ class ICPNode(Node):
                 self.create_ref = False
                 merged_points = np.vstack(self.accumulated_scans)
                 merged_ref = pc2.create_cloud_xyz32(cloud_out.header, merged_points)
-                self.target_pcd = self.pointcloud_2_open3d(merged_ref)
+                self.target_pcd_list.append( (self.pointcloud_2_open3d(merged_ref), self.pose) )
                 self.get_logger().info(f"Reference cloud accumulated in {ref_time} seconds")
                 
         else:
-            if self.counter % 10 == 0:
+            if self.counter % 5 == 0:
                 self.counter += 1
                 if not self.rotating:
                     self.lidar_pub.publish(cloud_out)
@@ -173,6 +185,10 @@ class ICPNode(Node):
             else:
                 self.counter += 1
         
+
+    def ref_msg_callback(self, msg):
+        self.pub_ref = True
+
 
     def odom_pose_callback(self, msg: PoseWithCovarianceStamped):
         self.publish_pose(msg)
@@ -197,16 +213,33 @@ class ICPNode(Node):
 
     def ICP(self, source_pcd):
         '''ICP Algorithm Implementation'''
-        if  source_pcd is None or self.target_pcd is None:
+        if source_pcd is None or not self.target_pcd_list:
             return
         start_time = time.time()
-        
+
+        # Determine which pointcloud to use
+        if len(self.target_pcd_list) == 1:
+            target_pcd = self.target_pcd_list[0][0]
+        else: 
+            curr_pos = np.array([self.pose.position.x, self.pose.position.y])
+            cloud_pos = np.array([self.target_pcd_list[1][1].position.x, self.target_pcd_list[1][1].position.y])
+            dist_cloud1 = np.linalg.norm(curr_pos) # Assumes cloud 1 was collected in origo
+            dist_cloud2 = np.linalg.norm(curr_pos - cloud_pos)
+            self.get_logger().info(f'First: {dist_cloud1}, second: {dist_cloud2}')
+            if dist_cloud1 <= dist_cloud2:
+                self.get_logger().info('Using first reference cloud')
+                target_pcd = self.target_pcd_list[0][0]
+            else:
+                self.get_logger().info('Using second reference cloud')
+                target_pcd = self.target_pcd_list[1][0]                
+
+
         # Compute normals for Point-to-Plane
         radius = 0.1 # max range for neighbour search
         max_nn = 10 # max amount of neighbours
 
-        source_pcd.estimate_normals(search_param = o3d.geometry.KDTreeSearchParamHybrid(radius ,max_nn))  
-        self.target_pcd.estimate_normals(search_param = o3d.geometry.KDTreeSearchParamHybrid(radius ,max_nn))  
+        source_pcd.estimate_normals(search_param = o3d.geometry.KDTreeSearchParamHybrid(radius, max_nn))  
+        target_pcd.estimate_normals(search_param = o3d.geometry.KDTreeSearchParamHybrid(radius, max_nn))  
 
         
         # Algorithm Parameters
@@ -217,15 +250,14 @@ class ICPNode(Node):
         max_iteration, relative_fitness, relative_rmse = 200, 1e-6, 1e-6
         # Run algorithm 
         result = o3d.pipelines.registration.registration_icp(
-            source_pcd, self.target_pcd, threshold, trans_init,
+            source_pcd, target_pcd, threshold, trans_init,
             o3d.pipelines.registration.TransformationEstimationPointToPlane(),
             o3d.pipelines.registration.ICPConvergenceCriteria(relative_fitness, relative_rmse, max_iteration)
         )
 
-
         translation = result.transformation[:3, 3]
         dist = np.linalg.norm(translation)
-        if result.fitness > 0.3 and result.inlier_rmse < 0.035: # and dist < 1: 
+        if result.fitness > 0.3 and result.inlier_rmse < 0.035 and dist < 0.4: 
             self.transform = result.transformation
 
             self.get_logger().info(f"ICP transform: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
@@ -272,6 +304,8 @@ class ICPNode(Node):
                 self.path.header.stamp = stamp
                 self.path.header.frame_id = 'map'    
                 self.map_path_pub.publish(self.path)
+
+                self.pose = map_pose
 
             except TransformException as ex:
                 self.get_logger().info(
