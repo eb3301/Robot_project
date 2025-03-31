@@ -228,13 +228,14 @@ class MinimalService(Node):
         plt.title("2D Robot Arm Visualization (User Input Angles)")
         plt.show()
 
-    def get_obj_pos(self):
+    def get_obj_pos(self,obj_class):
         pos = []
         image = self.latest_image
         bridge = CvBridge()
         #Convert ROS Image message to OpenCV format
-        frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
-        cv.imwrite('animaltop.jpg', frame)
+        #frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
+        frame = cv.imread(os.getcwd() + "/cube2.jpg")
+        #cv.imwrite('animaltop.jpg', frame)
         N = 50 # pixels to remove from bottom
         #cropped_frame = frame[:frame.shape[0] - N, :]
         cropped_frame = frame[90:340, 160:480]   
@@ -271,59 +272,44 @@ class MinimalService(Node):
         #     for pt in cnt:
         #         x, y = pt[0]
         #         cv.circle(cropped_frame, (x, y), 1, (0, 255, 0), -1)
+
         cv.drawContours(cropped_frame,contours, -1, (0,255,0),3)
         for pnt in centers: 
             cv.circle(cropped_frame, (pnt), 5, (0, 0, 255), -1)
         print(centers)
 
         all_points = np.vstack(contours)
-        x, y, w, h = cv.boundingRect(all_points)
-        cv.rectangle(cropped_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # x, y, w, h = cv.boundingRect(all_points)
+        # cv.rectangle(cropped_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        rect = cv.minAreaRect(all_points)
+        box = cv.boxPoints(rect)
+        box = np.int0(box)
+        print(rect[0])
+        print(rect[2])
+        cx = round(rect[0][0])
+        cy = round(rect[0][1])
+        cv.drawContours(cropped_frame, [box], 0, (0, 255, 0), 2)
+        cv.circle(cropped_frame, ([cx,cy]), 5, (0, 0, 255), -1)
+        
 
-        if len(centers)>=2:
-            self.frame_PCA(cropped_frame,centers)
-        elif len(centers) == 1:
-            shape = self.detect_shape(filtered_contours) #max(filtered_contours, key=cv.contourArea))
-            print(shape)
-        # merged_centers = self.merge_centers(centers, distance_threshold=110)
-        # print("merged centers: "+ str(merged_centers))
-        # cntr_pos = []
-        # for cntr in merged_centers:
-        #     #cv.circle(cropped_frame,cntr,5,(0,0,255),-1)
-        #     tmpx = round((cntr[0]/300-0.5)*15,3)/100#round((cntr[0]/640-0.5)*30,3)/100
-        #     tmpy = round(((1-cntr[1]/240)-0.5)*12+0.01,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
-        #     cntr_pos.append([tmpx,tmpy])
-        #     print("x,y: "+str(tmpx) + " " + str(tmpy))
-        #     if math.sqrt(tmpx**2+tmpy**2)<= 0.1:
-                
-        #         plt.subplot(1,2,1)
-        #         plt.imshow(cropped_frame)
-        #         plt.subplot(1,2,2)
-        #         plt.imshow(edges,cmap='gray')
-        #         plt.show()
-        #         return [tmpx,tmpy]
+        # if len(centers)>=2:
+        #     self.frame_PCA(cropped_frame,centers)
+        # elif len(centers) == 1:
+        #     shape = self.detect_shape(filtered_contours) #max(filtered_contours, key=cv.contourArea))
+        #     print(shape)
 
-        tmpx = round((centers[0][0]/310-0.5)*9.45,3)/100#round((cntr[0]/640-0.5)*30,3)/100
-        tmpy = round(((1-centers[0][1]/260)-0.5)*9.45+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
+        tmpx = round((cx/310-0.5)*9.45,3)/100#round((cntr[0]/640-0.5)*30,3)/100
+        tmpy = round(((1-cy/260)-0.5)*9.45+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
         #cntr_pos.append([tmpx,tmpy])
         print("x,y: "+str(tmpx) + " " + str(tmpy))
-        if math.sqrt(tmpx**2+tmpy**2)<= 0.1:
+        if math.sqrt(tmpx**2+tmpy**2)<= 0.15:
             
-            plt.subplot(1,2,1)
+            # plt.subplot(1,2,1)
             plt.imshow(cropped_frame)
-            plt.subplot(1,2,2)
-            plt.imshow(edges,cmap='gray')
+            # plt.subplot(1,2,2)
+            # plt.imshow(edges,cmap='gray')
             plt.show()
             return [tmpx,tmpy]
-
-        # print("cntr pos: " + str(cntr_pos))
-        # plt.subplot(1,2,1)
-        # plt.imshow(cropped_frame)
-        # plt.subplot(1,2,2)
-        # plt.imshow(edges,cmap='gray')
-        # plt.show()
-        #return cntr_pos
-           
         
 
         nothing_detected = True
@@ -447,11 +433,19 @@ class MinimalService(Node):
             response.message = "Arm not moving correctly"
             return response
 
+    def get_obj_grip(self,obj_class):
+        if obj_class == "cube" or obj_class == "sphere":
+            return 11000
+        elif obj_class == "animal":
+            return 12000
+
+
     async def arm_callback(self, request, response):
         time_data_set = [2000,2000,2000,2000,2000,2000]
         
         msg = Int16MultiArray()
         obj_class = request.obj_class
+        grip_size = self.get_obj_grip(obj_class)
 
         if request.xy[0] == 1: # this is command from client
             self.get_logger().info('moving arm to top')
@@ -466,23 +460,6 @@ class MinimalService(Node):
             response.success = True 
             response.message = 'successful'
             return response
-        
-        elif request.xy[0] == 3: 
-            self.get_logger().info('moving arm to grab')
-            msg.data = self.data_sets[int(request.xy[0]-1)]
-            self.publisher.publish(msg)
-
-            # find inverse kinematics (if ik used)
-            # otherwise convert values to command for planner or perform driving 
-
-            #Publish the grab message
-
-            #Publish arm top message
-
-            # call detection to see if object is in gripper.
-
-            # either send result or fail or restart from look.
-
         elif request.xy[0] == 4: 
             self.get_logger().info('moving arm to drop')
             msg.data = self.data_sets[int(request.xy[0]-1)]
@@ -493,14 +470,6 @@ class MinimalService(Node):
             # move if needed
             # Move object to drop
             # open gripper
-        elif request.xy[0] == 5:
-            msg.data = rob_data_set
-            self.publisher.publish(msg)
-            time.sleep(2.0)
-            print("sleep")
-            rob_data_set[0]=11000
-            msg.data = rob_data_set
-            self.publisher.publish(msg)
         elif request.xy[0] == 6:
             self.get_logger().info('moving arm to look')
             msg.data = self.data_sets[1]
@@ -514,7 +483,7 @@ class MinimalService(Node):
             # else:
             #     self.get_logger().info(response.message)
             #cv.imwrite("sphere.jpg")
-            cam_obj_pos = self.get_obj_pos()
+            cam_obj_pos = self.get_obj_pos(obj_class)
             print("cam obj pos :" + str(cam_obj_pos))
             if cam_obj_pos == []:
                 response.success = False 
@@ -548,7 +517,7 @@ class MinimalService(Node):
             time.sleep(4.0)
             #await asyncio.sleep(2)
             print("sleep")
-            cam_data_set[0]=11000
+            cam_data_set[0]=grip_size
             cam_data_set[6]=1000
             msg.data = cam_data_set
             self.publisher.publish(msg)
@@ -556,6 +525,9 @@ class MinimalService(Node):
             #await asyncio.sleep(2)
             msg.data = self.data_sets[1]
             self.publisher.publish(msg)
+        else:
+            response.success = False
+            response.message = "Send valid input please. (2, 4 or 6)"
 
         
         
