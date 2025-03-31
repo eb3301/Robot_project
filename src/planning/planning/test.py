@@ -75,11 +75,11 @@ def combine_segments(sorted_segments):
         next_segment = sorted_segments[i]
 
         # Skip if segments don't have enough points to merge
-        if len(prev_segment) < 5 or len(next_segment) < 5:
+        if len(prev_segment) < 8 or len(next_segment) < 8:
             print('Short')
             print(prev_segment)
             print(next_segment)
-            continue
+            # continue
         
         # Take the last two points from the previous segment
         prev_end_points = prev_segment[-3:]
@@ -88,13 +88,13 @@ def combine_segments(sorted_segments):
         next_start_points = next_segment[:3]
 
         # Create a new segment by combining these 4 points
-        new_segment = prev_end_points + next_start_points
+        merge_segment = prev_end_points + next_start_points
 
         # Add the non-modified segments to the list
         new_segments.append(prev_segment[2:-2])  # Exclude the last two points
 
         # Replace the two original segments with the new combined segment
-        new_segments.append(new_segment)
+        new_segments.append(merge_segment)
 
     # Add the last segment
     new_segments[0] = sorted_segments[0][:-2]
@@ -139,23 +139,23 @@ def create_god_path(path):
 
 
 # Example path
-# path = [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
-#         (4, 4), (4, 5), (5, 5), (5, 6), (6, 6), (6, 7), (7, 7), (7, 8), 
-#         (8, 8), (8, 9), (8, 10),(8, 11),(8, 12),(8, 13),(8, 14),(8, 15),
-#         (9, 15),(10,15),(11,15),(12,15),(13,15),(14,15),(15,15),(16,15),
-#         (16,14),(16,13),(16,12),(16,11),(16,10),(16, 9),(16, 8),(16, 7),
-#         (15,7), (14, 7),(13, 7),(12, 7),(11, 7),(10, 7),(9, 7), (8, 7)]
+path = [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
+        (4, 4), (4, 5), (5, 5), (5, 6), (6, 6), (6, 7), (7, 7), (7, 8), 
+        (8, 8), (8, 9), (8, 10),(8, 11),(8, 12),(8, 13),(8, 14),(8, 15),
+        (9, 15),(10,15),(11,15),(12,15),(13,15),(14,15),(15,15),(16,15),
+        (16,14),(16,13),(16,12),(16,11),(16,10),(16, 9),(16, 8),(16, 7),
+        (15,7), (14, 7),(13, 7),(12, 7),(11, 7),(10, 7),(9, 7), (8, 7)]
 
-path = [
-    (0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
-    (4, 4), (5, 4), (5, 5), (6, 5), (6, 6), (7, 6), (7, 7), (8, 7),
-    (8, 8), (9, 8), (9, 9), (10, 9), (10, 10), (11, 10), (11, 9), (12, 9),
-    (12, 8), (13, 8), (13, 7), (14, 7), (14, 6), (15, 6), (15, 5), (16, 5),
-    (16, 4), (15, 4), (15, 3), (14, 3), (14, 2), (13, 2), (13, 1), (12, 1),
-    (12, 0), (11, 0), (10, 0), (9, 0), (9, 1), (8, 1), (8, 2), (7, 2),
-    (7, 3), (6, 3), (6, 4), (5, 4), (5, 3), (4, 3), (4, 2), (3, 2),
-    (3, 1), (2, 1), (2, 0), (1, 0), (0, 0)
-]
+# path = [
+#     (0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
+#     (4, 4), (5, 4), (5, 5), (6, 5), (6, 6), (7, 6), (7, 7), (8, 7),
+#     (8, 8), (9, 8), (9, 9), (10, 9), (10, 10), (11, 10), (11, 9), (12, 9),
+#     (12, 8), (13, 8), (13, 7), (14, 7), (14, 6), (15, 6), (15, 5), (16, 5),
+#     (16, 4), (15, 4), (15, 3), (14, 3), (14, 2), (13, 2), (13, 1), (12, 1),
+#     (12, 0), (11, 0), (10, 0), (9, 0), (9, 1), (8, 1), (8, 2), (7, 2),
+#     (7, 3), (6, 3), (6, 4), (5, 4), (5, 3), (4, 3), (4, 2), (3, 2),
+#     (3, 1), (2, 1), (2, 0), (1, 0), (0, 0)
+# ]
 
 
 
