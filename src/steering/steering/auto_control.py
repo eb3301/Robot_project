@@ -40,7 +40,7 @@ class AutoControll(Node):
         self.listener = tf2_ros.TransformListener(self.buffer, self, spin_thread = True)
 
         # Preallocation
-        self.current_position = (0, 0)
+        self.current_position = (0.125, 0.175)
         self.current_heading = 0
         self.pose_list = []
 
@@ -49,7 +49,7 @@ class AutoControll(Node):
         # Init transform
         to_frame_rel = 'map'
         from_frame_rel = 'odom'
-        msg_time = rclpy.time.Time().from_msg(msg.header.stamp) # Maybe change?
+        msg_time = rclpy.time.Time().from_msg(msg.header.stamp) # Maybe change to most recent?
 
         # Wait for the transform asynchronously
         tf_future = self.buffer.wait_for_transform_async(
@@ -98,7 +98,7 @@ class AutoControll(Node):
             # Convert path to a NumPy array
             self.pose_list = np.array(self.pose_list)
 
-            while distance_to_goal > 2*resolution: # Change later
+            while distance_to_goal > resolution: # Change later
                 start_time = time.time()  # Record the start time
                 
                 # Calcluate distance to goal, maybe move back?
@@ -122,7 +122,7 @@ class AutoControll(Node):
             twist_msg = Twist()
             self.cmd_vel_pub.publish(twist_msg)
         else:
-            self.get_logger().info("Path empty, stoping")
+            self.get_logger().info("Path empty, stopping")
             twist_msg = Twist()
             self.cmd_vel_pub.publish(twist_msg)
 
@@ -141,8 +141,18 @@ def pure_pursuit_velocity(current_position, current_heading, path, lookahead_dis
     # Calculate the Euclidean distance from the current position to each waypoint
     distances = np.sqrt(dx**2 + dy**2)
 
-    # Find the first target point within the lookahead distance
-    target_point_idx = np.argmax(distances >= lookahead_distance)
+    # Find the current point index
+    current_point_idx = np.argmin(distances)
+    target_point_idx = current_point_idx
+    curr_x = path[current_point_idx][0]
+    curr_y = path[current_point_idx][1]
+    # print(distances)
+    # print(lookahead_distance*2)
+
+    # Find target index
+    while target_point_idx + 1 < len(path) and np.sqrt((path[target_point_idx + 1][0] - curr_x)**2 + (path[target_point_idx + 1][1] - curr_y)**2) < 2*lookahead_distance:
+        target_point_idx += 1
+
     if target_point_idx == 0:
         target_point_idx = 1  # Skip the first point, as it is the vehicle's current position
 
@@ -187,6 +197,12 @@ def calculate_steering_angle(current_position, current_heading, target_point):
 
     # Steering angle is the difference between the vehicle's heading and the angle to the target
     steering_angle = angle_to_target - current_heading
+
+    # Constrain the steering angle to be within the range of -pi/2 to pi/2
+    if steering_angle > np.pi / 2:
+        steering_angle = np.pi / 2
+    elif steering_angle < -np.pi / 2:
+        steering_angle = -np.pi / 2
 
     return steering_angle
 
