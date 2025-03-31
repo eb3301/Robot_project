@@ -1,0 +1,34 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/robot/Project/Robot_project/install/usb_cam/include/**",
+        "/home/robot/Project/Robot_project/install/robp_phidgets_temperature/include/**",
+        "/home/robot/Project/Robot_project/install/robp_phidgets_spatial/include/**",
+        "/home/robot/Project/Robot_project/install/robp_phidgets_motors/include/**",
+        "/home/robot/Project/Robot_project/install/robp_phidgets_encoders/include/**",
+        "/home/robot/Project/Robot_project/install/robp_interfaces/include/**",
+        "/home/robot/Project/Robot_project/install/detect_interfaces/include/**",
+        "/home/robot/Project/Robot_project/install/custom_msgs/include/**",
+        "/home/robot/Project/Robot_project/install/arm_interface/include/**",
+        "/opt/ros/jazzy/include/**",
+        "/home/robot/Project/Robot_project/src/robp_robot/robp_phidgets/robp_phidgets_encoders/include/**",
+        "/home/robot/Project/Robot_project/src/robp_robot/robp_phidgets/robp_phidgets_motors/include/**",
+        "/home/robot/Project/Robot_project/src/robp_robot/robp_phidgets/robp_phidgets_spatial/include/**",
+        "/home/robot/Project/Robot_project/src/robp_robot/robp_phidgets/robp_phidgets_temperature/include/**",
+        "/home/robot/Project/Robot_project/src/robp_robot/usb_cam/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

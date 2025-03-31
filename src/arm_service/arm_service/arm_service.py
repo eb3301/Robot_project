@@ -241,86 +241,24 @@ class MinimalService(Node):
         #image_path = os.getcwd() + "/src/arm_service/arm_service/sphere.jpg"
         # print("Current Working Directory:", os.getcwd())
         print(cropped_frame.shape)
-
-        '''# if not os.path.exists(image_path):
-
-        #     print(f"Error: The file '{image_path}' does not exist.")
-        # else:
-        #     frame = cv.imread(image_path, cv.IMREAD_GRAYSCALE)
-        #     frame = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
-        ## size of what camera can see is around 0.2x0.2 m
-
-        ### run image detection here
-
-        #height, width = image.shape[:2]
-        #res = cv.resize(image,(2*width, 2*height), interpolation = cv.INTER_CUBIC)    
-        #plt.imshow(image)
-        #plt.show()
-
-        ########################
-        # plt.imshow(frame)
-        # plt.show()
-
-        # hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-        # lower_white = np.array([0, 50, 110])
-        # upper_white = np.array([180, 190, 210])
-        # mask = cv.inRange(hsv, lower_white, upper_white)
-        # contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)    
-        # if contours:plt.imshow(frame)
-        # plt.show()
-
-        # hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-        # lower_white = np.array([0, 50, 110])
-        # upper_white = np.array([180, 190, 210])
-        # mask = cv.inRange(hsv, lower_white, upper_white)
-        # contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)    
-        # if contours:
-        #     c = max(contours, key=cv.contourArea)
-        #     M = cv.moments(c)
-        #     if M["m00"] != 0:
-        #         cx = int(M["m10"] / M["m00"])
-        #         cy = int(M["m01"] / M["m00"])
-        #         cv.drawContours(frame, [c], -1, (0, 255, 0), 2)
-        #         cv.circle(frame, (cx, cy), 5, (255, 0, 0), -1)
-        #         coord_text = f"Centroide: x={cx}, y={cy}"
-        #         cv.putText(frame, coord_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)            # Send coordinates to Simulink
-        #         data = np.array([cx, cy], dtype=np.float32).tobytes()
-        # print("x,y is " + str(cx) + " " + str(cy))
-        # plt.imshow(frame)    
-        # plt.show()
-        #     c = max(contours, key=cv.contourArea)
-        #     M = cv.moments(c)
-        #     if M["m00"] != 0:
-        #         cx = int(M["m10"] / M["m00"])
-        #         cy = int(M["m01"] / M["m00"])
-        #         cv.drawContours(frame, [c], -1, (0, 255, 0), 2)
-        #         cv.circle(frame, (cx, cy), 5, (255, 0, 0), -1)
-        #         coord_text = f"Centroide: x={cx}, y={cy}"
-        #         cv.putText(frame, coord_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)            # Send coordinates to Simulink
-        #         data = np.array([cx, cy], dtype=np.float32).tobytes()
-        # print("x,y is " + str(cx) + " " + str(cy))
-        #plt.imshow(cropped_frame)    
-        #plt.show()
-        #cv.destroyAllWindows()'''
         
         edges = cv.Canny(cropped_frame,200,500)
         contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         
-        c = max(contours, key=cv.contourArea)
-        Mc = cv.moments(c)
-        if Mc['m00'] != 0:
-            cx = int(Mc['m10'] / Mc['m00'])
-            cy = int(Mc['m01'] / Mc['m00'])
-        centers = [cx,cy]
-
-        # for cnt in contours:
-        #     M = cv.moments(cnt)
-        #     if M['m00'] != 0:
-        #         cx = int(M['m10'] / M['m00'])
-        #         cy = int(M['m01'] / M['m00'])
-        #         # Draw center
-        #         cv.circle(frame, (cx, cy), 5, (0, 0, 255), -1)
-        #         centers.append([cx,cy])
+        # c = max(contours, key=cv.contourArea)
+        # Mc = cv.moments(c)
+        # if Mc['m00'] != 0:
+        #     cx = int(Mc['m10'] / Mc['m00'])
+        #     cy = int(Mc['m01'] / Mc['m00'])
+        #centers =[[cx,cy]]
+        centers = []
+        filtered_contours = [cnt for cnt in contours if cv.arcLength(cnt, True) > 10]
+        for cnt in filtered_contours:
+            M = cv.moments(cnt)
+            if M['m00'] != 0:
+                cx = int(M['m10'] / M['m00'])
+                cy = int(M['m01'] / M['m00'])
+                centers.append([cx,cy])
         # for cnt in contours:
         #     if cv.contourArea(cnt) > 50:  # Filter out tiny noise
         #         cx, cy, x, y, w, h= self.get_center_from_bounding_rect(cnt)
@@ -334,8 +272,15 @@ class MinimalService(Node):
         #         x, y = pt[0]
         #         cv.circle(cropped_frame, (x, y), 1, (0, 255, 0), -1)
         cv.drawContours(cropped_frame,contours, -1, (0,255,0),3)
-        cv.circle(cropped_frame, (cx, cy), 5, (0, 0, 255), -1)
-
+        for pnt in centers: 
+            cv.circle(cropped_frame, (pnt), 5, (0, 0, 255), -1)
+        print(centers)
+        
+        if len(centers)>=2:
+            self.frame_PCA(cropped_frame,centers)
+        elif len(centers) == 1:
+            shape = self.detect_shape(max(filtered_contours, key=cv.contourArea))
+            print(shape)
         # merged_centers = self.merge_centers(centers, distance_threshold=110)
         # print("merged centers: "+ str(merged_centers))
         # cntr_pos = []
@@ -354,8 +299,8 @@ class MinimalService(Node):
         #         plt.show()
         #         return [tmpx,tmpy]
 
-        tmpx = round((centers[0]/310-0.5)*9.45,3)/100#round((cntr[0]/640-0.5)*30,3)/100
-        tmpy = round(((1-centers[1]/260)-0.5)*9.45+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
+        tmpx = round((centers[0][0]/310-0.5)*9.45,3)/100#round((cntr[0]/640-0.5)*30,3)/100
+        tmpy = round(((1-centers[0][1]/260)-0.5)*9.45+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
         #cntr_pos.append([tmpx,tmpy])
         print("x,y: "+str(tmpx) + " " + str(tmpy))
         if math.sqrt(tmpx**2+tmpy**2)<= 0.1:
@@ -416,14 +361,78 @@ class MinimalService(Node):
         if nothing_detected:
             return [0,0]
         return pos
-    
+
+    def frame_PCA(self, img,points):
+        # Center the data
+        points = np.array(points)
+        mean = np.mean(points, axis=0)
+        centered = points - mean
+
+        # Compute covariance matrix
+        cov = np.cov(centered.T)
+
+        # Eigen decomposition
+        eigenvalues, eigenvectors = np.linalg.eig(cov)
+
+        # Sort eigenvectors by eigenvalues (descending)
+        order = np.argsort(eigenvalues)[::-1]
+        eigenvalues = eigenvalues[order]
+        eigenvectors = eigenvectors[:, order]
+
+        # First principal component
+        pc1 = eigenvectors[:, 0]
+        pc2 = eigenvectors[:, 1]
+
+        ##### plotting
+
+        # Show image with principal axes
+        plt.imshow(cv.cvtColor(img, cv.COLOR_BGR2RGB))
+        plt.scatter(points[:, 0], points[:, 1], color='blue')
+
+        # Draw principal components
+        scale = 100
+        plt.quiver(mean[0], mean[1], pc1[0], pc1[1], scale=1, color='red', label='PC1')
+        plt.quiver(mean[0], mean[1], pc2[0], pc2[1], scale=1, color='green', label='PC2')
+        plt.legend()
+        plt.gca().invert_yaxis()
+        plt.title("PCA of Blue Points (NumPy + OpenCV)")
+        plt.show()
+
+    def detect_shape(self,contour):
+        # Get bounding rect
+        x, y, w, h = cv.boundingRect(contour)
+        aspect_ratio = float(w) / h
+
+        # Calculate area and perimeter
+        area = cv.contourArea(contour)
+        perimeter = cv.arcLength(contour, True)
+        print(" A,per: "+ str(area) + ", "+ str(perimeter))
+
+        # Avoid division by zero
+        if perimeter == 0:
+            return "unknown"
+
+        # Circularity = 4π * Area / (Perimeter^2)
+        circularity = 4 * math.pi * (area / (perimeter * perimeter))
+
+        # Polygon approximation
+        approx = cv.approxPolyDP(contour, 0.04 * perimeter, True)
+        print("Circularity, approx: "+ str(aspect_ratio) + ", "+ str(approx))
+        # Decide based on features
+        if circularity > 0.8 and len(approx) > 5:
+            return "sphere"
+        elif 0.9 <= aspect_ratio <= 1.1 and len(approx) == 4:
+            return "cube"
+        else:
+            return "unknown"
+
     def get_center_from_bounding_rect(self, contour):
         x, y, w, h = cv.boundingRect(contour)
         cx = x + w // 2
         cy = y + h // 2
 
         return (cx, cy, x, y, w, h)
-    
+
     def cornerHarris_demo(self,val,src_gray):
             thresh = val    # Detector parameters
             blockSize = 2
