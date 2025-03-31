@@ -2,6 +2,7 @@ from arm_interface.srv import Arm
 
 import os
 import time
+import asyncio
 import cv2 as cv
 from cv_bridge import CvBridge
 import rclpy
@@ -33,6 +34,7 @@ class MinimalService(Node):
         self.srv = self.create_service(Arm, 'arm', self.arm_callback)
         self.publisher = self.create_publisher(Int16MultiArray, 'multi_servo_cmd_sub', 10)
         self.imagesubscriber = self.create_subscription(Image, "/arm_camera/image_raw", self.image_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)) ## frame id is arm_camera_link
+        self.servo_sub = self.create_subscription(Int16MultiArray,'topicname',self.arm_pos_callback)
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
         self.data_sets = [[11000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
                     [3000,12000,3000,19000,10500,12000,2000,2000,2000,2000,2000,2000],
@@ -41,6 +43,19 @@ class MinimalService(Node):
                     [2000,12000,3000,12000,4000,14000,2000,2000,2000,2000,2000,2000]]
         self.arm_length = [0.101,0.094,0.169]
         self.latest_image = None
+        self.curr_arm_pos = None
+
+    def image_callback(self,image):
+        self.latest_image = image
+
+    def arm_pos_callback(self,arr):
+        self.curr_arm_pos = arr
+
+    def get_arm_pos(self):
+        if self.curr_arm_pos is not None:
+            return self.curr_arm_pos
+        else:
+            return None
 
     def pos_ok_check(self,target_position):
         x, y, z = target_position
@@ -111,7 +126,7 @@ class MinimalService(Node):
                 iktheta = math.radians(180)-theta
             else:
                 iktheta = theta
-        elif y<0.05:
+        elif y<0.1:
             self.get_logger().info("too close to robot")
             return [1],[]
         elif abs(x)<0.01 and y>0.01:
@@ -212,9 +227,6 @@ class MinimalService(Node):
         plt.ylabel("Y Position")
         plt.title("2D Robot Arm Visualization (User Input Angles)")
         plt.show()
-
-    def image_callback(self,image):
-        self.latest_image = image
 
     def get_obj_pos(self):
         pos = []
@@ -408,9 +420,8 @@ class MinimalService(Node):
         cx = x + w // 2
         cy = y + h // 2
 
-        
-
         return (cx, cy, x, y, w, h)
+    
     def cornerHarris_demo(self,val,src_gray):
             thresh = val    # Detector parameters
             blockSize = 2
@@ -449,38 +460,23 @@ class MinimalService(Node):
             merged.append(avg)
         return merged
 
-    def arm_callback(self, request, response):
+    def arm_move_check(self,actual_arr,wanted_arr,response):
+        arm_diff = sum(actual_arr-wanted_arr)
+        if arm_diff <= 200:
+            response.success = True
+            response.message = "Arm in position"
+            
+            return response 
+        else:
+            response.success = False
+            response.message = "Arm not moving correctly"
+            return response
+
+    async def arm_callback(self, request, response):
         time_data_set = [2000,2000,2000,2000,2000,2000]
-        target_position = [ 0.03, 0.19, -0.16] #assuming x right 
-        target_orientation = [0, 0, 0]
+        
         msg = Int16MultiArray()
-
-        # if not self.pos_ok_check(obj_pos):
-        #     response.success = "Object is not in position to pick"
-        # ## continue with ik here
-
-        
-        #ang_test = [math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(90),math.radians(70)]
-        #self.get_logger().info("forward kin test: "+ str(self.forward_kinematics(ang_test)))
-        
-        '''robot_angles, plt_ang = self.inverse_kinematics(target_position)
-
-        if robot_angles == [0]:
-            response.success = False
-            response.message = "object too far from robot"
-            return response
-        elif robot_angles == [1]:
-            response.success = False
-            response.message = "object too close to robot"
-            return response
-        
-        rob_data_set = np.concatenate((robot_angles,time_data_set))
-        rob_data_set[0] = 2000
-        self.get_logger().info("computed sequence is " + str(rob_data_set))
-
-        #self.plot_robot_arm(self.arm_length,plt_ang)'''
-
-
+        obj_class = request.obj_class
 
         if request.xy[0] == 1: # this is command from client
             self.get_logger().info('moving arm to top')
@@ -492,7 +488,7 @@ class MinimalService(Node):
             msg.data = self.data_sets[int(request.xy[0]-1)]
             self.publisher.publish(msg)
 
-            response.success = True #"success"
+            response.success = True 
             response.message = 'successful'
             return response
         
@@ -534,7 +530,14 @@ class MinimalService(Node):
             self.get_logger().info('moving arm to look')
             msg.data = self.data_sets[1]
             self.publisher.publish(msg)
-            #time.sleep(0.1)
+            arm_pos = self.get_arm_pos()
+
+            response = self.arm_move_check(arm_pos,self.data_sets[1],response)
+            if not response.success:
+                return response
+            else:
+                self.get_logger().info(response.message)
+
             cam_obj_pos = self.get_obj_pos()
             print("cam obj pos :" + str(cam_obj_pos))
             if cam_obj_pos == []:
@@ -548,23 +551,31 @@ class MinimalService(Node):
             obj_pos.append(-0.16)
             print("obj pos: " + str(obj_pos))
             cam_angles, garbage = self.inverse_kinematics(obj_pos)
-            if cam_angles != [0]:
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
-                print(cam_angles)
-                cam_data_set = np.concatenate((cam_angles,time_data_set))
-                cam_data_set[0] = 2000
-                self.get_logger().info("computed cam sequence is " + str(cam_data_set))
-            self.get_logger().info("Pickup has ran !!!!!!!!!!!!!!!!!!!!!")
+
+            if cam_angles == [0]:
+                response.success = False
+                response.message = "Object too far"
+                return response
+            elif cam_angles == [1]:
+                response.success = False
+                response.message = "Object too close"
+                return response
             
-            #msg.data = cam_data_set
-            #self.publisher.publish(msg)
+            print(cam_angles)
+            cam_data_set = np.concatenate((cam_angles,time_data_set))
+            cam_data_set[0] = 2000
+            self.get_logger().info("computed cam sequence is " + str(cam_data_set))
+            
+            await asyncio.sleep(2)
+
             self.safepublish(cam_data_set)
-            time.sleep(4.0)
+            await asyncio.sleep(2)
             print("sleep")
             cam_data_set[0]=11000
+            cam_data_set[6]=1000
             msg.data = cam_data_set
             self.publisher.publish(msg)
-            time.sleep(4.0)
+            await asyncio.sleep(2)
             msg.data = self.data_sets[0]
             self.publisher.publish(msg)
 
