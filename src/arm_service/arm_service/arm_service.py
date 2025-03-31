@@ -234,7 +234,7 @@ class MinimalService(Node):
         bridge = CvBridge()
         #Convert ROS Image message to OpenCV format
         frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
-        cv.imwrite('sphere.jpg', frame)
+        cv.imwrite('animaltop.jpg', frame)
         N = 50 # pixels to remove from bottom
         #cropped_frame = frame[:frame.shape[0] - N, :]
         cropped_frame = frame[90:340, 160:480]   
@@ -275,7 +275,11 @@ class MinimalService(Node):
         for pnt in centers: 
             cv.circle(cropped_frame, (pnt), 5, (0, 0, 255), -1)
         print(centers)
-        
+
+        all_points = np.vstack(contours)
+        x, y, w, h = cv.boundingRect(all_points)
+        cv.rectangle(cropped_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
         if len(centers)>=2:
             self.frame_PCA(cropped_frame,centers)
         elif len(centers) == 1:
@@ -350,9 +354,11 @@ class MinimalService(Node):
         pc1 = eigenvectors[:, 0]
         pc2 = eigenvectors[:, 1]
 
-        pc1_ang = math.atan2(pc1[1],pc1[0])
-        pc2_ang = math.atan2(pc2[1],pc2[0])
+        pc1_ang = math.atan2(pc1[1],pc1[0])%(math.pi)
+        pc2_ang = math.atan2(pc2[1],pc2[0])%(math.pi)
         print("angles: " + str(pc1_ang) + ", " + str(pc2_ang))
+
+        
         ##### plotting
 
         # Show image with principal axes
