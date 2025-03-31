@@ -43,7 +43,7 @@ class BehaviourTree(Node):
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
                                           #children = [create_ws, waypoints, explore_samples, explore_unknown]
-                                          children = [create_ws,waypoints]
+                                          children = [create_ws, waypoints, explore_samples, explore_unknown]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -164,39 +164,17 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
         UNIFORMITY_RADIUS = 1.30  # distanza minima tra candidati (Poisson disk)
         NUM_UNCOVERED_SAMPLES = 100
 
-
-        # # Find 'center' of workspace
-        # x_cords = [point[0] for point in self.ws]
-        # y_cords = [point[1] for point in self.ws]
-        # center = (np.mean(x_cords), np.mean(y_cords))
-        #
-        # for idx, corner in enumerate(self.ws):
-        #     # Sample every corner and add offset to move it towards center
-        #     # if idx == len(self.ws) - 1:
-        #     #     next_corner = self.ws[0]
-        #     # else:
-        #     #     next_corner = self.ws[idx + 1]
-            
-        #     # dx, dy = next_corner[0] - corner[0], next_corner[1] - corner[1] 
-        #     # orthogonal = (dx, -dy) / np.linalg.norm(np.array([dx, -dy])) + (dx/2, dy/2)
-
-        #     # sampled_point = (orthogonal[0] - corner[0], orthogonal[1] - corner[1])
-        #     # self.waypoints.append(tuple(sampled_point))
-
-        #     offset = np.array(center) - np.array(corner) 
-        #     offset /= np.linalg.norm(offset) # Normalise to 1m
-        #     sampled_point = np.array(corner) + offset * 0.5
-        #     self.waypoints.append(tuple(sampled_point))
-
         candidates = self.poisson_disk_sample(polygon, radius=UNIFORMITY_RADIUS)
         self.waypoints = self.greedy_visibility_coverage(polygon, candidates, resolution=NUM_UNCOVERED_SAMPLES)
-        self.node.get_logger().info(f"{self.waypoints}")
+        #self.node.get_logger().info(f"{self.waypoints}")
         
         self.plot_workspace()
+        
         # Save waypoints
         self.blackboard.set('waypoints', self.waypoints)
         return pt.common.Status.SUCCESS
     
+
     def poisson_disk_sample(self,polygon, radius, k=30):
         minx, miny, maxx, maxy = polygon.bounds
         cell_size = radius / np.sqrt(2)
@@ -204,8 +182,10 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
         points = []
         active = []
 
+
         def grid_coords(p):
             return int((p.x - minx) / cell_size), int((p.y - miny) / cell_size)
+
 
         def fits(p):
             gx, gy = grid_coords(p)
@@ -241,7 +221,6 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
                     found = True
             if not found:
                 active.pop(idx)
-
         return points
 
     # === 3. Campiona i punti ===
@@ -279,9 +258,8 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
             if not best_point:
                 break
 
-            self.waypoints.append(best_point)
-            self.node.get_logger().info(f"{self.waypoints}")
-            
+            self.waypoints.append((best_point.x, best_point.y))
+            #self.node.get_logger().info(f"{self.waypoints}")
             uncovered = [u for u in uncovered if u not in best_covered]
         return self.waypoints
 
@@ -296,8 +274,8 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
         # way_x, way_y = zip(*self.waypoints) if self.waypoints else ([], [])
 
         if self.waypoints:
-            way_x = [p.x for p in self.waypoints]
-            way_y = [p.y for p in self.waypoints]
+            way_x = [p[0] for p in self.waypoints]
+            way_y = [p[1] for p in self.waypoints]
         else:
             way_x, way_y = [], []
 
