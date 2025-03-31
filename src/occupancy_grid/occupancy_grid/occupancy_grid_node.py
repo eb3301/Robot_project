@@ -34,7 +34,7 @@ class OccupancyGridPublisher(Node):
 
         # Initialize map
         # Adjust grid size based on workspace dimensions
-        self.workspace_coordinates = self.read_workspace_coordinates("/home/group1/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
+        self.workspace_coordinates = self.read_workspace_coordinates("/home/robot/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
         self.grid_size_x, self.grid_size_y, self.origin_x, self.origin_y = self.calculate_grid_size_and_origin(self.workspace_coordinates)
 
         # Initialize map data
@@ -90,7 +90,12 @@ class OccupancyGridPublisher(Node):
 
         # Optionally, add buffer around the workspace (inflation)
         # You can apply inflation here if needed to create a buffer zone around the workspace
-
+        # Add some custom patterns or corridors
+        for i in range(30, 40):
+          grid[i, 50:51] = 100  # Add vertical wall
+        # for i in range(20, 50):
+        #   grid[70:80, i] = 100  # Add horizontal wall
+        grid[60, 40] = 100
         return grid.flatten().tolist()
 
     def lidar_callback(self, msg):
@@ -204,7 +209,7 @@ class OccupancyGridPublisher(Node):
         marker.color.g = 0.0
         marker.color.b = 1.0
 
-        file_path = "/home/group1/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
+        file_path = "/home/robot/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
         coordinates = self.read_workspace_coordinates(file_path)
 
         first_point = None
