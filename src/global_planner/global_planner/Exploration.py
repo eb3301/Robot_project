@@ -5,6 +5,7 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 import py_trees as pt
 import py_trees_ros as ptr
@@ -20,6 +21,10 @@ from std_srvs.srv import SetBool
 from detect_interfaces.srv import DetectObjects
 from robp_interfaces.msg import Encoders
 import math
+
+from shapely.geometry import Polygon, LineString
+from shapely.geometry import Point as shapelyPoint
+import random
 
 class BehaviourTree(Node):
     def __init__(self):
@@ -39,7 +44,7 @@ class BehaviourTree(Node):
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
                                           #children = [create_ws, waypoints, explore_samples, explore_unknown]
-                                          children = [detection]
+                                          children = [create_ws,waypoints]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -152,35 +157,134 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
             print('No workspace loaded...')
             return pt.common.Status.FAILURE
 
-        # Find 'center' of workspace
-        x_cords = [point[0] for point in self.ws]
-        y_cords = [point[1] for point in self.ws]
-        center = (np.mean(x_cords), np.mean(y_cords))
+        vertices = list(self.ws)
+        if vertices[0] != vertices[-1]:
+            vertices.append(vertices[0])
+        polygon = Polygon(vertices)
+
+        UNIFORMITY_RADIUS = 1.30  # distanza minima tra candidati (Poisson disk)
+        NUM_UNCOVERED_SAMPLES = 100
 
 
-        for idx, corner in enumerate(self.ws):
-            # Sample every corner and add offset to move it towards center
-            # if idx == len(self.ws) - 1:
-            #     next_corner = self.ws[0]
-            # else:
-            #     next_corner = self.ws[idx + 1]
+        # # Find 'center' of workspace
+        # x_cords = [point[0] for point in self.ws]
+        # y_cords = [point[1] for point in self.ws]
+        # center = (np.mean(x_cords), np.mean(y_cords))
+        #
+        # for idx, corner in enumerate(self.ws):
+        #     # Sample every corner and add offset to move it towards center
+        #     # if idx == len(self.ws) - 1:
+        #     #     next_corner = self.ws[0]
+        #     # else:
+        #     #     next_corner = self.ws[idx + 1]
             
-            # dx, dy = next_corner[0] - corner[0], next_corner[1] - corner[1] 
-            # orthogonal = (dx, -dy) / np.linalg.norm(np.array([dx, -dy])) + (dx/2, dy/2)
+        #     # dx, dy = next_corner[0] - corner[0], next_corner[1] - corner[1] 
+        #     # orthogonal = (dx, -dy) / np.linalg.norm(np.array([dx, -dy])) + (dx/2, dy/2)
 
-            # sampled_point = (orthogonal[0] - corner[0], orthogonal[1] - corner[1])
-            # self.waypoints.append(tuple(sampled_point))
+        #     # sampled_point = (orthogonal[0] - corner[0], orthogonal[1] - corner[1])
+        #     # self.waypoints.append(tuple(sampled_point))
 
-            offset = np.array(center) - np.array(corner) 
-            offset /= np.linalg.norm(offset) # Normalise to 1m
-            sampled_point = np.array(corner) + offset * 0.5
-            self.waypoints.append(tuple(sampled_point))
+        #     offset = np.array(center) - np.array(corner) 
+        #     offset /= np.linalg.norm(offset) # Normalise to 1m
+        #     sampled_point = np.array(corner) + offset * 0.5
+        #     self.waypoints.append(tuple(sampled_point))
 
+        candidates = self.poisson_disk_sample(polygon, radius=UNIFORMITY_RADIUS)
+        self.waypoints = self.greedy_visibility_coverage(polygon, candidates, resolution=NUM_UNCOVERED_SAMPLES)
+        self.node.get_logger().info(f"{self.waypoints}")
+        
         self.plot_workspace()
         # Save waypoints
         self.blackboard.set('waypoints', self.waypoints)
         return pt.common.Status.SUCCESS
     
+    def poisson_disk_sample(self,polygon, radius, k=30):
+        minx, miny, maxx, maxy = polygon.bounds
+        cell_size = radius / np.sqrt(2)
+        grid = {}
+        points = []
+        active = []
+
+        def grid_coords(p):
+            return int((p.x - minx) / cell_size), int((p.y - miny) / cell_size)
+
+        def fits(p):
+            gx, gy = grid_coords(p)
+            for dx in [-1, 0, 1]:
+                for dy in [-1, 0, 1]:
+                    neighbor = grid.get((gx + dx, gy + dy))
+                    if neighbor and p.distance(neighbor) < radius:
+                        return False
+            return polygon.contains(p)
+
+        # first casual point
+        p0 = None
+        while not p0 or not polygon.contains(p0):
+            p0 = shapelyPoint(random.uniform(minx, maxx), random.uniform(miny, maxy))
+        points.append(p0)
+        active.append(p0)
+        grid[grid_coords(p0)] = p0
+
+        while active:
+            idx = random.randint(0, len(active) - 1)
+            center = active[idx]
+            found = False
+            for _ in range(k):
+                angle = random.uniform(0, 2 * np.pi)
+                r = random.uniform(radius, 2 * radius)
+                px = center.x + r * np.cos(angle)
+                py = center.y + r * np.sin(angle)
+                p = shapelyPoint(px, py)
+                if fits(p):
+                    points.append(p)
+                    active.append(p)
+                    grid[grid_coords(p)] = p
+                    found = True
+            if not found:
+                active.pop(idx)
+
+        return points
+
+    # === 3. Campiona i punti ===
+    def sample_points_within_polygon(self,polygon, num_points):
+        minx, miny, maxx, maxy = polygon.bounds
+        points = []
+        while len(points) < num_points:
+            p = shapelyPoint(random.uniform(minx, maxx), random.uniform(miny, maxy))
+            if polygon.contains(p):
+                points.append(p)
+        return points
+
+    # === 4. Algoritmo greedy con raggio limitato ===
+    def greedy_visibility_coverage(self,polygon, candidates, resolution=600):
+        uncovered = self.sample_points_within_polygon(polygon, resolution)
+        self.waypoints = []
+        MAX_RANGE = 1.30  
+
+        while uncovered:
+            best_point = None
+            best_covered = []
+
+            for p in candidates:
+                visible = []
+                for u in uncovered:
+                    if p.distance(u) <= MAX_RANGE:
+                        line = LineString([p, u])
+                        if line.within(polygon):
+                            visible.append(u)
+
+                if len(visible) > len(best_covered):
+                    best_covered = visible
+                    best_point = p
+
+            if not best_point:
+                break
+
+            self.waypoints.append(best_point)
+            self.node.get_logger().info(f"{self.waypoints}")
+            
+            uncovered = [u for u in uncovered if u not in best_covered]
+        return self.waypoints
 
     def plot_workspace(self):
         '''Plots the workspace boundary and sampled waypoints'''
@@ -190,7 +294,14 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
         
         # Extract coordinates
         x_vals, y_vals = zip(*self.ws + [self.ws[0]])  # Close the shape
-        way_x, way_y = zip(*self.waypoints) if self.waypoints else ([], [])
+        # way_x, way_y = zip(*self.waypoints) if self.waypoints else ([], [])
+
+        if self.waypoints:
+            way_x = [p.x for p in self.waypoints]
+            way_y = [p.y for p in self.waypoints]
+        else:
+            way_x, way_y = [], []
+
         
         # Plot
         plt.figure(figsize=(6,6))
