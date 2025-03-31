@@ -327,11 +327,13 @@ class MinimalService(Node):
             return [0,0]
         return pos
 
-    def frame_PCA(self, img,points):
+    def frame_PCA(self, img, points):
         # Center the data
         points = np.array(points)
         mean = np.mean(points, axis=0)
         centered = points - mean
+        print("centered: "+str(centered))
+        print("mean: "+str(mean))
 
         # Compute covariance matrix
         cov = np.cov(centered.T)
@@ -348,6 +350,9 @@ class MinimalService(Node):
         pc1 = eigenvectors[:, 0]
         pc2 = eigenvectors[:, 1]
 
+        pc1_ang = math.atan2(pc1[1],pc1[0])
+        pc2_ang = math.atan2(pc2[1],pc2[0])
+        print("angles: " + str(pc1_ang) + ", " + str(pc2_ang))
         ##### plotting
 
         # Show image with principal axes
@@ -359,7 +364,7 @@ class MinimalService(Node):
         plt.quiver(mean[0], mean[1], pc1[0], pc1[1], scale=1, color='red', label='PC1')
         plt.quiver(mean[0], mean[1], pc2[0], pc2[1], scale=1, color='green', label='PC2')
         plt.legend()
-        plt.gca().invert_yaxis()
+       #plt.gca().invert_yaxis()
         plt.title("PCA of Blue Points (NumPy + OpenCV)")
         plt.show()
 
@@ -371,7 +376,7 @@ class MinimalService(Node):
             area = cv.contourArea(cnt)
             print("area, approx: " + str(area) + ", " + str(approx))
 
-            if area > 50:  # filter out noise
+            if area > 5:  # filter out noise
                 if len(approx) > 8:
                     print("Probably a sphere (round shape)")
                     return("sphere")
@@ -494,7 +499,7 @@ class MinimalService(Node):
             self.get_logger().info('moving arm to look')
             msg.data = self.data_sets[1]
             self.publisher.publish(msg)
-            
+            time.sleep(3.0)
             arm_pos = self.get_arm_pos()
             
             #response = self.arm_move_check(arm_pos,self.data_sets[1],response)
@@ -513,7 +518,7 @@ class MinimalService(Node):
             obj_pos = self.cam_forward_kinematics(self.transform_from_robot(self.data_sets[1]))
             obj_pos[0] += float(cam_obj_pos[0])
             obj_pos[1] += float(cam_obj_pos[1]) ## this will return a position x,y which the camera sees, should be transformed to arm_base
-            obj_pos.append(-0.16)
+            obj_pos.append(-0.17)
             print("obj pos: " + str(obj_pos))
             cam_angles, garbage = self.inverse_kinematics(obj_pos)
 
@@ -541,6 +546,7 @@ class MinimalService(Node):
             cam_data_set[6]=1000
             msg.data = cam_data_set
             self.publisher.publish(msg)
+            time.sleep(4.0)
             #await asyncio.sleep(2)
             msg.data = self.data_sets[1]
             self.publisher.publish(msg)
