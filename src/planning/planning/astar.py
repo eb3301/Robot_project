@@ -21,6 +21,7 @@ class Planner(Node):
 
   def __init__(self):
     super().__init__('Initialize_Planner')
+    self.get_logger().info(f"Starting planner")
 
     qos = QoSProfile(
             reliability = QoSReliabilityPolicy.RELIABLE, # Does not lose msg
@@ -50,7 +51,7 @@ class Planner(Node):
     self.theta0 = 0
 
     # Target coordinates
-    self.goal_received = False
+    self.goal_received = True
     self.xt = 0.5
     self.yt = 0.6
 
@@ -163,6 +164,9 @@ class Planner(Node):
     if msg.pose.position.z == -1:
       self.goal_received = False
 
+
+
+
 class Plan_node(object):
   def __init__(self, x, y, theta, parent = None):
     self.x = x
@@ -176,7 +180,6 @@ class Plan_node(object):
     self.c = 0  # Cost of kernel
     self.feasible = True
 
-
 def reached_target(x, y, xt, yt, resolution):
   if np.sqrt(((x - xt)**2 + (y - yt)**2)) <= resolution/2: # change distance to target np.abs(x - xt) < 0.01 and np.abs(y - yt) < 0.01:
     return True
@@ -188,22 +191,11 @@ def find_cell_index(x, y, resolution, origin):
   y_index = int((y - origin[1]) // resolution)  # Integer division to get the grid index
   return (y_index, x_index)
 
-def start_center(x, y, resolution): # this migh need to be changes?
+def start_center(x, y, resolution):
   # Adjust the coordinates to the center of the grid cell
-  x_center = x + (0.5 * resolution)
-  y_center = y + (0.5 * resolution)
+  x_center = (x - x % resolution) + (0.5 * resolution)
+  y_center = (y - y % resolution) + (0.5 * resolution)
   return x_center, y_center
-
-# def start_center(x, y, resolution, origin):
-#   # Find the index of the cell
-#   x_index, y_index = find_cell_index(x, y, resolution, origin)
-  
-#   # Adjust to the center of the grid cell
-#   x_center = (x_index + 0.5) * resolution + origin[0]
-#   y_center = (y_index + 0.5) * resolution + origin[1]
-  
-#   return x_center, y_center
-
 
 def step(x, y, theta, phi, resolution):
   # Take a one cell step
@@ -216,7 +208,6 @@ def step(x, y, theta, phi, resolution):
   yn = y + dy
   thetan = (dtheta + theta) % (2 * np.pi)
   return xn, yn, thetan
-
 
 def step_collided_with_obsticale(obsticales, x, y, resolution, origin):
   x_index, y_index = find_cell_index(x, y, resolution, origin) # Maybe need to be center?
@@ -454,7 +445,7 @@ def main():
     try:
         rclpy.spin(node)
         time.sleep(3)
-    except KeyboardInterrupt:
+    except rclpy.exceptions.ROSInterruptException:
         pass
     rclpy.shutdown()
 

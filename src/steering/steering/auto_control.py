@@ -18,6 +18,7 @@ class AutoControll(Node):
 
     def __init__(self):
         super().__init__('Auto_Controller')
+        self.get_logger().info(f"Starting planner")
 
         qos = QoSProfile(
             reliability = QoSReliabilityPolicy.RELIABLE, # Does not lose msg
@@ -88,14 +89,16 @@ class AutoControll(Node):
             # Calculate the distance to the final point
             final_point = self.pose_list[-1]
             distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(final_point))
+            # print(f'Final point is: {final_point}')
 
             # Calculate the lookahead distance
-            lookahead_distance = 2*np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
+            resolution = np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
+            lookahead_distance = 2*resolution
 
             # Convert path to a NumPy array
             self.pose_list = np.array(self.pose_list)
 
-            while distance_to_goal > 2*lookahead_distance: # Change later
+            while distance_to_goal > 2*resolution: # Change later
                 start_time = time.time()  # Record the start time
                 
                 # Calcluate distance to goal, maybe move back?
@@ -106,7 +109,7 @@ class AutoControll(Node):
                 
                 # Publish the twist message
                 self.cmd_vel_pub.publish(twist_msg)
-                self.get_logger().info(f"Published velocity: linear = {twist_msg.linear.x}, angular = {twist_msg.angular.z}")
+                # self.get_logger().info(f"Published velocity: linear = {twist_msg.linear.x}, angular = {twist_msg.angular.z}")
                 
                 # Wait for 0.2 seconds to ensure the loop runs at 5 Hz
                 elapsed_time = time.time() - start_time
@@ -145,6 +148,9 @@ def pure_pursuit_velocity(current_position, current_heading, path, lookahead_dis
 
     # Get the target point
     target_point = path[target_point_idx]
+    print(f'Pose is: {current_position}')
+    print(f'Target is: {target_point}')
+    print(f'Index is: {target_point_idx}')
 
     # Calculate the steering angle to the target point
     steering_angle = calculate_steering_angle(current_position, current_heading, target_point)
@@ -192,7 +198,7 @@ def main():
     # _ = input("Press enter to start moving!")
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except rclpy.exceptions.ROSInterruptException:
         pass
     rclpy.shutdown()
 
