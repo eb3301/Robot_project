@@ -234,10 +234,11 @@ class MinimalService(Node):
         bridge = CvBridge()
         #Convert ROS Image message to OpenCV format
         frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
+        cv.imwrite('sphere.jpg', frame)
         N = 50 # pixels to remove from bottom
         #cropped_frame = frame[:frame.shape[0] - N, :]
         cropped_frame = frame[90:340, 160:480]   
-        # image_path = os.getcwd() + "/src/arm_service/arm_service/cube.jpg"
+        #image_path = os.getcwd() + "/src/arm_service/arm_service/sphere.jpg"
         # print("Current Working Directory:", os.getcwd())
         print(cropped_frame.shape)
 
@@ -539,7 +540,7 @@ class MinimalService(Node):
             #     return response
             # else:
             #     self.get_logger().info(response.message)
-
+            #cv.imwrite("sphere.jpg")
             cam_obj_pos = self.get_obj_pos()
             print("cam obj pos :" + str(cam_obj_pos))
             if cam_obj_pos == []:
@@ -571,7 +572,7 @@ class MinimalService(Node):
             #await asyncio.sleep(2)
 
             self.safepublish(cam_data_set)
-            time.sleep(2.0)
+            time.sleep(4.0)
             #await asyncio.sleep(2)
             print("sleep")
             cam_data_set[0]=11000

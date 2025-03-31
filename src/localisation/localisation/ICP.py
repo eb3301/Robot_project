@@ -272,13 +272,13 @@ class ICPNode(Node):
         if result.fitness > 0.3 and result.inlier_rmse < 0.04 and dist < 0.2: 
             self.transform = result.transformation
 
-            self.get_logger().info(f"ICP transform: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
+            #self.get_logger().info(f"ICP transform: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
 
             end_time = time.time()
-            self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
+            #self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
         else: 
-            self.get_logger().info(f"Ignoring ICP result \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} \n Distance moved: {dist}")
-
+            #self.get_logger().info(f"Ignoring ICP result \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} \n Distance moved: {dist}")
+            pass
     
     def publish_pose(self, pose_msg):
             stamp = pose_msg.header.stamp
