@@ -34,7 +34,7 @@ class MinimalService(Node):
         self.srv = self.create_service(Arm, 'arm', self.arm_callback)
         self.publisher = self.create_publisher(Int16MultiArray, 'multi_servo_cmd_sub', 10)
         self.imagesubscriber = self.create_subscription(Image, "/arm_camera/image_raw", self.image_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)) ## frame id is arm_camera_link
-        self.servo_sub = self.create_subscription(Int16MultiArray,'topicname',self.arm_pos_callback)
+        self.servo_sub = self.create_subscription(Int16MultiArray,'topicname',self.arm_pos_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
         self.data_sets = [[11000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
                     [3000,12000,3000,19000,10500,12000,2000,2000,2000,2000,2000,2000],
@@ -311,6 +311,7 @@ class MinimalService(Node):
             cx = int(Mc['m10'] / Mc['m00'])
             cy = int(Mc['m01'] / Mc['m00'])
         centers = [cx,cy]
+
         # for cnt in contours:
         #     M = cv.moments(cnt)
         #     if M['m00'] != 0:
@@ -331,7 +332,7 @@ class MinimalService(Node):
         #     for pt in cnt:
         #         x, y = pt[0]
         #         cv.circle(cropped_frame, (x, y), 1, (0, 255, 0), -1)
-        cv.drawContours(cropped_frame,[c], -1, (0,255,0),3)
+        cv.drawContours(cropped_frame,contours, -1, (0,255,0),3)
         cv.circle(cropped_frame, (cx, cy), 5, (0, 0, 255), -1)
 
         # merged_centers = self.merge_centers(centers, distance_threshold=110)
@@ -530,13 +531,14 @@ class MinimalService(Node):
             self.get_logger().info('moving arm to look')
             msg.data = self.data_sets[1]
             self.publisher.publish(msg)
+            time.sleep(2.0)
             arm_pos = self.get_arm_pos()
-
-            response = self.arm_move_check(arm_pos,self.data_sets[1],response)
-            if not response.success:
-                return response
-            else:
-                self.get_logger().info(response.message)
+            
+            #response = self.arm_move_check(arm_pos,self.data_sets[1],response)
+            # if not response.success:
+            #     return response
+            # else:
+            #     self.get_logger().info(response.message)
 
             cam_obj_pos = self.get_obj_pos()
             print("cam obj pos :" + str(cam_obj_pos))
@@ -566,17 +568,17 @@ class MinimalService(Node):
             cam_data_set[0] = 2000
             self.get_logger().info("computed cam sequence is " + str(cam_data_set))
             
-            await asyncio.sleep(2)
+            #await asyncio.sleep(2)
 
             self.safepublish(cam_data_set)
-            await asyncio.sleep(2)
+            #await asyncio.sleep(2)
             print("sleep")
             cam_data_set[0]=11000
             cam_data_set[6]=1000
             msg.data = cam_data_set
             self.publisher.publish(msg)
-            await asyncio.sleep(2)
-            msg.data = self.data_sets[0]
+            #await asyncio.sleep(2)
+            msg.data = self.data_sets[1]
             self.publisher.publish(msg)
 
         
