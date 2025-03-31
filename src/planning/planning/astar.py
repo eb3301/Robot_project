@@ -12,7 +12,7 @@ import tf2_geometry_msgs
 from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
-from tf_transformations import quaternion_from_euler
+# from tf_transformations import quaternion_from_euler
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm
@@ -50,37 +50,39 @@ class Planner(Node):
     self.theta0 = 0
 
     # Target coordinates
+    self.goal_received = False
     self.xt = 0.5
     self.yt = 0.6
-    # self.origin = (0,0)
 
     # Path
     self.planned = False
     self.path = []
 
   def map_callback(self, msg : OccupancyGrid):
-    # Get data from message
-    map_data = msg.data
-    map_data = np.reshape(map_data, (msg.info.height, msg.info.width))
-    resolution = msg.info.resolution
-    origin_x = msg.info.origin.position.x
-    origin_y = msg.info.origin.position.y
-    self.origin = (origin_x, origin_y)
-    time = msg.header.stamp
+    if self.goal_received:
+      # Get data from message
+      map_data = msg.data
+      map_data = np.reshape(map_data, (msg.info.height, msg.info.width))
+      resolution = msg.info.resolution
+      origin_x = msg.info.origin.position.x
+      origin_y = msg.info.origin.position.y
+      self.origin = (origin_x, origin_y)
+      time = msg.header.stamp
 
-    if self.planned: # Logic, maybe move out?
-      for i in range(len(self.path)):
-        x_index = int((self.path[i][0] - origin_x) // resolution)  
-        y_index = int((self.path[i][1] - origin_y) // resolution)
-        if map_data[y_index][x_index] == 100:
-          self.planned = False
-          self.get_logger().info(f"Path obstructed at ({x_index}, {y_index})")
-          break
-      self.get_logger().info(f"Test good")
-    if not self.planned:
-      self.get_logger().info("Planning new path")
-      self.plan_path(map_data, resolution, time)
-      self.planned = True
+      # Logic for replan
+      if self.planned: 
+        for i in range(len(self.path)):
+          x_index = int((self.path[i][0] - origin_x) // resolution)  
+          y_index = int((self.path[i][1] - origin_y) // resolution)
+          if map_data[y_index][x_index] == 100:
+            self.planned = False
+            self.get_logger().info(f"Path obstructed at ({x_index}, {y_index})")
+            break
+        self.get_logger().info(f"Path is good")
+      if not self.planned:
+        self.get_logger().info("Planning new path")
+        self.plan_path(map_data, resolution, time)
+        self.planned = True
 
 
   def plan_path(self, map_data, resolution, time):
@@ -102,23 +104,18 @@ class Planner(Node):
         pose_msg.pose.position.x = pose[0]
         pose_msg.pose.position.y = pose[1]
         # Convert the orientation from phi (heading) to a quaternion
-        quaternion = quaternion_from_euler(0, 0, 0) #pose[2])  # Use phi as the yaw angle
-        pose_msg.pose.orientation.x = quaternion[0]
-        pose_msg.pose.orientation.y = quaternion[1]
-        pose_msg.pose.orientation.z = quaternion[2]
-        pose_msg.pose.orientation.w = quaternion[3]
+        # quaternion = quaternion_from_euler(0, 0, 0) #pose[2])  # Use phi as the yaw angle
+        # pose_msg.pose.orientation.x = quaternion[0]
+        # pose_msg.pose.orientation.y = quaternion[1]
+        # pose_msg.pose.orientation.z = quaternion[2]
+        # pose_msg.pose.orientation.w = quaternion[3]
         
         message.poses.append(pose_msg)
       self.get_logger().info("Publishing path")
       self.path_pub.publish(message)
     else: # If no path exist, publish empty path
       self.get_logger().info('Path empty')
-        # pose_msg = PoseStamped()
-        # pose_msg.header.stamp = message.header.stamp
-        # pose_msg.header.frame_id = message.header.frame_id
-        # message.poses.append(pose_msg)
 
-    
 
   def pose_callback(self, msg : PoseWithCovarianceStamped):
     # Init transform
@@ -153,7 +150,11 @@ class Planner(Node):
     # Get position of goal
     self.xt = msg.pose.position.x
     self.yt = msg.pose.position.y
-  
+    self.goal_received = True
+
+    # Stop planning
+    if msg.pose.position.z == -1:
+      self.goal_received = False
 
 class Plan_node(object):
   def __init__(self, x, y, theta, parent = None):
@@ -325,7 +326,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
 
     # Get new nodes
     get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions, origin)
-  print('No path')
+  
 
 def main2():
   grid = np.zeros((100, 100), dtype=int)

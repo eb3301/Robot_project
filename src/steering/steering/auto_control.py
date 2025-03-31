@@ -10,6 +10,7 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
 from tf_transformations import euler_from_quaternion
 from nav_msgs.msg import Path
+import tf2_ros
 from tf2_ros import TransformException
 import tf2_geometry_msgs
 
@@ -33,8 +34,12 @@ class AutoControll(Node):
         # Subscribe to goal pose
         self.path_sub = self.create_subscription(Path, "/planned_path", self.path_callback, qos) # latched topic
 
+        # TF2
+        self.buffer = tf2_ros.Buffer()
+        self.listener = tf2_ros.TransformListener(self.buffer, self, spin_thread = True)
+
         # Preallocation
-        self.current_position = (0.0)
+        self.current_position = (0, 0)
         self.current_heading = 0
         self.pose_list = []
 
@@ -43,13 +48,13 @@ class AutoControll(Node):
         # Init transform
         to_frame_rel = 'map'
         from_frame_rel = 'odom'
-        time = rclpy.time.Time().from_msg(msg.header.stamp) # Maybe change?
+        msg_time = rclpy.time.Time().from_msg(msg.header.stamp) # Maybe change?
 
         # Wait for the transform asynchronously
         tf_future = self.buffer.wait_for_transform_async(
         target_frame=to_frame_rel,
         source_frame=from_frame_rel,
-        time=time
+        time=msg_time
         )
         rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
 
@@ -57,13 +62,13 @@ class AutoControll(Node):
         try:
             t = self.buffer.lookup_transform(to_frame_rel,
                                             from_frame_rel,
-                                            time)
+                                            msg_time)
             # Do the transform
             map_pose = tf2_geometry_msgs.do_transform_pose(msg.pose.pose, t)
 
             # Get position of robot
-            x = msg.pose.pose.position.x
-            y = msg.pose.pose.position.y
+            x = map_pose.position.x
+            y = map_pose.position.y
             self.current_position = (x, y)
             self.current_heading = self.compute_heading(msg.pose.pose.orientation)
         except TransformException:
@@ -72,6 +77,7 @@ class AutoControll(Node):
 
     # Updates path, extract position (x, y) and add to list
     def path_callback(self, msg: Path):
+        self.get_logger().info('Path received')
         self.pose_list = []
         
         for pose_msg in msg.poses:
@@ -84,6 +90,9 @@ class AutoControll(Node):
 
         # Calculate the lookahead distance
         lookahead_distance = 2*np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
+
+        # Convert path to a NumPy array
+        self.pose_list = np.array(self.pose_list)
 
         while distance_to_goal < 2*lookahead_distance: # Change later
             start_time = time.time()  # Record the start time
@@ -117,9 +126,6 @@ class AutoControll(Node):
 
         
 def pure_pursuit_velocity(current_position, current_heading, path, lookahead_distance):
-    # Convert path to a NumPy array
-    path = np.array(path) # move out
-
     # Calculate the vector from the robot to each point in the path
     dx = path[:, 0] - current_position[0]
     dy = path[:, 1] - current_position[1]
