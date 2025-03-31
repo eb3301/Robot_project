@@ -1,1 +1,1 @@
-/home/group1/dd2419_ws/src/robp_robot/sllidar_ros2/launch/view_sllidar_a3_launch.py
+/home/robot/dd2419_ws/src/robp_robot/sllidar_ros2/launch/view_sllidar_a3_launch.py
