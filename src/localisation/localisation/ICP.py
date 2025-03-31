@@ -7,7 +7,7 @@ import rclpy.time
 import tf2_ros
 from tf2_ros import TransformException
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
-import tf2_geometry_msgs
+import tf2_geometry_msgs 
 
 from sensor_msgs.msg import PointCloud2, LaserScan
 import sensor_msgs_py.point_cloud2 as pc2
@@ -15,6 +15,7 @@ from laser_geometry import LaserProjection
 from robp_interfaces.msg import Encoders
 from nav_msgs.msg import Path
 from std_msgs.msg import String
+from tf2_geometry_msgs import Pose
 
 from tf_transformations import euler_from_quaternion, quaternion_from_matrix
 from geometry_msgs.msg import TransformStamped, PoseStamped, PoseWithCovarianceStamped
@@ -92,7 +93,15 @@ class ICPNode(Node):
         self.stamp = None
         self.rotating = False
         
-        self.pose = None
+        self.pose = Pose()
+        self.pose.position.x = 0.0
+        self.pose.position.y = 0.0
+        self.pose.position.z = 0.0
+        self.pose.orientation.x = 0.0
+        self.pose.orientation.y = 0.0
+        self.pose.orientation.z = 0.0
+        self.pose.orientation.w = 1.0 
+
         self.path = Path()
 
         self.n_ref_clouds = 0
@@ -162,7 +171,7 @@ class ICPNode(Node):
             self.pub_ref = False
 
         # Create reference pointcloud for ICP
-        if self.ref_counter <= 5:
+        if self.ref_counter <= 1:
             self.accumulated_scans.append(points)
             self.ref_counter += 1
             self.ref_cloud_pub.publish(cloud_out)
@@ -176,7 +185,7 @@ class ICPNode(Node):
                 self.get_logger().info(f"Reference cloud accumulated in {ref_time} seconds")
                 
         else:
-            if self.counter % 5 == 0:
+            if self.counter % 2 == 0:
                 self.counter += 1
                 if not self.rotating:
                     self.lidar_pub.publish(cloud_out)
@@ -217,25 +226,28 @@ class ICPNode(Node):
             return
         start_time = time.time()
 
-        # Determine which pointcloud to use
+        # Determine which point cloud to use
         if len(self.target_pcd_list) == 1:
             target_pcd = self.target_pcd_list[0][0]
-        else: 
+        else:
             curr_pos = np.array([self.pose.position.x, self.pose.position.y])
-            cloud_pos = np.array([self.target_pcd_list[1][1].position.x, self.target_pcd_list[1][1].position.y])
-            dist_cloud1 = np.linalg.norm(curr_pos) # Assumes cloud 1 was collected in origo
-            dist_cloud2 = np.linalg.norm(curr_pos - cloud_pos)
-            self.get_logger().info(f'First: {dist_cloud1}, second: {dist_cloud2}')
-            if dist_cloud1 <= dist_cloud2:
-                self.get_logger().info('Using first reference cloud')
-                target_pcd = self.target_pcd_list[0][0]
-            else:
-                self.get_logger().info('Using second reference cloud')
-                target_pcd = self.target_pcd_list[1][0]                
+
+            # Compute distances to all clouds
+            distances = []
+            for i, (_, cloud_pose) in enumerate(self.target_pcd_list):  
+                cloud_pos = np.array([cloud_pose.position.x, cloud_pose.position.y])
+                dist = np.linalg.norm(curr_pos - cloud_pos)
+                distances.append((dist, i))
+
+            # Find the closest cloud
+            closest_index = min(distances, key=lambda x: x[0])[1]
+            self.get_logger().info(f'Using reference cloud {closest_index} at distance {distances[closest_index][0]}')
+
+            target_pcd = self.target_pcd_list[closest_index][0]             
 
 
         # Compute normals for Point-to-Plane
-        radius = 0.1 # max range for neighbour search
+        radius = 0.15 # max range for neighbour search
         max_nn = 10 # max amount of neighbours
 
         source_pcd.estimate_normals(search_param = o3d.geometry.KDTreeSearchParamHybrid(radius, max_nn))  
@@ -257,16 +269,16 @@ class ICPNode(Node):
 
         translation = result.transformation[:3, 3]
         dist = np.linalg.norm(translation)
-        if result.fitness > 0.3 and result.inlier_rmse < 0.035 and dist < 0.4: 
+        if result.fitness > 0.3 and result.inlier_rmse < 0.04 and dist < 0.2: 
             self.transform = result.transformation
 
-            self.get_logger().info(f"ICP transform: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
+            #self.get_logger().info(f"ICP transform: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
 
             end_time = time.time()
-            self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
+            #self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
         else: 
-            self.get_logger().info(f"Ignoring ICP result, fitness: {result.fitness}, Inlier rmse: {result.inlier_rmse}")
-
+            #self.get_logger().info(f"Ignoring ICP result \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} \n Distance moved: {dist}")
+            pass
     
     def publish_pose(self, pose_msg):
             stamp = pose_msg.header.stamp
