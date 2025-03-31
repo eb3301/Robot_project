@@ -8,6 +8,8 @@ from visualization_msgs.msg import Marker, MarkerArray
 from geometry_msgs.msg import Point
 from detect_interfaces.srv import DetectObjects
 from std_srvs.srv import SetBool, Trigger
+from robp_interfaces.msg import Encoders
+import math
 
 
 
@@ -23,12 +25,9 @@ class Detection(Node):
         self.srv = self.create_service(DetectObjects, 'detect_objects', self.detect_objects_callback)
 
         # Subscriber to the point cloud topic
-        self._sub = self.create_subscription(
-            PointCloud2,
-            '/camera/camera/depth/color/points',
-            self.cloud_callback,
-            10
-        )
+        self._sub = self.create_subscription(PointCloud2, '/camera/camera/depth/color/points', self.cloud_callback, 10)
+        # Subscriber to Encoder topic
+        self.create_subscription(Encoders, '/motor/encoders', self.encoder_callback, 10)
 
         self.latest_cloud = None
         self.ObjectList = []  # Stores detected objects
@@ -43,6 +42,46 @@ class Detection(Node):
 
 
         self.get_logger().info("Node started and service ready")
+
+    def encoder_callback(self, msg: Encoders):
+        """Takes encoder readings and updates the odometry.
+
+        This function is called every time the encoders are updated (i.e., when a message is published on the '/motor/encoders' topic).
+
+        Your task is to update the odometry based on the encoder data in 'msg'. You are allowed to add/change things outside this function.
+
+        Keyword arguments:
+        msg -- An encoders ROS message. To see more information about it 
+        run 'ros2 interface show robp_interfaces/msg/Encoders' in a terminal.
+        """
+
+        # The kinematic parameters for the differential configuration
+        dt = 50 / 1000
+        ticks_per_rev = 48 * 64
+        wheel_radius = 0.04915 # 0.04921
+        base = 0.31 # 0.30
+
+        # Ticks since last message
+        delta_ticks_left = msg.delta_encoder_left
+        delta_ticks_right = msg.delta_encoder_right
+
+        K = 1/ticks_per_rev * 2*math.pi
+
+        v = wheel_radius/2 * (K*delta_ticks_right + K*delta_ticks_left) 
+        w = wheel_radius/base * (K*delta_ticks_right - K*delta_ticks_left)
+
+        # Threshold to avoid numerical errors
+        rot_threshold = 0.005
+        vel_threshold = 1
+
+        if abs(w) > rot_threshold or abs(v) > vel_threshold: 
+            if self.active:
+                self.get_logger().info("Rotating robot: stop detection")
+                self.active = False
+                self.get_logger().info(f"omega: {w}")
+        elif not self.active:
+                self.get_logger().info("Robot still or in linear motion: start detection.")
+                self.active = True
 
     def detect_objects_callback(self, request, response):
         """Service callback that returns the detected objects and their positions."""

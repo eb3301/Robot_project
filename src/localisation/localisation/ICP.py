@@ -96,7 +96,6 @@ class ICPNode(Node):
         self.path = Path()
 
         self.n_ref_clouds = 0
-
         self.get_logger().info("Initialised ICP node...")
         
 
@@ -118,6 +117,7 @@ class ICPNode(Node):
             self.rotating = True
         else:
             self.rotating = False
+
 
     def scan_callback(self, msg: LaserScan):
         self.stamp = msg.header.stamp
@@ -176,7 +176,7 @@ class ICPNode(Node):
                 self.get_logger().info(f"Reference cloud accumulated in {ref_time} seconds")
                 
         else:
-            if self.counter % 10 == 0:
+            if self.counter % 5 == 0:
                 self.counter += 1
                 if not self.rotating:
                     self.lidar_pub.publish(cloud_out)
@@ -257,7 +257,7 @@ class ICPNode(Node):
 
         translation = result.transformation[:3, 3]
         dist = np.linalg.norm(translation)
-        if result.fitness > 0.3 and result.inlier_rmse < 0.035: # and dist < 1: 
+        if result.fitness > 0.3 and result.inlier_rmse < 0.035 and dist < 0.4: 
             self.transform = result.transformation
 
             self.get_logger().info(f"ICP transform: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
