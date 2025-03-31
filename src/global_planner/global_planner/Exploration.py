@@ -39,7 +39,6 @@ class BehaviourTree(Node):
         waypoints = Sample_Waypoints(self)
         explore_samples = ExploreSamples(self)
         explore_unknown = ExploreUknownSpace((self)) 
-        detection = Detection(self)
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
@@ -359,6 +358,7 @@ class ExploreSamples(pt.behaviour.Behaviour):
         if len(self.waypoints) == 0:
             print("All waypoints have been visited - Stopping detection client")
             self.call_set_bool(self.stop_client, True)
+            self.pub_goal_marker(stop = True)
             return pt.common.Status.SUCCESS
 
         # Pick out target
@@ -382,7 +382,11 @@ class ExploreSamples(pt.behaviour.Behaviour):
                 print('Arrived at target!')
                 self.target = None        
 
-    def pub_goal_marker(self):
+    def pub_goal_marker(self, stop = False):
+        if stop is True:
+            z = -1.0
+        else:
+            z = 0.0
         marker = Marker()
         marker.header = Header()
         marker.header.stamp = self.node.get_clock().now().to_msg()
@@ -393,7 +397,7 @@ class ExploreSamples(pt.behaviour.Behaviour):
         marker.action = Marker.ADD
         marker.pose.position.x = self.target[0]
         marker.pose.position.y = self.target[1]
-        marker.pose.position.z = 0.0
+        marker.pose.position.z = z
         marker.pose.orientation.x = 0.0
         marker.pose.orientation.y = 0.0
         marker.pose.orientation.z = 0.0
@@ -437,6 +441,8 @@ class ExploreUknownSpace(pt.behaviour.Behaviour):
     def update(self):
         # Check if it is first time running 
         if self.status == pt.common.Status.INVALID:
+
+            # Initialise sub/pub
             qos = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE, 
             durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  
@@ -444,12 +450,23 @@ class ExploreUknownSpace(pt.behaviour.Behaviour):
             self.grid_sub = self.node.create_subscription(OccupancyGrid, '/map', self.grid_callback, 10)
             self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/map_pose', self.pose_callback, 10)
             self.target_pub = self.node.create_publisher(Marker, '/goal_marker', qos)
-            print('Exploring Remaining unknown space')
+
+            # Initialise detection
+            self.start_client = self.node.create_client(SetBool, '/start_detection')
+            self.stop_client = self.node.create_client(SetBool, '/stop_detection')
+            self.detect_client = self.node.create_client(DetectObjects, '/detect_objects')
+            print('Exploring Remaining unknown space -- Starting detection client')
+
+            # Start detection
+            print('Time to explore - Starting detection client')
+            self.call_set_bool(self.start_client, True)
             return pt.common.Status.RUNNING
         
         # Check if everything is explored
         if self.unknown < 0.05: # 5%
-            print("Good job! The entire workspace has been explored :)")
+            print("Good job! The entire workspace has been explored -- Stopping detection client")
+            self.call_set_bool(self.stop_client, True)
+            self.pub_goal_marker(stop = True)
             return pt.common.Status.SUCCESS
 
         # Check if grid as been recieved
@@ -520,7 +537,11 @@ class ExploreUknownSpace(pt.behaviour.Behaviour):
         self.unknown = n_unknown_cells / n_total
 
         
-    def pub_goal_marker(self):
+    def pub_goal_marker(self, stop = False):
+        if stop is True:
+            z = -1.0
+        else:
+            z = 0.0
         marker = Marker()
         marker.header = Header()
         marker.header.stamp = self.node.get_clock().now().to_msg()
@@ -531,7 +552,7 @@ class ExploreUknownSpace(pt.behaviour.Behaviour):
         marker.action = Marker.ADD
         marker.pose.position.x = self.target[0]
         marker.pose.position.y = self.target[1]
-        marker.pose.position.z = 0.0
+        marker.pose.position.z = z
         marker.pose.orientation.x = 0.0
         marker.pose.orientation.y = 0.0
         marker.pose.orientation.z = 0.0
@@ -545,131 +566,6 @@ class ExploreUknownSpace(pt.behaviour.Behaviour):
         marker.color.b = 0.0
         #print('Published goal marker')
         self.target_pub.publish(marker)
-
-
-
-class Detection(pt.behaviour.Behaviour):
-    def __init__(self, node):
-        super().__init__('Detection')
-        self.node = node
-
-        self.angular_velocity = 0.0
-        self.linear_velocity = 0.0
-        self.detection_active = False  
-        self.blackboard = pt.blackboard.Blackboard()
-
-        # Subscribe to encoder
-        self.node.create_subscription(Encoders, '/motor/encoders', self.encoder_callback, 10)
-
-        # Service client
-        self.start_client = self.node.create_client(SetBool, '/start_detection')
-        self.stop_client = self.node.create_client(SetBool, '/stop_detection')
-        self.detect_client = self.node.create_client(DetectObjects, '/detect_objects')
-
-        # Timer
-        self.node.create_timer(1.0, self.timer_callback)
-
-        #self.node.get_logger().info("Start detection")
-
-    def update(self):
-        if self.status == pt.common.Status.INVALID:
-            print("Sending detection request")
-            return pt.common.Status.RUNNING
-
-        rot_threshold = 0.005
-        vel_threshold = 1.0
-
-        if hasattr(self, 'v') and hasattr(self, 'w'):
-            if abs(self.w) > rot_threshold or abs(self.v) > vel_threshold:
-                if self.detection_active:
-                    self.node.get_logger().info("Rotating robot: stop detection")
-                    self.call_set_bool(self.stop_client, True)
-                    self.detection_active = False
-            elif not self.detection_active:
-                self.node.get_logger().info("Robot still or in linear motion: start detection.")
-                self.call_set_bool(self.start_client, True)
-                self.detection_active = True
-
-        # Should I move here also the timer function?
-        # self.call_detect_service()
-
-        return pt.common.Status.RUNNING
-
-    
-    def encoder_callback(self, msg: Encoders):
-        """Takes encoder readings and updates the odometry.
-
-        This function is called every time the encoders are updated (i.e., when a message is published on the '/motor/encoders' topic).
-
-        Your task is to update the odometry based on the encoder data in 'msg'. You are allowed to add/change things outside this function.
-
-        Keyword arguments:
-        msg -- An encoders ROS message. To see more information about it 
-        run 'ros2 interface show robp_interfaces/msg/Encoders' in a terminal.
-        """
-
-        # The kinematic parameters for the differential configuration
-        dt = 50 / 1000
-        ticks_per_rev = 48 * 64
-        wheel_radius = 0.04915 # 0.04921
-        base = 0.31 # 0.30
-
-        # Ticks since last message
-        delta_ticks_left = msg.delta_encoder_left
-        delta_ticks_right = msg.delta_encoder_right
-
-        K = 1/ticks_per_rev * 2*math.pi
-
-        v = wheel_radius/2 * (K*delta_ticks_right + K*delta_ticks_left) 
-        w = wheel_radius/base * (K*delta_ticks_right - K*delta_ticks_left)
-
-        self.v=v
-        self.w=w
-
-        # # Threshold to avoid numerical errors
-        # rot_threshold = 0.005
-        # vel_threshold = 1
-
-        # if abs(w) > rot_threshold or abs(v) > vel_threshold: 
-        #     if self.detection_active:
-        #         self.node.get_logger().info("Rotating robot: stop detection")
-        #         self.call_set_bool(self.stop_client, True)
-        #         self.detection_active = False
-        # elif not self.detection_active:
-        #         self.node.get_logger().info("Robot still or in linear motion: start detection.")
-        #         self.call_set_bool(self.start_client, True)
-        #         self.detection_active = True
-
-    # If timer outside the control on frequency of request is decoupled from ticks of tree
-    def timer_callback(self):
-        # Every ## seconds read list of obj
-        if not self.detect_client.wait_for_service(timeout_sec=0.1):
-            self.node.get_logger().warn("Service detect objects not available")
-            return
-
-        req = DetectObjects.Request()
-        future = self.detect_client.call_async(req)
-        future.add_done_callback(self.handle_detect_response)
-
-    # In case the timer is moved inside the update
-    # def call_detect_service(self):
-    #     if not self.detect_client.wait_for_service(timeout_sec=0.1):
-    #         self.node.get_logger().warn("Service detect objects not available")
-    #         return
-
-    #     req = DetectObjects.Request()
-    #     future = self.detect_client.call_async(req)
-    #     future.add_done_callback(self.handle_detect_response)
-
-
-    def handle_detect_response(self, future):
-        try:    
-            res = future.result()
-            #fself.get_logger().info(f" Oggetti rilevati: {len(res.object_types)}")
-            for i, (obj_type, pos) in enumerate(zip(res.object_types, res.object_positions)):
-                self.node.get_logger().info(f"  #{i+1}: {obj_type} @ ({pos.x:.2f}, {pos.y:.2f}, {pos.z:.2f})")
-        except Exception as e:
-            self.node.get_logger().error(f"Error response detect_objects: {e}")
 
     def call_set_bool(self, client, value: bool):
         if not client.wait_for_service(timeout_sec=1.0):
