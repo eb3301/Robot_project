@@ -279,7 +279,7 @@ class MinimalService(Node):
         if len(centers)>=2:
             self.frame_PCA(cropped_frame,centers)
         elif len(centers) == 1:
-            shape = self.detect_shape(max(filtered_contours, key=cv.contourArea))
+            shape = self.detect_shape(filtered_contours) #max(filtered_contours, key=cv.contourArea))
             print(shape)
         # merged_centers = self.merge_centers(centers, distance_threshold=110)
         # print("merged centers: "+ str(merged_centers))
@@ -320,42 +320,7 @@ class MinimalService(Node):
         # plt.show()
         #return cntr_pos
            
-        '''
-        ##############################
-        src = cropped_frame
-        source_window = "Cube Image"
-        corners_window = 'Corners detected'
-        max_thresh = 255
         
-        # parser = argparse.ArgumentParser(description='Code for Harris corner detector tutorial.')
-        # parser.add_argument('--input', help='Path to input image.', default=frame)
-        # args = parser.parse_args()
-        # src = cv.imread(args.input)
-        if src is None:
-            print('Could not open or find the image:')#, args.input)
-            exit(1)
-        src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)# Create a window and a trackbar
-        #cv.namedWindow(source_window)
-        thresh = 200 # initial threshold
-        #cv.createTrackbar('Threshold: ', source_window, thresh, max_thresh, cornerHarris_demo)
-        #plt.imshow(src)#source_window, src)
-        #cornerHarris_demo(thresh,src_gray)
-        src_gray = src_gray.astype(np.uint8)
-
-        print(f"src_gray shape: {src_gray.shape}, dtype: {src_gray.dtype}")
-
-
-        result = self.cornerHarris_demo( thresh,src_gray)
-        #print(result[0])
-
-        # # Display using matplotlib (safe for headless)
-        # plt.imshow(result, cmap='gray')
-        # plt.title("Corners Detected")
-        # plt.axis('off')
-        # plt.show()
-        # #cv.waitKey()
-
-        ################'''
 
         nothing_detected = True
         if nothing_detected:
@@ -398,33 +363,21 @@ class MinimalService(Node):
         plt.title("PCA of Blue Points (NumPy + OpenCV)")
         plt.show()
 
-    def detect_shape(self,contour):
-        # Get bounding rect
-        x, y, w, h = cv.boundingRect(contour)
-        aspect_ratio = float(w) / h
+    def detect_shape(self,contours):
+        # Find contours
+        for cnt in contours:
+            print("eplsilon:" + str(0.01 * cv.arcLength(cnt, True),))
+            approx = cv.approxPolyDP(cnt, 0.01 * cv.arcLength(cnt, True), True)
+            area = cv.contourArea(cnt)
+            print("area, approx: " + str(area) + ", " + str(approx))
 
-        # Calculate area and perimeter
-        area = cv.contourArea(contour)
-        perimeter = cv.arcLength(contour, True)
-        print(" A,per: "+ str(area) + ", "+ str(perimeter))
-
-        # Avoid division by zero
-        if perimeter == 0:
-            return "unknown"
-
-        # Circularity = 4π * Area / (Perimeter^2)
-        circularity = 4 * math.pi * (area / (perimeter * perimeter))
-
-        # Polygon approximation
-        approx = cv.approxPolyDP(contour, 0.04 * perimeter, True)
-        print("Circularity, approx: "+ str(aspect_ratio) + ", "+ str(approx))
-        # Decide based on features
-        if circularity > 0.8 and len(approx) > 5:
-            return "sphere"
-        elif 0.9 <= aspect_ratio <= 1.1 and len(approx) == 4:
-            return "cube"
-        else:
-            return "unknown"
+            if area > 50:  # filter out noise
+                if len(approx) > 8:
+                    print("Probably a sphere (round shape)")
+                    return("sphere")
+                elif 4 <= len(approx) <=8:
+                    print("Probably a cube (polygonal shape)")
+                    return("cube")
 
     def get_center_from_bounding_rect(self, contour):
         x, y, w, h = cv.boundingRect(contour)
