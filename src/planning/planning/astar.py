@@ -42,7 +42,7 @@ class Planner(Node):
 
     # TF2
     self.buffer = tf2_ros.Buffer()
-    self.listener = tf2_ros.TransformListener(self.tf_buffer, self, spin_thread = True)
+    self.listener = tf2_ros.TransformListener(self.buffer, self, spin_thread = True)
 
     # Robot pose coordnates
     self.x0 = 0.0
