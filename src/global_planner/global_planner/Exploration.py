@@ -168,7 +168,7 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
         self.waypoints = self.greedy_visibility_coverage(polygon, candidates, resolution=NUM_UNCOVERED_SAMPLES)
         #self.node.get_logger().info(f"{self.waypoints}")
         
-        self.plot_workspace()
+        #self.plot_workspace()
         
         # Save waypoints
         self.blackboard.set('waypoints', self.waypoints)
@@ -356,7 +356,7 @@ class ExploreSamples(pt.behaviour.Behaviour):
             dx, dy = np.abs(self.target[0] - x), np.abs(self.target[1] - y)
             dist = np.linalg.norm(np.array([dx, dy]))
 
-            if dist < 0.1:
+            if dist < 0.3:
                 print('Arrived at target!')
                 self.target = None        
 

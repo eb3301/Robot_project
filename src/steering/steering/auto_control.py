@@ -94,7 +94,7 @@ class AutoControll(Node):
         # Convert path to a NumPy array
         self.pose_list = np.array(self.pose_list)
 
-        while distance_to_goal < 2*lookahead_distance: # Change later
+        while distance_to_goal > 2*lookahead_distance: # Change later
             start_time = time.time()  # Record the start time
             
             # Calcluate distance to goal, maybe move?

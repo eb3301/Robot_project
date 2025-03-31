@@ -78,7 +78,7 @@ class Planner(Node):
             self.planned = False
             self.get_logger().info(f"Path obstructed at ({x_index}, {y_index})")
             break
-        self.get_logger().info(f"Path is good")
+        #self.get_logger().info(f"Path is good")
       if not self.planned:
         self.get_logger().info("Planning new path")
         self.plan_path(map_data, resolution, time)
