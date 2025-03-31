@@ -44,19 +44,27 @@ def generate_launch_description():
 
     # Path Planning Node
     ExecuteProcess(
-        cmd=['ros2', 'run', 'mapping', 'mapping'],
+        cmd=['ros2', 'run', 'planning', 'astar'],
         output='screen',
-        name='Mapping_Node'
+        name='Path_Planning_Node'
     ),
 
     # Path Execution Node
     ExecuteProcess(
-        cmd=['ros2', 'run', 'mapping', 'mapping'],
+        cmd=['ros2', 'run', 'steering', 'auto_controller'],
         output='screen',
-        name='Mapping_Node'
+        name='Auto_Controller_Node'
+    ),
+
+
+    # Path Execution Node
+    ExecuteProcess(
+        cmd=['ros2', 'run', 'steering', 'wheel_controller'],
+        output='screen',
+        name='Wheel_Controller_Node'
     )
 
-    
+
     ])
 
 
