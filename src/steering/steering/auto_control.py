@@ -10,6 +10,8 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
 from tf_transformations import euler_from_quaternion
 from nav_msgs.msg import Path
+from tf2_ros import TransformException
+import tf2_geometry_msgs
 
 class AutoControll(Node):
 
@@ -38,10 +40,35 @@ class AutoControll(Node):
 
     # Get position of robot
     def pose_callback(self, msg : PoseWithCovarianceStamped):
-        x = msg.pose.pose.position.x
-        y = msg.pose.pose.position.y
-        self.current_position = (x, y)
-        self.current_heading = self.compute_heading(msg.pose.pose.orientation)
+        # Init transform
+        to_frame_rel = 'map'
+        from_frame_rel = 'odom'
+        time = rclpy.time.Time().from_msg(msg.header.stamp) # Maybe change?
+
+        # Wait for the transform asynchronously
+        tf_future = self.buffer.wait_for_transform_async(
+        target_frame=to_frame_rel,
+        source_frame=from_frame_rel,
+        time=time
+        )
+        rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
+
+        # Lookup tansform
+        try:
+            t = self.buffer.lookup_transform(to_frame_rel,
+                                            from_frame_rel,
+                                            time)
+            # Do the transform
+            map_pose = tf2_geometry_msgs.do_transform_pose(msg.pose.pose, t)
+
+            # Get position of robot
+            x = msg.pose.pose.position.x
+            y = msg.pose.pose.position.y
+            self.current_position = (x, y)
+            self.current_heading = self.compute_heading(msg.pose.pose.orientation)
+        except TransformException:
+            self.get_logger().info('No transform found')
+        
 
     # Updates path, extract position (x, y) and add to list
     def path_callback(self, msg: Path):

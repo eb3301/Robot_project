@@ -3,9 +3,12 @@
 import rclpy
 import rclpy.logging
 import numpy as np
+import tf2_ros
+from tf2_ros import TransformException
 import time
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
+import tf2_geometry_msgs
 from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
@@ -37,6 +40,10 @@ class Planner(Node):
     # Publish the planned path
     self.path_pub = self.create_publisher(Path, "/planned_path", qos)
 
+    # TF2
+    self.buffer = tf2_ros.Buffer()
+    self.listener = tf2_ros.TransformListener(self.tf_buffer, self, spin_thread = True)
+
     # Robot pose coordnates
     self.x0 = 0.0
     self.y0 = 0.0
@@ -66,7 +73,7 @@ class Planner(Node):
       for i in range(len(self.path)):
         x_index = int((self.path[i][0] - origin_x) // resolution)  
         y_index = int((self.path[i][1] - origin_y) // resolution)
-        if map_data[x_index][y_index] == 100:
+        if map_data[y_index][x_index] == 100: # maybe reshape change?
           self.planned = False
           self.get_logger().info(f"Path obstructed at ({x_index}, {y_index})")
           break
@@ -102,7 +109,7 @@ class Planner(Node):
         pose_msg.pose.orientation.w = quaternion[3]
         
         message.poses.append(pose_msg)
-        self.path_pub.publish(message)
+      self.path_pub.publish(message)
     else: # If no path exist, publish empty path
       self.get_logger().info('Path empty')
         # pose_msg = PoseStamped()
@@ -113,9 +120,33 @@ class Planner(Node):
     
 
   def pose_callback(self, msg : PoseWithCovarianceStamped):
-    # Get position of robot
-    self.x0 = msg.pose.pose.position.x
-    self.y0 = msg.pose.pose.position.y
+    # Init transform
+    to_frame_rel = 'map'
+    from_frame_rel = 'odom'
+    time = rclpy.time.Time().from_msg(msg.header.stamp) # Maybe change?
+
+    # Wait for the transform asynchronously
+    tf_future = self.buffer.wait_for_transform_async(
+      target_frame=to_frame_rel,
+      source_frame=from_frame_rel,
+      time=time
+    )
+    rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
+
+    # Lookup tansform
+    try:
+      t = self.buffer.lookup_transform(to_frame_rel,
+                                      from_frame_rel,
+                                      time)
+       # Do the transform
+      map_pose = tf2_geometry_msgs.do_transform_pose(msg.pose.pose, t)
+
+      # Get position of robot
+      self.x0 = map_pose.position.x
+      self.y0 = map_pose.position.y
+    except TransformException:
+      self.get_logger().info('No transform found')
+
 
   def goal_callback(self, msg : Marker):
     # Get position of goal
@@ -269,7 +300,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
       
       # Take out hte path
       while current_node:
-          path.append((current_node.x, current_node.y, current_node.theta))
+          path.append((current_node.x, current_node.y))#, current_node.theta))
           current_node = current_node.parent
       path.pop(-1) # The robots position, should be included?
       # x, y, theta = path[-1]
@@ -287,22 +318,147 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
     get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions, origin)
 
 
-# def smooth(path):
-#   for i in range(1, len(path)):
-#     current_pose = path[i][:2]
-#     current_theta = path[i][2]
-#     next_pose = path[i+1][:2]
-#     next_theta = path[i+1][2]
-#     next_next_pose = path[i+2][:2]
-#     next_next_theta = path[i+2][2]
-#     if next_theta == current_theta + np.pi/2 and next_next_theta == current_theta:
-#       print(2)
-#     elif next_theta == current_theta - np.pi/2 and next_next_theta == current_theta:
-#       print(1)
+# # Function to compute cubic Bézier curve for a given t
+# def cubic_bezier(t, P0, P1, P2, P3):
+#   return (1 - t)**3 * P0 + 3 * (1 - t)**2 * t * P1 + 3 * (1 - t) * t**2 * P2 + t**3 * P3
+
+# def smooth(points):
+#   points = np.array(points)
+#   number = len(points)
+#   smoothed_path = []
+
+#   P0 = points[0]
+#   P1 = points[int(number / 4)]
+#   P2 = points[int(3 * number / 4) - 1]
+#   P3 = points[-1]
+
+#   t_values = np.linspace(0, 1, 20)
+
+#   for t in t_values:
+#     smoothed_point = cubic_bezier(t, P0, P1, P2, P3)
+#     smoothed_path.append(tuple(smoothed_point))  # Convert the NumPy array to a tuple
+
+#   return smoothed_path
+
+
+# def extract_segments(path, resolution=1):
+#   horizontal_segments = []
+#   vertical_segments = []
+#   diagonal_segments = []
+  
+#   i = 0
+#   print(len(path))
+#   print(path[78])
+#   while i < len(path) - 2:
+#     x1, y1 = path[i]
+#     x2, y2 = path[i + 1]
+#     x3, y3 = path[i + 2]
+
+#     # Horizontal segment (constant y, x increases by resolution)
+#     if np.isclose(y1, y2) and np.isclose(y2, y3) and np.isclose(x2 - x1, resolution) and np.isclose(x3 - x2, resolution):
+#       start = i
+#       print('Horiz')
+#       while i + 2 < len(path) and np.isclose(path[i + 1][1], path[i][1]) and np.isclose(path[i + 1][0] - path[i][0], resolution) and np.isclose(path[i + 2][0] - path[i + 1][0], resolution):
+#         i += 1
+#       horizontal_segments.append(path[start:i + 2])
+#     # Vertical segment (constant x, y increases by resolution)
+#     elif np.isclose(x1, x2) and np.isclose(x2, x3) and np.isclose(abs(y2 - y1), resolution) and np.isclose(abs(y3 - y2), resolution):
+#       start = i
+#       print('Vertical')
+#       while i + 2 < len(path) and np.isclose(path[i + 1][0], path[i][0]) and np.isclose(abs(path[i + 1][1] - path[i][1]), resolution) and np.isclose(abs(path[i + 2][1] - path[i + 1][1]), resolution):
+#         i += 1
+#       vertical_segments.append(path[start:i + 2])
+#       print(i)
+#     # Diagonal segment (x and y both change by resolution)
+#     elif (np.isclose(abs(x2 - x1), resolution) and np.isclose(abs(y2 - y1), 0) and np.isclose(abs(x3 - x2), 0) and np.isclose(abs(y3 - y2), resolution)) or (np.isclose(abs(x2 - x1), 0) and np.isclose(abs(y2 - y1), resolution) and np.isclose(abs(x3 - x2), resolution) and np.isclose(abs(y3 - y2), 0)):        
+#       start = i
+#       print('in loop')
+#       while i + 2 < len(path) and (
+#           (np.isclose(abs(path[i + 1][0] - path[i][0]), resolution) and np.isclose(abs(path[i + 1][1] - path[i][1]), 0) and np.isclose(abs(path[i + 2][0] - path[i + 1][0]), 0) and np.isclose(abs(path[i + 2][1] - path[i + 1][1]), resolution)) or
+#           (np.isclose(abs(path[i + 1][0] - path[i][0]), 0) and np.isclose(abs(path[i + 1][1] - path[i][1]), resolution) and np.isclose(abs(path[i + 2][0] - path[i + 1][0]), resolution) and np.isclose(abs(path[i + 2][1] - path[i + 1][1]), 0))
+#       ):
+#           i += 1
+#       diagonal_segments.append(path[start:i + 2])
+#     else:
+#       print(f'({x1},{y1})')
+#       print(f'({x2},{y2})')
+#       print(f'({x3},{y3})')
+
+
+#     i += 1
+#     print(f'({x1},{y1})')
+#     print(f'({x2},{y2})')
+#     print(f'({x3},{y3})')
+
+#     return horizontal_segments, vertical_segments, diagonal_segments
+
+
+# # Function to combine adjacent segments
+# def combine_segments(sorted_segments):
+#   new_segments = []
+#   for i in range(1, len(sorted_segments)):
+#     # Get the last two points of the previous segment
+#     prev_segment = sorted_segments[i - 1]
+#     next_segment = sorted_segments[i]
+
+#     # Skip if segments don't have enough points to merge
+#     if len(prev_segment) < 5 or len(next_segment) < 5:
+#         continue
     
-    
-#     delta = (current_pose[0] - next_pose[0], current_pose[1] - next_pose[1])
-#   pass
+#     # Take the last two points from the previous segment
+#     prev_end_points = prev_segment[-3:]
+
+#     # Take the first two points from the next segment
+#     next_start_points = next_segment[:3]
+
+#     # Create a new segment by combining these 4 points
+#     new_segment = prev_end_points + next_start_points
+
+#     # Add the non-modified segments to the list
+#     new_segments.append(prev_segment[2:-2])  # Exclude the last two points
+
+#     # Replace the two original segments with the new combined segment
+#     new_segments.append(new_segment)
+
+#   # Replace the last segment
+#   new_segments[0] = sorted_segments[0][:-2]
+#   new_segments.append(sorted_segments[-1][2:])
+#   return new_segments
+
+
+# def create_god_path(path, resolution):
+#   # Extract segments
+#   horizontal, vertical, diagonal = extract_segments(path, resolution)
+#   print(horizontal)
+#   print(vertical)
+#   print(diagonal)
+
+#   # Combine segments
+#   combined_segments = diagonal + horizontal + vertical
+
+#   # Sort the segments by the first point of each segment
+#   combined_segments_sorted = sorted(combined_segments, key=lambda x: x[0])
+
+#   # Output the new combined segments
+#   print("New Combined Segments:")
+#   for segment in combined_segments_sorted:
+#     print(segment)
+
+#   # Combine adjacent segments by taking out the last two and first two points
+#   combined_segments_with_gaps = combine_segments(combined_segments_sorted)
+
+#   # Output the new combined segments
+#   print("New Combined Segments after merge:")
+#   for segment in combined_segments_with_gaps:
+#     print(segment)
+
+#   # Now, smooth the segments and create the new path (as a list of tuples)
+#   smoothed_path = []
+#   for segment in combined_segments_with_gaps:
+#     smoothed_segment = smooth(segment)
+#     smoothed_path.extend(smoothed_segment)  # Add the smoothed points to the final list
+
+#   return smoothed_path
 
 def main2():
   grid = np.zeros((100, 100), dtype=int)
@@ -315,7 +471,7 @@ def main2():
 
   x0 = 0.1 # start x position
   y0 = 0.1 # start y position
-  xt = 0.60 # target x position
+  xt = 0.40 # target x position
   yt = 0.60 # target y position
 
   # Mark the start (x0, y0) and goal (xt, yt) points with green (value 50)
@@ -350,7 +506,7 @@ def main2():
     # Plot path
     print('Path found')
     for node in path:
-      (x,y, theta) = node
+      (x,y) = node #, theta
       x_index = int(x * 100)
       y_index = int(y * 100)
       grid[x_index, y_index] = 5
@@ -368,7 +524,10 @@ def main2():
   # Plot start and goal as green points
   plt.scatter(start_y_index, start_x_index, c='green', marker='o', s=50, label=f"Start ({start_x_index}, {start_y_index})")
   plt.scatter(goal_y_index, goal_x_index, c='green', marker='o', s=50, label=f"Goal ({goal_x_index}, {goal_y_index})")
-
+  
+  # print('Path is ' + str(len(path)))
+  # print('Closed set is ' + str(len(closed_set)))
+  # print('Open set is ' + str(len(open_set)))
   # for node_key in closed_set:
   #   node = closed_set[node_key]
   #   closed_x_index = int(node.x * 100)
@@ -388,7 +547,29 @@ def main2():
   plt.title(f"Path calculation at time: {elapsed_time:.4f} seconds")
   plt.show()
 
- 
+  # smoothed_path = create_god_path(path, 1/100)
+
+  # Convert path to NumPy array for plotting
+  path = np.array(path)
+
+
+  # Plot the original staircase path (connecting the points)
+  plt.plot(path[:, 0], path[:, 1], 'o-', label='Original Path (Staircase)', color='r')
+
+  # Plot the smoothed path
+  # for smoothed_segment in smoothed_path:
+  #     plt.plot(smoothed_segment[:, 0], smoothed_segment[:, 1], label='Smoothed Path', color='b')
+
+  # Add title and labels
+  plt.legend()
+  plt.xlabel('X')
+  plt.ylabel('Y')
+  plt.title('Original vs Smoothed Sorted Path')
+
+  # Show the plot
+  plt.show()
+
+ # points = [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4), (4,4), (4,5), (5,5), (5,6), (6,6), (6,7), (7,7), (7,9)]
 
 # main2()
 
