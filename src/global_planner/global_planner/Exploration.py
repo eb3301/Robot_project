@@ -212,28 +212,42 @@ class ExploreSamples(pt.behaviour.Behaviour):
         self.node = node
         self.blackboard = pt.blackboard.Blackboard
 
-        qos = QoSProfile(
-                        reliability=QoSReliabilityPolicy.RELIABLE,  # Ensures message delivery
-                        durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  # Keeps the last message for new subscribers
-                        depth=10  # Stores up to 10 messages in queue
-                        )
-        
-        self.target_pub = self.node.create_publisher(Marker, '/goal_marker', qos)
-        self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, 'map_pose', self.pose_callback, 10)
         self.target = None
+        self.detection_active = False
 
     def update(self):
         if self.status == pt.common.Status.INVALID:
+            # Get waypoints
             self.waypoints = self.blackboard.get('waypoints')
+            
+            # Initialise sub/pub
+            qos = QoSProfile(
+                            reliability=QoSReliabilityPolicy.RELIABLE,  # Ensures message delivery
+                            durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  # Keeps the last message for new subscribers
+                            depth=10  # Stores up to 10 messages in queue
+                            )
+            
+            self.target_pub = self.node.create_publisher(Marker, '/goal_marker', qos)
+            self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, 'map_pose', self.pose_callback, 10)
+
+            # Initialise detection
+            self.start_client = self.node.create_client(SetBool, '/start_detection')
+            self.stop_client = self.node.create_client(SetBool, '/stop_detection')
+            self.detect_client = self.node.create_client(DetectObjects, '/detect_objects')
+
             if not self.waypoints:
                 print("No waypoints sampled...")
                 return pt.common.Status.FAILURE
             else:
-                print('Exploring lots!')
+                # Start detection service
+                print('Time to explore - Starting detection client')
+                self.call_set_bool(self.start_client, True)
+                self.detection_active = True
                 return pt.common.Status.RUNNING
 
         if len(self.waypoints) == 0:
-            print("All waypoints have been visited!")
+            print("All waypoints have been visited - Stopping detection client")
+            self.call_set_bool(self.stop_client, True)
             return pt.common.Status.SUCCESS
 
         # Pick out target
@@ -282,6 +296,14 @@ class ExploreSamples(pt.behaviour.Behaviour):
         marker.color.b = 0.0
         #print('Published goal marker')
         self.target_pub.publish(marker)
+
+    def call_set_bool(self, client, value: bool):
+        if not client.wait_for_service(timeout_sec=1.0):
+            self.node.get_logger().warn("Service not available")
+            return
+        req = SetBool.Request()
+        req.data = value
+        client.call_async(req)
 
 
 class ExploreUknownSpace(pt.behaviour.Behaviour):
@@ -413,6 +435,8 @@ class ExploreUknownSpace(pt.behaviour.Behaviour):
         #print('Published goal marker')
         self.target_pub.publish(marker)
 
+
+
 class Detection(pt.behaviour.Behaviour):
     def __init__(self, node):
         super().__init__('Detection')
@@ -437,6 +461,10 @@ class Detection(pt.behaviour.Behaviour):
         #self.node.get_logger().info("Start detection")
 
     def update(self):
+        if self.status == pt.common.Status.INVALID:
+            print("Sending detection request")
+            return pt.common.Status.RUNNING
+
         rot_threshold = 0.005
         vel_threshold = 1.0
 
