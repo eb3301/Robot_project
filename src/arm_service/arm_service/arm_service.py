@@ -531,7 +531,7 @@ class MinimalService(Node):
             self.get_logger().info('moving arm to look')
             msg.data = self.data_sets[1]
             self.publisher.publish(msg)
-            time.sleep(2.0)
+            
             arm_pos = self.get_arm_pos()
             
             #response = self.arm_move_check(arm_pos,self.data_sets[1],response)
@@ -571,6 +571,7 @@ class MinimalService(Node):
             #await asyncio.sleep(2)
 
             self.safepublish(cam_data_set)
+            time.sleep(2.0)
             #await asyncio.sleep(2)
             print("sleep")
             cam_data_set[0]=11000
