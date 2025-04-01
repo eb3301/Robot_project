@@ -35,6 +35,9 @@ class AutoControll(Node):
         # Subscribe to goal pose
         self.path_sub = self.create_subscription(Path, "/planned_path", self.path_callback, qos) # latched topic
 
+        # Create timer
+        self.timer = self.create_timer(0.2, self.execution)  # 5 Hz Frequency
+
         # TF2
         self.buffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.buffer, self, spin_thread = True)
@@ -43,6 +46,7 @@ class AutoControll(Node):
         self.current_position = (0.125, 0.175)
         self.current_heading = 0
         self.pose_list = []
+        self.start = False
 
     # Get position of robot
     def pose_callback(self, msg : PoseWithCovarianceStamped):
@@ -75,10 +79,14 @@ class AutoControll(Node):
             self.current_heading = self.compute_heading(map_pose.orientation)
         except TransformException:
             self.get_logger().info('No transform found')
+
+    # Compute heading from Loke
+    def compute_heading(self, orientation):
+        x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
+        _, _, yaw = euler_from_quaternion((x, y, z, w))
+        return yaw
             
         
-        
-
     # Updates path, extract position (x, y) and add to list
     def path_callback(self, msg: Path):
         self.get_logger().info('Path received')
@@ -87,56 +95,45 @@ class AutoControll(Node):
         for pose_msg in msg.poses:
             position = (pose_msg.pose.position.x, pose_msg.pose.position.y)
             self.pose_list.append(position)
-
+        
         if self.pose_list:
+            # Set the
+            self.get_logger().info('Executing Path')
+            self.start = True
+
             # Calculate the distance to the final point
-            final_point = self.pose_list[-1]
-            distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(final_point))
-            # print(f'Final point is: {final_point}')
+            self.final_point = self.pose_list[-1]
 
             # Calculate the lookahead distance
-            resolution = np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
-            lookahead_distance = 2*resolution
+            self.resolution = np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
+            self.lookahead_distance = 2*self.resolution
 
             # Convert path to a NumPy array
             self.pose_list = np.array(self.pose_list)
+        else:
+            self.get_logger().info("Path empty, stopping")
+            # Publish 0, to stop
+            twist_msg = Twist()
+            self.cmd_vel_pub.publish(twist_msg)
 
-            while distance_to_goal > resolution: # Change later
-                start_time = time.time()  # Record the start time
-                
-                # Calcluate distance to goal, maybe move back?
-                distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(final_point)) 
-                
+        
+    def execution(self):
+        if self.start:
+            # Calculate distance to goal
+            distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(self.final_point))
+
+            if distance_to_goal > self.resolution:
                 # Compute the velocity command using the Pure Pursuit algorithm
-                twist_msg = self.pure_pursuit_velocity(self.current_position, self.current_heading, self.pose_list, lookahead_distance)
+                twist_msg = self.pure_pursuit_velocity(self.current_position, self.current_heading, self.pose_list, self.lookahead_distance)
                 
                 # Publish the twist message
                 self.cmd_vel_pub.publish(twist_msg)
                 # self.get_logger().info(f"Published velocity: linear = {twist_msg.linear.x}, angular = {twist_msg.angular.z}")
                 
-                # Wait for 0.2 seconds to ensure the loop runs at 5 Hz
-                rclpy.spin_once(self)
-                rclpy.spin_once(self)
-                elapsed_time = time.time() - start_time
-                if elapsed_time < 0.2: # Ensure we don't sleep for negative time
-                    sleep_time = max(0.2 - elapsed_time, 0)  
-                    self.get_logger().info("Sleep")
-                    time.sleep(sleep_time)
-                
             self.get_logger().info("Goal reached! Stopping.")
             # Publish 0, to stop
             twist_msg = Twist()
             self.cmd_vel_pub.publish(twist_msg)
-        else:
-            self.get_logger().info("Path empty, stopping")
-            twist_msg = Twist()
-            self.cmd_vel_pub.publish(twist_msg)
-
-    # Compute heading from Loke
-    def compute_heading(self, orientation):
-        x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
-        _, _, yaw = euler_from_quaternion((x, y, z, w))
-        return yaw
 
         
     def pure_pursuit_velocity(self, current_position, current_heading, path, lookahead_distance):
@@ -164,7 +161,7 @@ class AutoControll(Node):
 
         # Get the target point
         target_point = path[target_point_idx]
-        # self.get_logger().info(f'Index is: {target_point_idx}')
+        self.get_logger().info(f'Index is: {target_point_idx}')
         # print(f'Pose is: {current_position}')
         # print(f'Target is: {target_point}')
         # print(f'Index is: {target_point_idx}')
