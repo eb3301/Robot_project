@@ -23,7 +23,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'MS2_collection = global_planner.MS2_collection:main',
+            'Collection = global_planner.Collection:main',
             'Exploration = global_planner.Exploration:main'
         ],
     }
