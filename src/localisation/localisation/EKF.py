@@ -82,7 +82,7 @@ class EKF_Algorithm(Node):
 
         if dt > 0:
             x, y, yaw = self.ekf_x.flatten()
-            # # Update states
+            # Update states
             x_bar = x +  v*np.cos(yaw) 
             y_bar = y + v*np.sin(yaw) 
             yaw_bar = yaw + w 
