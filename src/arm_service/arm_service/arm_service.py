@@ -61,8 +61,7 @@ class MinimalService(Node):
         x, y, z = target_position
         print("check: " + str(target_position))
         return (
-            (np.all([0.13 <= y <= 0.22, -0.12 <= x <= 0.1]) or 
-            np.all([-0.15 <= y <= -0.05, -0.1 <= x <= 0.18]))
+            np.all([0.12 <= y <= 0.22, -0.15 <= x <= 0.15])
             and (0.01 <= z <= 0.05)
         )
 
@@ -119,30 +118,32 @@ class MinimalService(Node):
         a,b,c = self.arm_length
         x, y, z = target_position # transformed to arm, change to polar and calculate first arm length
         
-        #print("Inverse Kinematics start, x,y is: " + str(x)+ " " + str(y))
-        if abs(x)>=0.01 and y>=0.05:
+        if not self.pos_ok_check(target_position):
+            if y < 0.12:
+                return [1],[x,y] # returning too close to robot
+            else:
+                return [0],[x,y]
+        if abs(x)>=0.01:
             theta = math.atan2(y,abs(x))
             if x<=0:
                 iktheta = math.radians(180)-theta
             else:
                 iktheta = theta
-        elif y<0.1:
-            self.get_logger().info("too close to robot")
-            return [1],[]
+        
         elif abs(x)<0.01 and y>0.01:
             iktheta = math.radians(90)
         
-        ikx = x #-a*math.cos(iktheta)*math.cos(phi_1) # changes the x and y to account for the first link being decided 
-        iky = y #-a*math.sin(iktheta)*math.cos(phi_1) # we assume that theta is zero in x direction  and phi_1 zero in ground plane
-        ikz = z+c #z-a*math.sin(phi_1) # this sets z to the length of link z above object
+        ikx = x # changes the x and y to account for the first link being decided 
+        iky = y # we assume that theta is zero in x direction  and phi_1 zero in ground plane
+        ikz = z+c # this sets z to the length of link z above object
         rho = math.sqrt(ikx**2+iky**2)
-        print("theta, rho, x, y, z is: " +str(iktheta) + ", " + str(rho)+ ", " + str(ikx)+ ", " + str(iky)+ ", " + str(ikz))
+        #print("theta, rho, x, y, z is: " +str(iktheta) + ", " + str(rho)+ ", " + str(ikx)+ ", " + str(iky)+ ", " + str(ikz))
 
         two_joint_dist = math.sqrt(ikz**2+rho**2)
         if a+b <= two_joint_dist:
             self.get_logger().info("a + b = " + str(a+b))
             self.get_logger().info("too far: " + str(two_joint_dist))
-            return [0],[]
+            return [0],[ikx,iky]
         #print(((abs(ikz)**2+rho**2-b**2-a**2)/(-2*b*a)))#%math.pi) # the minus in 2bc is removed below
         phi_2 = math.acos(((abs(ikz)**2+rho**2-a**2-b**2)/(-2*a*b)))#%math.pi) 
 
@@ -233,8 +234,8 @@ class MinimalService(Node):
         image = self.latest_image
         bridge = CvBridge()
         #Convert ROS Image message to OpenCV format
-        #frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
-        frame = cv.imread(os.getcwd() + "/cube2.jpg")
+        frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
+        #frame = cv.imread(os.getcwd() + "/animal6.jpg")
         #cv.imwrite('animaltop.jpg', frame)
         N = 50 # pixels to remove from bottom
         #cropped_frame = frame[:frame.shape[0] - N, :]
@@ -285,7 +286,8 @@ class MinimalService(Node):
         box = cv.boxPoints(rect)
         box = np.int0(box)
         print(rect[0])
-        print(rect[2])
+        print(rect)
+        angle = math.radians(rect[2])
         cx = round(rect[0][0])
         cy = round(rect[0][1])
         cv.drawContours(cropped_frame, [box], 0, (0, 255, 0), 2)
@@ -301,7 +303,7 @@ class MinimalService(Node):
         tmpx = round((cx/310-0.5)*9.45,3)/100#round((cntr[0]/640-0.5)*30,3)/100
         tmpy = round(((1-cy/260)-0.5)*9.45+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
         #cntr_pos.append([tmpx,tmpy])
-        print("x,y: "+str(tmpx) + " " + str(tmpy))
+        print("x,y: "+str(tmpx) + ", " + str(tmpy))
         if math.sqrt(tmpx**2+tmpy**2)<= 0.15:
             
             # plt.subplot(1,2,1)
@@ -309,13 +311,10 @@ class MinimalService(Node):
             # plt.subplot(1,2,2)
             # plt.imshow(edges,cmap='gray')
             plt.show()
-            return [tmpx,tmpy]
+            return [tmpx,tmpy],angle
         
 
-        nothing_detected = True
-        if nothing_detected:
-            return [0,0]
-        return pos
+        return []
 
     def frame_PCA(self, img, points):
         # Center the data
@@ -439,6 +438,13 @@ class MinimalService(Node):
         elif obj_class == "animal":
             return 12000
 
+    def angle_cube_to_grip(self,angle):
+        grip_angle = round(math.degrees((math.radians(120)-angle))*100)
+        return grip_angle
+    
+    def angle_animal_to_grip(self, angle):
+        grip_angle = round(math.degrees((math.radians(210)-angle))*100)
+        return grip_angle
 
     async def arm_callback(self, request, response):
         time_data_set = [2000,2000,2000,2000,2000,2000]
@@ -483,12 +489,14 @@ class MinimalService(Node):
             # else:
             #     self.get_logger().info(response.message)
             #cv.imwrite("sphere.jpg")
-            cam_obj_pos = self.get_obj_pos(obj_class)
-            print("cam obj pos :" + str(cam_obj_pos))
+            cam_obj_pos, obj_angle = self.get_obj_pos(obj_class)
+            grip_angle_cube = self.angle_cube_to_grip(obj_angle)
+            grip_angle_animal = self.angle_animal_to_grip(obj_angle)
+            print("cam obj pos :" + str(cam_obj_pos) + ", " + str(grip_angle_animal))
             if cam_obj_pos == []:
                 response.success = False 
                 response.message = "No object detected"
-                return response
+                return response 
             
             obj_pos = self.cam_forward_kinematics(self.transform_from_robot(self.data_sets[1]))
             obj_pos[0] += float(cam_obj_pos[0])
@@ -500,15 +508,23 @@ class MinimalService(Node):
             if cam_angles == [0]:
                 response.success = False
                 response.message = "Object too far"
+                response.xyfix = garbage
                 return response
             elif cam_angles == [1]:
                 response.success = False
                 response.message = "Object too close"
+                response.xyfix = garbage
                 return response
             
             print(cam_angles)
+            
+            cam_angles[0] = 2000
+            if obj_class == "sphere":
+                cam_angles[1] = 12000
+            elif obj_class == "cube":
+                cam_angles[1] = grip_angle_cube
             cam_data_set = np.concatenate((cam_angles,time_data_set))
-            cam_data_set[0] = 2000
+            
             self.get_logger().info("computed cam sequence is " + str(cam_data_set))
             
             #await asyncio.sleep(2)

@@ -16,7 +16,7 @@ class ArmClient(Node):
 
     def send_request(self, command):
         self.req.xy[0] = command
-        self.req.obj_class = "cube"
+        self.req.obj_class = "animal"
         self.future = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
