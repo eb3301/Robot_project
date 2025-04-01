@@ -39,11 +39,7 @@ def generate_launch_description():
 
         #Static broadcaster: LiDAR - base_link
         ExecuteProcess(
-<<<<<<< HEAD
             cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher','--x', '0.0', '--y', '0.0815', '--z', '0.115', '--frame-id', 'base_link', '--child-frame-id', 'lidar_link'],
-=======
-            cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher','--x', '0.0', '--y', '0.815', '--z', '0.115', '--frame-id', 'base_link', '--child-frame-id', 'lidar_link'],
->>>>>>> 4124fa19 (Changes idk)
             output='screen',
             name='base_to_lidar'
         ),
