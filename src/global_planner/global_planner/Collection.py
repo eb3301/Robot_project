@@ -44,7 +44,7 @@ class BehaviourTree(Node):
         drive_to_obj_2 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this one to box?
         pickup = Pickup(self) # Pickup object
         place = Place() # Place object
-        detection = Detection()
+        detection = Detection(self)
 
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
