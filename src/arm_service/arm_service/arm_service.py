@@ -10,6 +10,7 @@ from rclpy.node import Node
 
 from std_msgs.msg import String
 from std_msgs.msg import Int16MultiArray
+from sensor_msgs.msg import JointState
 from sensor_msgs.msg import Image
 from rclpy.qos import QoSProfile, ReliabilityPolicy
 import argparse
@@ -34,12 +35,12 @@ class MinimalService(Node):
         self.srv = self.create_service(Arm, 'arm', self.arm_callback)
         self.publisher = self.create_publisher(Int16MultiArray, 'multi_servo_cmd_sub', 10)
         self.imagesubscriber = self.create_subscription(Image, "/arm_camera/image_raw", self.image_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)) ## frame id is arm_camera_link
-        self.servo_sub = self.create_subscription(Int16MultiArray,'topicname',self.arm_pos_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
+        self.servo_sub = self.create_subscription(JointState,'/servo_pos_publisher',self.arm_pos_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
         self.data_sets = [[11000,12000,12000,12000,12000,12000,2000,2000,2000,2000,2000,2000],
                     [3000,12000,3000,19000,10500,12000,2000,2000,2000,2000,2000,2000],
                     [11000,12000,3000,12000,4000,12000,2000,2000,2000,2000,2000,2000],
-                    [2000,12000,8000,16000,10000,12000,2000,2000,2000,2000,2000,2000],
+                    [-1,12000,8000,16000,10000,12000,2000,2000,2000,2000,2000,2000],
                     [2000,12000,3000,12000,4000,14000,2000,2000,2000,2000,2000,2000]]
         self.arm_length = [0.101,0.094,0.169]
         self.latest_image = None
@@ -50,8 +51,12 @@ class MinimalService(Node):
 
     def arm_pos_callback(self,arr):
         self.curr_arm_pos = arr
-
+        
     def get_arm_pos(self):
+        #jointstate = rospy.wait_for_message('/servo_pos_publisher', JointState)
+        #angles = jointstate.position
+        rclpy.spin_once(self,timeout_sec=1.0)
+        print("Getting joint state: ")# + str(angles))
         if self.curr_arm_pos is not None:
             return self.curr_arm_pos
         else:
@@ -62,7 +67,7 @@ class MinimalService(Node):
         print("check: " + str(target_position))
         return (
             np.all([0.12 <= y <= 0.22, -0.15 <= x <= 0.15])
-            and (0.01 <= z <= 0.05)
+            #and (-0.01 <= z <= 0.3)
         )
 
     def safepublish(self,arr):
@@ -232,6 +237,7 @@ class MinimalService(Node):
     def get_obj_pos(self,obj_class):
         pos = []
         image = self.latest_image
+        
         bridge = CvBridge()
         #Convert ROS Image message to OpenCV format
         frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
@@ -242,7 +248,8 @@ class MinimalService(Node):
         cropped_frame = frame[90:340, 160:480]   
         #image_path = os.getcwd() + "/src/arm_service/arm_service/sphere.jpg"
         # print("Current Working Directory:", os.getcwd())
-        print(cropped_frame.shape)
+        plt.imshow(cropped_frame)
+        plt.show()
         
         edges = cv.Canny(cropped_frame,200,500)
         contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
@@ -470,6 +477,10 @@ class MinimalService(Node):
             self.get_logger().info('moving arm to drop')
             msg.data = self.data_sets[int(request.xy[0]-1)]
             self.publisher.publish(msg)
+            time.sleep(2.0)
+            msg.data[0] = 2000
+            self.publisher.publish(msg)
+
 
             # either keep as is and make sure planner is good enough
             # otherwise, move arm to look for box
@@ -477,11 +488,12 @@ class MinimalService(Node):
             # Move object to drop
             # open gripper
         elif request.xy[0] == 6:
-            self.get_logger().info('moving arm to look')
-            msg.data = self.data_sets[1]
-            self.publisher.publish(msg)
-            time.sleep(3.0)
-            arm_pos = self.get_arm_pos()
+            # self.get_logger().info('moving arm to look')
+            # msg.data = self.data_sets[1]
+            # self.publisher.publish(msg)
+            # time.sleep(5.0)
+            
+            #arm_pos = self.get_arm_pos()
             
             #response = self.arm_move_check(arm_pos,self.data_sets[1],response)
             # if not response.success:
@@ -489,6 +501,8 @@ class MinimalService(Node):
             # else:
             #     self.get_logger().info(response.message)
             #cv.imwrite("sphere.jpg")
+            #rclpy.spin_once(self,timeout_sec=1.0)
+            
             cam_obj_pos, obj_angle = self.get_obj_pos(obj_class)
             grip_angle_cube = self.angle_cube_to_grip(obj_angle)
             grip_angle_animal = self.angle_animal_to_grip(obj_angle)
@@ -539,7 +553,7 @@ class MinimalService(Node):
             self.publisher.publish(msg)
             time.sleep(4.0)
             #await asyncio.sleep(2)
-            msg.data = self.data_sets[1]
+            msg.data = self.data_sets[0]
             self.publisher.publish(msg)
         else:
             response.success = False
