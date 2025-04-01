@@ -16,7 +16,7 @@ class ArmClient(Node):
 
     def send_request(self, command):
         self.req.xy[0] = command
-        self.req.obj_class = "animal"
+        self.req.obj_class = "cube"
         self.future = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
@@ -33,7 +33,16 @@ def main(args=None):
     rclpy.init(args=args)
 
     arm_client = ArmClient()
-    response = arm_client.send_request(int(sys.argv[1])) # sys.argv is from terminal
+    command = int(sys.argv[1])
+    if command == 6:
+        print("6")
+        look = arm_client.send_request(2) 
+        print("success: "+ str(look.success))
+        if look.success:
+            print("going to pick now")
+            response = arm_client.send_request(6) # sys.argv is from terminal
+    else:
+        response = arm_client.send_request(command) 
     arm_client.get_logger().info(
         'Response from arm is: ' + str(response.success) + " and " + response.message)
 
