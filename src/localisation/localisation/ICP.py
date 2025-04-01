@@ -218,6 +218,7 @@ class ICPNode(Node):
 
 
     def ICP(self, source_pcd):
+        return
         '''ICP Algorithm Implementation'''
         if source_pcd is None or not self.target_pcd_list:
             return
@@ -301,9 +302,6 @@ class ICPNode(Node):
                     # self.get_logger().info(f"Creating new reference cloud: nearest cloud was {min_distance:.2f}m away")
 
                 self.fitness_counter = 0
-
-
-
 
     
     def publish_pose(self, pose_msg):
