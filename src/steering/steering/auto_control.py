@@ -111,6 +111,7 @@ class AutoControll(Node):
             # Convert path to a NumPy array
             self.pose_list = np.array(self.pose_list)
         else:
+            self.start = False
             self.get_logger().info("Path empty, stopping")
             # Publish 0, to stop
             twist_msg = Twist()
@@ -129,11 +130,12 @@ class AutoControll(Node):
                 # Publish the twist message
                 self.cmd_vel_pub.publish(twist_msg)
                 # self.get_logger().info(f"Published velocity: linear = {twist_msg.linear.x}, angular = {twist_msg.angular.z}")
-                
-            self.get_logger().info("Goal reached! Stopping.")
-            # Publish 0, to stop
-            twist_msg = Twist()
-            self.cmd_vel_pub.publish(twist_msg)
+            else:  
+                self.start = False
+                self.get_logger().info("Goal reached! Stopping.")
+                # Publish 0, to stop
+                twist_msg = Twist()
+                self.cmd_vel_pub.publish(twist_msg)
 
         
     def pure_pursuit_velocity(self, current_position, current_heading, path, lookahead_distance):
