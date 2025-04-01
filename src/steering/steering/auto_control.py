@@ -74,7 +74,7 @@ class AutoControll(Node):
             # Get position of robot
             x = map_pose.position.x
             y = map_pose.position.y
-            self.get_logger().info(f'Pose received, ({x},{y})')
+            #self.get_logger().info(f'Pose received, ({x},{y})')
             self.current_position = (x, y)
             self.current_heading = self.compute_heading(map_pose.orientation)
         except TransformException:
@@ -163,7 +163,7 @@ class AutoControll(Node):
 
         # Get the target point
         target_point = path[target_point_idx]
-        self.get_logger().info(f'Index is: {target_point_idx}')
+        #self.get_logger().info(f'Index is: {target_point_idx}')
         # print(f'Pose is: {current_position}')
         # print(f'Target is: {target_point}')
         # print(f'Index is: {target_point_idx}')
