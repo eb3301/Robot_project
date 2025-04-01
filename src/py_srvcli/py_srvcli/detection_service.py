@@ -14,6 +14,9 @@ from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from tf_transformations import quaternion_matrix
+import colorsys
+import struct
+import ctypes
 
 
 
@@ -156,18 +159,20 @@ class Detection(Node):
         # Cloud Processing
         self.latest_cloud = msg  # Store latest cloud
         points = pc2.read_points_numpy(msg, skip_nans=True)[:, :3]
+        colors = pc2.read_points_numpy(msg, skip_nans=True)[:, 3]
 
         distances = np.linalg.norm(points[:, :3], axis=1)
         offset = 0.089
         mask = (distances <= 1.5) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
         filtered_indices = np.where(mask)[0]
         filtered_points = points[mask]
+        filtered_colors = colors[mask]
 
         if filtered_points.shape[0] == 0:
             self.get_logger().info("No points after filtering")
             return
 
-        db = DBSCAN(eps=0.15, min_samples=70)
+        db = DBSCAN(eps=0.03, min_samples=80)
         labels = db.fit_predict(filtered_points)
 
         _, counts = np.unique(labels, return_counts=True)
@@ -186,8 +191,11 @@ class Detection(Node):
 
             cluster_mask = labels == label
             cluster_points = filtered_points[cluster_mask]
+            cluster_colors = filtered_colors[cluster_mask]
             cluster_indices = filtered_indices[cluster_mask]
-            
+            self.get_logger().info(f"Cluster #{label} → {cluster_points.shape[0]} punti")
+
+
             if cluster_points.shape[0] < 10:
                 continue
 
@@ -201,10 +209,24 @@ class Detection(Node):
             x_min, x_max = -x_lim, x_lim
             if (bbox_min[0] < x_min or bbox_max[0] > x_max):
                 continue
-
+            
             obj_type = "trash"  # Default category
 
-            if volume < 0.00012:  # Small objects (cube, sphere)
+            rgb_list = []
+            for idx, c in enumerate(cluster_colors):
+                s = struct.pack('>f', c)
+                i = struct.unpack('>l', s)[0]
+                pack = ctypes.c_uint32(i).value
+                r = (pack >> 16) & 255
+                g = (pack >> 8) & 255
+                b = pack & 255
+                rgb_list.append([r, g, b])
+
+            rgb_array = np.array(rgb_list, dtype=np.float32) / 255.0
+            hsv_list = [colorsys.rgb_to_hsv(r, g, b) for r, g, b in rgb_array]
+            hsv_array = np.array(hsv_list)
+
+            if volume < 0.00012 or np.mean(hsv_array[:, 1]) > 0.4:  # Small objects (cube, sphere)
                 curvatures = []
                 for p in cluster_points:
                     cov_matrix = np.cov(cluster_points.T)
