@@ -21,6 +21,7 @@ class Planner(Node):
 
   def __init__(self):
     super().__init__('Initialize_Planner')
+    self.get_logger().info(f"Starting planner")
 
     qos = QoSProfile(
             reliability = QoSReliabilityPolicy.RELIABLE, # Does not lose msg
@@ -50,7 +51,7 @@ class Planner(Node):
     self.theta0 = 0
 
     # Target coordinates
-    self.goal_received = False
+    self.goal_received = True
     self.xt = 0.5
     self.yt = 0.6
 
@@ -71,6 +72,12 @@ class Planner(Node):
 
       # Logic for replan
       if self.planned: 
+        try:
+          if not self.path:
+            self.get_logger().info(f"Path is empty")
+        except:
+          self.get_logger().info(f"Path is empty")
+
         for i in range(len(self.path)):
           x_index = int((self.path[i][0] - origin_x) // resolution)  
           y_index = int((self.path[i][1] - origin_y) // resolution)
@@ -79,6 +86,7 @@ class Planner(Node):
             self.get_logger().info(f"Path obstructed at ({x_index}, {y_index})")
             break
         #self.get_logger().info(f"Path is good")
+        
       if not self.planned:
         self.get_logger().info("Planning new path")
         self.plan_path(map_data, resolution, time)
@@ -136,7 +144,7 @@ class Planner(Node):
       t = self.buffer.lookup_transform(to_frame_rel,
                                       from_frame_rel,
                                       time)
-       # Do the transform
+      # Do the transform
       map_pose = tf2_geometry_msgs.do_transform_pose(msg.pose.pose, t)
 
       # Get position of robot
@@ -151,10 +159,14 @@ class Planner(Node):
     self.xt = msg.pose.position.x
     self.yt = msg.pose.position.y
     self.goal_received = True
+    self.planned = False
 
     # Stop planning
     if msg.pose.position.z == -1:
       self.goal_received = False
+
+
+
 
 class Plan_node(object):
   def __init__(self, x, y, theta, parent = None):
@@ -169,37 +181,25 @@ class Plan_node(object):
     self.c = 0  # Cost of kernel
     self.feasible = True
 
-
 def reached_target(x, y, xt, yt, resolution):
   if np.sqrt(((x - xt)**2 + (y - yt)**2)) <= resolution/2: # change distance to target np.abs(x - xt) < 0.01 and np.abs(y - yt) < 0.01:
     return True
   return False
 
 def find_cell_index(x, y, resolution, origin):
-  # Convert to integers to avoid floating-point precision issues
-  x_index = int((x - origin[0]) // resolution)  # Integer division to get the grid index
-  y_index = int((y - origin[1]) // resolution)  # Integer division to get the grid index
+  # Find grid index from map coordinate
+  x_index = int((x - origin[0]) // resolution)  
+  y_index = int((y - origin[1]) // resolution)  
   return (y_index, x_index)
 
-def start_center(x, y, resolution): # this migh need to be changes?
+def start_center(x, y, resolution):
   # Adjust the coordinates to the center of the grid cell
-  x_center = x + (0.5 * resolution)
-  y_center = y + (0.5 * resolution)
+  x_center = (x - x % resolution) + (0.5 * resolution)
+  y_center = (y - y % resolution) + (0.5 * resolution)
   return x_center, y_center
 
-# def start_center(x, y, resolution, origin):
-#   # Find the index of the cell
-#   x_index, y_index = find_cell_index(x, y, resolution, origin)
-  
-#   # Adjust to the center of the grid cell
-#   x_center = (x_index + 0.5) * resolution + origin[0]
-#   y_center = (y_index + 0.5) * resolution + origin[1]
-  
-#   return x_center, y_center
-
-
 def step(x, y, theta, phi, resolution):
-  # Take a one cell step
+  # Take a cell step
   dx = resolution * np.cos(theta + phi)
   dy = resolution * np.sin(theta + phi)
   dtheta = phi
@@ -210,9 +210,9 @@ def step(x, y, theta, phi, resolution):
   thetan = (dtheta + theta) % (2 * np.pi)
   return xn, yn, thetan
 
-
 def step_collided_with_obsticale(obsticales, x, y, resolution, origin):
-  x_index, y_index = find_cell_index(x, y, resolution, origin) # Maybe need to be center?
+  # Check if cell is occupied
+  x_index, y_index = find_cell_index(x, y, resolution, origin)
   if obsticales[x_index, y_index] == 100:
     return True
   return False
@@ -236,37 +236,40 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
     for i in range(steps):
       xn, yn, thetan = step(xn, yn, thetan, phi, resolution)
             
-      if step_collided_with_obsticale(obsticales, xn, yn, resolution, origin): # chatgpt fail
+      if step_collided_with_obsticale(obsticales, xn, yn, resolution, origin):
         feasible = False
         break
     
     # Calculate new node
     new_node = Plan_node(xn, yn, thetan)
     new_node_key = (new_node.x, new_node.y)
-        
+    
+    # Check if the point already is visited
     if new_node_key not in closed_set:
+      # Check if the point is free or occupied
       if not feasible:
-        # If node in obsticle
         new_node.feasible = False
         closed_set[new_node_key] = new_node 
       else:
         # Cost functions
-        new_node.g = current_node.g + resolution #+ math.sqrt((new_node.x - current_node.x)**2 + (new_node.y - current_node.y)**2) # change to Mahalanobis distance
+        new_node.g = current_node.g + resolution 
         x_index, y_index = find_cell_index(xn, yn, resolution, origin) 
         new_node.c = obsticales[x_index, y_index]
         
-        # Check if is in the open set and if the cost is smaller?
+        # Check if the point is in the open set 
         if new_node_key in open_set:
           node = open_set[new_node_key]
+          # Check if the cost is smaller
           if node.g + node.c > new_node.g + new_node.c:
-            new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2)) # np.abs(new_node.x - xt) + np.abs(new_node.y - yt)
+            new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2)) 
             new_node.f = new_node.g + new_node.h * 2 + new_node.c
                 
             new_node.parent = current_node
             new_node.phi = phi        
             open_set[new_node_key] = new_node
         else:
-          new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2)) # np.abs(new_node.x - xt) + np.abs(new_node.y - yt)
+          # If the point is free and not visited, add to open set
+          new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2))
           new_node.f = new_node.g + new_node.h * 2 + new_node.c
               
           new_node.parent = current_node
@@ -275,49 +278,50 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
 
 
 def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
+  # Parameters
   steps = 1
   start = 0
 
-  # Ensure grid compatibility
+  # Ensure grid compatibility, start at a center cell
   x0, y0 = start_center(x0, y0, resolution)
   xt, yt = start_center(xt, yt, resolution)
 
-  # Start node
+  # Init the first node
   start_node = Plan_node(x0, y0, theta0) 
-  start_node.h = np.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2)) # np.abs(start_node.x - xt) + np.abs(start_node.y - yt) #
+  start_node.h = np.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2))
   start_node.f = start_node.g + start_node.h * 2
   start_node_key = (start_node.x, start_node.y)
   
-  # Innit and preallocate lists
+  # Innit and preallocate sets
   open_set = dict()
   closed_set = dict()
   
-  # Put in the start node in the open list
+  # Put in the start node in the open set
   open_set[start_node_key] = start_node
 
-  # For avalible paths
+  # For avalible points
   while open_set:
-    # Find and take out the lowest cost node
+    # Find and take out the lowest cost point
     current_node_key = min(open_set, key=lambda node: open_set[node].f)
     current_node = open_set[current_node_key]
     del open_set[current_node_key]
     
-    # Add visited nodes
+    # Add visited point to closed set to never go there again
     closed_set[current_node_key] = current_node
        
     if reached_target(current_node.x, current_node.y, xt, yt, resolution):
       path=[]
       
-      # Take out hte path
+      # Take out the path
       while current_node:
           path.append((current_node.x, current_node.y))#, current_node.theta))
           current_node = current_node.parent
       # path.pop(-1) # The robots position, should be included?
       # x, y, theta = path[-1]
-      # path[-1] = (x - 0.5 * resolution, y - 0.5 * resolution, theta)
+      # path[-1] = (x - 0.5 * resolution, y - 0.5 * resolution)
       return path[::-1]#, closed_set, open_set
 
-    # For the start, explore all directions
+    # For the start node explore all directions then only in front of
     if start == 0:
       directions = 4
       start = 1
@@ -389,8 +393,8 @@ def main2():
   plt.imshow(grid, cmap=cmap, norm=norm, interpolation='nearest')
 
   # Plot start and goal as green points
-  plt.scatter(start_x_index, start_y_index, c='green', marker='o', s=50, label=f"Start ({start_x_index}, {start_y_index})")
-  plt.scatter(goal_x_index, goal_y_index, c='green', marker='o', s=50, label=f"Goal ({goal_x_index}, {goal_y_index})")
+  plt.scatter(start_y_index, start_x_index, c='green', marker='o', s=50, label=f"Start ({start_x_index}, {start_y_index})")
+  plt.scatter(goal_y_index, goal_x_index, c='green', marker='o', s=50, label=f"Goal ({goal_x_index}, {goal_y_index})")
   
   # print('Path is ' + str(len(path)))
   # print('Closed set is ' + str(len(closed_set)))
@@ -447,7 +451,7 @@ def main():
     try:
         rclpy.spin(node)
         time.sleep(3)
-    except KeyboardInterrupt:
+    except rclpy.exceptions.ROSInterruptException:
         pass
     rclpy.shutdown()
 
