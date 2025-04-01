@@ -10,6 +10,10 @@ from detect_interfaces.srv import DetectObjects
 from std_srvs.srv import SetBool, Trigger
 from robp_interfaces.msg import Encoders
 import math
+from tf2_ros import TransformException
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
+from tf_transformations import quaternion_matrix
 
 
 
@@ -39,6 +43,10 @@ class Detection(Node):
         self.create_service(SetBool, 'stop_detection', self.stop_detection_callback)
         self.create_service(Trigger, 'reset_detected_objects', self.reset_callback)
 
+        # Initialize the transform buffer
+        self.tf_buffer = Buffer()
+        # Initialize the transform listener
+        self.tf_listener = TransformListener(self.tf_buffer, self)
 
 
         self.get_logger().info("Node started and service ready")
@@ -117,7 +125,35 @@ class Detection(Node):
         """
         if not self.active:
             return  # Ignora frame se il nodo è disattivato
+        
+        # Transformation
+        to_frame_rel = 'map'
+        from_frame_rel = msg.header.frame_id
 
+        time = rclpy.time.Time().from_msg(msg.header.stamp)
+
+        tf_future = self.tf_buffer.wait_for_transform_async(
+            target_frame=to_frame_rel,
+            source_frame=from_frame_rel,
+            time=time
+        )
+
+        rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
+
+        try:
+            t = self.tf_buffer.lookup_transform(
+                to_frame_rel,
+                from_frame_rel,
+                time)
+        except TransformException as ex:
+            self.get_logger().info(
+                f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
+            return
+        
+        transform_mat = self.transform_to_matrix(t)
+        
+
+        # Cloud Processing
         self.latest_cloud = msg  # Store latest cloud
         points = pc2.read_points_numpy(msg, skip_nans=True)[:, :3]
 
@@ -190,6 +226,8 @@ class Detection(Node):
             elif volume < 0.01:
                 obj_type = "Box"
 
+            points_homogeneous = np.hstack([cluster_points, np.ones((cluster_points.shape[0], 1))])
+            cluster_points = (transform_mat @ points_homogeneous.T).T[:, :3]  # Torna a 3D
             # Store detected object
             if not self.ObjectList:
                 self.ObjectList.append([obj_type, np.mean(cluster_points, axis=0)])
@@ -211,7 +249,20 @@ class Detection(Node):
 
         self.publish_detected_objects(detected_indices, msg)
         self.publish_bounding_boxes(detected_indices, points, msg.header)
+        
 
+    def transform_to_matrix(self,t):
+        trans = t.transform.translation
+        rot = t.transform.rotation
+
+        translation = np.array([trans.x, trans.y, trans.z])
+        quaternion = [rot.x, rot.y, rot.z, rot.w]
+
+        transform_mat = quaternion_matrix(quaternion)
+        transform_mat[0:3, 3] = translation
+        return transform_mat
+
+        
     def publish_detected_objects(self, clusters, original_msg):
         """Publishes detected objects as PointCloud2."""
         if not clusters:
