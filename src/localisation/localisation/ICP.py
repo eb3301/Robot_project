@@ -169,10 +169,10 @@ class ICPNode(Node):
         points = pc2.read_points_numpy(cloud_out, field_names=("x", "y", "z"), skip_nans=True)
 
         # If it is time to create a reference cloud
-        if self.pub_ref:
-            if not self.rotating:
-            # Create reference pointcloud for ICP 
-            # First reference cloud it accumulates N scans. Other clouds it uses only 1
+        if not self.rotating:
+            if self.pub_ref:
+                # Create reference pointcloud for ICP 
+                # First reference cloud it accumulates N scans. Other clouds it uses only 1
                 if self.ref_counter == 10:
                     merged_points = np.vstack(self.accumulated_scans)
                     merged_ref = pc2.create_cloud_xyz32(cloud_out.header, merged_points)
@@ -183,14 +183,14 @@ class ICPNode(Node):
                     self.ref_counter += 1
                     self.accumulated_scans.append(points)
                     self.ref_cloud_pub.publish(cloud_out)
-        else:
-            if self.counter % 2 == 0:
-                self.counter += 1
-                self.lidar_pub.publish(cloud_out)
-                source_pcd = self.pointcloud_2_open3d(cloud_out)
-                self.ICP(source_pcd)
             else:
-                self.counter += 1
+                if self.counter % 6 == 0:
+                    self.counter += 1
+                    self.lidar_pub.publish(cloud_out)
+                    source_pcd = self.pointcloud_2_open3d(cloud_out)
+                    self.ICP(source_pcd)
+                else:
+                    self.counter += 1
 
     def ref_msg_callback(self, msg):
         self.pub_ref = True
@@ -243,9 +243,9 @@ class ICPNode(Node):
             target_pcd = self.target_pcd_list[closest_index][0]             
 
         # Downsample clouds using Voxel Filter
-        # voxel_size = 0.02  
-        # source_pcd = source_pcd.voxel_down_sample(voxel_size)
-        # target_pcd = target_pcd.voxel_down_sample(voxel_size)
+        voxel_size = 0.02  
+        source_pcd = source_pcd.voxel_down_sample(voxel_size)
+        target_pcd = target_pcd.voxel_down_sample(voxel_size)
 
         # Compute normals for Point-to-Plane
         radius = 0.10 # max range for neighbour search
@@ -274,12 +274,12 @@ class ICPNode(Node):
             self.fitness_counter = 0
             self.transform = result.transformation
 
-            self.get_logger().info(f"RUNNING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
+            # self.get_logger().info(f"RUNNING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
 
             end_time = time.time()
             #self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
         else:
-            self.get_logger().info(f"IGNORING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} ") 
+            # self.get_logger().info(f"IGNORING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} ") 
             self.fitness_counter += 1
             
             if self.fitness_counter == 3:
@@ -293,10 +293,12 @@ class ICPNode(Node):
                     min_distance = min(min_distance, dist)
 
                 if min_distance < 1.5:  # Adjust threshold as needed
-                    self.get_logger().info(f"Skipping new reference cloud: closest existing cloud is {min_distance:.2f}m away")
+                    # self.get_logger().info(f"Skipping new reference cloud: closest existing cloud is {min_distance:.2f}m away")
+                    pass
                 else:
+                    pass
                     self.pub_ref = True
-                    self.get_logger().info(f"Creating new reference cloud: nearest cloud was {min_distance:.2f}m away")
+                    # self.get_logger().info(f"Creating new reference cloud: nearest cloud was {min_distance:.2f}m away")
 
                 self.fitness_counter = 0
 

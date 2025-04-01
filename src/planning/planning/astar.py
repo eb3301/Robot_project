@@ -20,7 +20,7 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 class Planner(Node):
 
   def __init__(self):
-    super().__init__('Initialize_Planner')
+    super().__init__('Astar_Planner')
     self.get_logger().info(f"Starting planner")
 
     qos = QoSProfile(
@@ -51,9 +51,9 @@ class Planner(Node):
     self.theta0 = 0
 
     # Target coordinates
-    self.goal_received = True
-    self.xt = 1.0
-    self.yt = 0.0
+    self.goal_received = False
+    self.xt = 2.0
+    self.yt = 1.0
 
     # Path
     self.planned = False
@@ -450,7 +450,6 @@ def main():
     node = Planner()
     try:
         rclpy.spin(node)
-        time.sleep(3)
     except rclpy.exceptions.ROSInterruptException:
         pass
     rclpy.shutdown()
