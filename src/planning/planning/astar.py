@@ -51,7 +51,7 @@ class Planner(Node):
     self.theta0 = 0
 
     # Target coordinates
-    self.goal_received = True
+    self.goal_received = False
     self.xt = 2.0
     self.yt = 1.0
 
