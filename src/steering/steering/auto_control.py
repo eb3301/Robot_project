@@ -181,7 +181,7 @@ class AutoControll(Node):
         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
 
         # Use max linear velocity
-        linear_velocity = max_vel
+        linear_velocity = (1 - abs(steering_angle) / (np.pi / 2)) * max_vel
 
         # Calculate the angular velocity using the steering angle and a gain factor
         angular_velocity = max_rot * steering_angle
