@@ -4,16 +4,15 @@ import numpy as np
 
 import rclpy
 import rclpy.logging
+import time
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
-
+from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
+from tf_transformations import euler_from_quaternion
+from nav_msgs.msg import Path
 import tf2_ros
 from tf2_ros import TransformException
 import tf2_geometry_msgs
-from tf_transformations import euler_from_quaternion
-from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
-from nav_msgs.msg import Path
-
 
 class AutoControll(Node):
 
@@ -181,6 +180,8 @@ class AutoControll(Node):
 
         # Calculate the angular velocity using the steering angle and a gain factor
         angular_velocity = max_rot * steering_angle
+        # print(f'Linear: {linear_velocity}')
+        # print(f'Angular: {angular_velocity}')
 
         # Create a ROS Twist message
         twist_msg = Twist()
@@ -193,12 +194,18 @@ class AutoControll(Node):
 def calculate_steering_angle(current_position, current_heading, target_point):
     # Vector from current position to target point
     vector_to_target = target_point - np.array(current_position)
+    # print(f'Vector to target: {vector_to_target}')
 
     # Calculate the angle to the target point
     angle_to_target = np.arctan2(vector_to_target[1], vector_to_target[0])
+    # print(f'Angle to target: {angle_to_target}')
 
     # Steering angle is the difference between the vehicle's heading and the angle to the target
     steering_angle = angle_to_target - current_heading
+
+    # Normalize the steering angle to be in the range of -pi to pi
+    steering_angle = (steering_angle + np.pi) % (2 * np.pi) - np.pi
+    # print(f'Steering angle: {steering_angle}')
 
     # Constrain the steering angle to be within the range of -pi/2 to pi/2 to not drive backwards
     if steering_angle > np.pi / 2:

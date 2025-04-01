@@ -59,7 +59,7 @@ class Controller(Node):
         # Create Twist msg
         cmd_msg = Twist()
         cmd_msg.linear.x = float(vel_x)
-        cmd_msg.linear.y = float(vel_y)
+        # cmd_msg.linear.y = float(vel_y)
         cmd_msg.linear.z = float(max_factor)
         cmd_msg.angular.z = float(rot)
         
