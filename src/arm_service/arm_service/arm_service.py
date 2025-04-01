@@ -61,8 +61,7 @@ class MinimalService(Node):
         x, y, z = target_position
         print("check: " + str(target_position))
         return (
-            (np.all([0.13 <= y <= 0.22, -0.12 <= x <= 0.1]) or 
-            np.all([-0.15 <= y <= -0.05, -0.1 <= x <= 0.18]))
+            np.all([0.12 <= y <= 0.22, -0.15 <= x <= 0.15])
             and (0.01 <= z <= 0.05)
         )
 
@@ -119,30 +118,32 @@ class MinimalService(Node):
         a,b,c = self.arm_length
         x, y, z = target_position # transformed to arm, change to polar and calculate first arm length
         
-        #print("Inverse Kinematics start, x,y is: " + str(x)+ " " + str(y))
-        if abs(x)>=0.01 and y>=0.05:
+        if not self.pos_ok_check(target_position):
+            if y < 0.12:
+                return [1],[x,y] # returning too close to robot
+            else:
+                return [0],[x,y]
+        if abs(x)>=0.01:
             theta = math.atan2(y,abs(x))
             if x<=0:
                 iktheta = math.radians(180)-theta
             else:
                 iktheta = theta
-        elif y<0.1:
-            self.get_logger().info("too close to robot")
-            return [1],[]
+        
         elif abs(x)<0.01 and y>0.01:
             iktheta = math.radians(90)
         
-        ikx = x #-a*math.cos(iktheta)*math.cos(phi_1) # changes the x and y to account for the first link being decided 
-        iky = y #-a*math.sin(iktheta)*math.cos(phi_1) # we assume that theta is zero in x direction  and phi_1 zero in ground plane
-        ikz = z+c #z-a*math.sin(phi_1) # this sets z to the length of link z above object
+        ikx = x # changes the x and y to account for the first link being decided 
+        iky = y # we assume that theta is zero in x direction  and phi_1 zero in ground plane
+        ikz = z+c # this sets z to the length of link z above object
         rho = math.sqrt(ikx**2+iky**2)
-        print("theta, rho, x, y, z is: " +str(iktheta) + ", " + str(rho)+ ", " + str(ikx)+ ", " + str(iky)+ ", " + str(ikz))
+        #print("theta, rho, x, y, z is: " +str(iktheta) + ", " + str(rho)+ ", " + str(ikx)+ ", " + str(iky)+ ", " + str(ikz))
 
         two_joint_dist = math.sqrt(ikz**2+rho**2)
         if a+b <= two_joint_dist:
             self.get_logger().info("a + b = " + str(a+b))
             self.get_logger().info("too far: " + str(two_joint_dist))
-            return [0],[]
+            return [0],[ikx,iky]
         #print(((abs(ikz)**2+rho**2-b**2-a**2)/(-2*b*a)))#%math.pi) # the minus in 2bc is removed below
         phi_2 = math.acos(((abs(ikz)**2+rho**2-a**2-b**2)/(-2*a*b)))#%math.pi) 
 
@@ -228,98 +229,38 @@ class MinimalService(Node):
         plt.title("2D Robot Arm Visualization (User Input Angles)")
         plt.show()
 
-    def get_obj_pos(self):
+    def get_obj_pos(self,obj_class):
         pos = []
         image = self.latest_image
         bridge = CvBridge()
         #Convert ROS Image message to OpenCV format
         frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
+        #frame = cv.imread(os.getcwd() + "/animal6.jpg")
+        #cv.imwrite('animaltop.jpg', frame)
         N = 50 # pixels to remove from bottom
         #cropped_frame = frame[:frame.shape[0] - N, :]
         cropped_frame = frame[90:340, 160:480]   
-        # image_path = os.getcwd() + "/src/arm_service/arm_service/cube.jpg"
+        #image_path = os.getcwd() + "/src/arm_service/arm_service/sphere.jpg"
         # print("Current Working Directory:", os.getcwd())
         print(cropped_frame.shape)
-
-        '''# if not os.path.exists(image_path):
-
-        #     print(f"Error: The file '{image_path}' does not exist.")
-        # else:
-        #     frame = cv.imread(image_path, cv.IMREAD_GRAYSCALE)
-        #     frame = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
-        ## size of what camera can see is around 0.2x0.2 m
-
-        ### run image detection here
-
-        #height, width = image.shape[:2]
-        #res = cv.resize(image,(2*width, 2*height), interpolation = cv.INTER_CUBIC)    
-        #plt.imshow(image)
-        #plt.show()
-
-        ########################
-        # plt.imshow(frame)
-        # plt.show()
-
-        # hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-        # lower_white = np.array([0, 50, 110])
-        # upper_white = np.array([180, 190, 210])
-        # mask = cv.inRange(hsv, lower_white, upper_white)
-        # contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)    
-        # if contours:plt.imshow(frame)
-        # plt.show()
-
-        # hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-        # lower_white = np.array([0, 50, 110])
-        # upper_white = np.array([180, 190, 210])
-        # mask = cv.inRange(hsv, lower_white, upper_white)
-        # contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)    
-        # if contours:
-        #     c = max(contours, key=cv.contourArea)
-        #     M = cv.moments(c)
-        #     if M["m00"] != 0:
-        #         cx = int(M["m10"] / M["m00"])
-        #         cy = int(M["m01"] / M["m00"])
-        #         cv.drawContours(frame, [c], -1, (0, 255, 0), 2)
-        #         cv.circle(frame, (cx, cy), 5, (255, 0, 0), -1)
-        #         coord_text = f"Centroide: x={cx}, y={cy}"
-        #         cv.putText(frame, coord_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)            # Send coordinates to Simulink
-        #         data = np.array([cx, cy], dtype=np.float32).tobytes()
-        # print("x,y is " + str(cx) + " " + str(cy))
-        # plt.imshow(frame)    
-        # plt.show()
-        #     c = max(contours, key=cv.contourArea)
-        #     M = cv.moments(c)
-        #     if M["m00"] != 0:
-        #         cx = int(M["m10"] / M["m00"])
-        #         cy = int(M["m01"] / M["m00"])
-        #         cv.drawContours(frame, [c], -1, (0, 255, 0), 2)
-        #         cv.circle(frame, (cx, cy), 5, (255, 0, 0), -1)
-        #         coord_text = f"Centroide: x={cx}, y={cy}"
-        #         cv.putText(frame, coord_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)            # Send coordinates to Simulink
-        #         data = np.array([cx, cy], dtype=np.float32).tobytes()
-        # print("x,y is " + str(cx) + " " + str(cy))
-        #plt.imshow(cropped_frame)    
-        #plt.show()
-        #cv.destroyAllWindows()'''
         
         edges = cv.Canny(cropped_frame,200,500)
         contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         
-        c = max(contours, key=cv.contourArea)
-        Mc = cv.moments(c)
-        if Mc['m00'] != 0:
-            cx = int(Mc['m10'] / Mc['m00'])
-            cy = int(Mc['m01'] / Mc['m00'])
-        centers = [cx,cy]
-
-        # for cnt in contours:
-        #     M = cv.moments(cnt)
-        #     if M['m00'] != 0:
-        #         cx = int(M['m10'] / M['m00'])
-        #         cy = int(M['m01'] / M['m00'])
-        #         # Draw center
-        #         cv.circle(frame, (cx, cy), 5, (0, 0, 255), -1)
-        #         centers.append([cx,cy])
+        # c = max(contours, key=cv.contourArea)
+        # Mc = cv.moments(c)
+        # if Mc['m00'] != 0:
+        #     cx = int(Mc['m10'] / Mc['m00'])
+        #     cy = int(Mc['m01'] / Mc['m00'])
+        #centers =[[cx,cy]]
+        centers = []
+        filtered_contours = [cnt for cnt in contours if cv.arcLength(cnt, True) > 10]
+        for cnt in filtered_contours:
+            M = cv.moments(cnt)
+            if M['m00'] != 0:
+                cx = int(M['m10'] / M['m00'])
+                cy = int(M['m01'] / M['m00'])
+                centers.append([cx,cy])
         # for cnt in contours:
         #     if cv.contourArea(cnt) > 50:  # Filter out tiny noise
         #         cx, cy, x, y, w, h= self.get_center_from_bounding_rect(cnt)
@@ -332,97 +273,115 @@ class MinimalService(Node):
         #     for pt in cnt:
         #         x, y = pt[0]
         #         cv.circle(cropped_frame, (x, y), 1, (0, 255, 0), -1)
+
         cv.drawContours(cropped_frame,contours, -1, (0,255,0),3)
-        cv.circle(cropped_frame, (cx, cy), 5, (0, 0, 255), -1)
+        for pnt in centers: 
+            cv.circle(cropped_frame, (pnt), 5, (0, 0, 255), -1)
+        print(centers)
 
-        # merged_centers = self.merge_centers(centers, distance_threshold=110)
-        # print("merged centers: "+ str(merged_centers))
-        # cntr_pos = []
-        # for cntr in merged_centers:
-        #     #cv.circle(cropped_frame,cntr,5,(0,0,255),-1)
-        #     tmpx = round((cntr[0]/300-0.5)*15,3)/100#round((cntr[0]/640-0.5)*30,3)/100
-        #     tmpy = round(((1-cntr[1]/240)-0.5)*12+0.01,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
-        #     cntr_pos.append([tmpx,tmpy])
-        #     print("x,y: "+str(tmpx) + " " + str(tmpy))
-        #     if math.sqrt(tmpx**2+tmpy**2)<= 0.1:
-                
-        #         plt.subplot(1,2,1)
-        #         plt.imshow(cropped_frame)
-        #         plt.subplot(1,2,2)
-        #         plt.imshow(edges,cmap='gray')
-        #         plt.show()
-        #         return [tmpx,tmpy]
-
-        tmpx = round((centers[0]/310-0.5)*9.45,3)/100#round((cntr[0]/640-0.5)*30,3)/100
-        tmpy = round(((1-centers[1]/260)-0.5)*9.45+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
-        #cntr_pos.append([tmpx,tmpy])
-        print("x,y: "+str(tmpx) + " " + str(tmpy))
-        if math.sqrt(tmpx**2+tmpy**2)<= 0.1:
-            
-            plt.subplot(1,2,1)
-            plt.imshow(cropped_frame)
-            plt.subplot(1,2,2)
-            plt.imshow(edges,cmap='gray')
-            plt.show()
-            return [tmpx,tmpy]
-
-        # print("cntr pos: " + str(cntr_pos))
-        # plt.subplot(1,2,1)
-        # plt.imshow(cropped_frame)
-        # plt.subplot(1,2,2)
-        # plt.imshow(edges,cmap='gray')
-        # plt.show()
-        #return cntr_pos
-           
-        '''
-        ##############################
-        src = cropped_frame
-        source_window = "Cube Image"
-        corners_window = 'Corners detected'
-        max_thresh = 255
+        all_points = np.vstack(contours)
+        # x, y, w, h = cv.boundingRect(all_points)
+        # cv.rectangle(cropped_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        rect = cv.minAreaRect(all_points)
+        box = cv.boxPoints(rect)
+        box = np.int0(box)
+        print(rect[0])
+        print(rect)
+        angle = math.radians(rect[2])
+        cx = round(rect[0][0])
+        cy = round(rect[0][1])
+        cv.drawContours(cropped_frame, [box], 0, (0, 255, 0), 2)
+        cv.circle(cropped_frame, ([cx,cy]), 5, (0, 0, 255), -1)
         
-        # parser = argparse.ArgumentParser(description='Code for Harris corner detector tutorial.')
-        # parser.add_argument('--input', help='Path to input image.', default=frame)
-        # args = parser.parse_args()
-        # src = cv.imread(args.input)
-        if src is None:
-            print('Could not open or find the image:')#, args.input)
-            exit(1)
-        src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)# Create a window and a trackbar
-        #cv.namedWindow(source_window)
-        thresh = 200 # initial threshold
-        #cv.createTrackbar('Threshold: ', source_window, thresh, max_thresh, cornerHarris_demo)
-        #plt.imshow(src)#source_window, src)
-        #cornerHarris_demo(thresh,src_gray)
-        src_gray = src_gray.astype(np.uint8)
 
-        print(f"src_gray shape: {src_gray.shape}, dtype: {src_gray.dtype}")
+        # if len(centers)>=2:
+        #     self.frame_PCA(cropped_frame,centers)
+        # elif len(centers) == 1:
+        #     shape = self.detect_shape(filtered_contours) #max(filtered_contours, key=cv.contourArea))
+        #     print(shape)
 
+        tmpx = round((cx/310-0.5)*9.45,3)/100#round((cntr[0]/640-0.5)*30,3)/100
+        tmpy = round(((1-cy/260)-0.5)*9.45+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
+        #cntr_pos.append([tmpx,tmpy])
+        print("x,y: "+str(tmpx) + ", " + str(tmpy))
+        if math.sqrt(tmpx**2+tmpy**2)<= 0.15:
+            
+            # plt.subplot(1,2,1)
+            plt.imshow(cropped_frame)
+            # plt.subplot(1,2,2)
+            # plt.imshow(edges,cmap='gray')
+            plt.show()
+            return [tmpx,tmpy],angle
+        
 
-        result = self.cornerHarris_demo( thresh,src_gray)
-        #print(result[0])
+        return []
 
-        # # Display using matplotlib (safe for headless)
-        # plt.imshow(result, cmap='gray')
-        # plt.title("Corners Detected")
-        # plt.axis('off')
-        # plt.show()
-        # #cv.waitKey()
+    def frame_PCA(self, img, points):
+        # Center the data
+        points = np.array(points)
+        mean = np.mean(points, axis=0)
+        centered = points - mean
+        print("centered: "+str(centered))
+        print("mean: "+str(mean))
 
-        ################'''
+        # Compute covariance matrix
+        cov = np.cov(centered.T)
 
-        nothing_detected = True
-        if nothing_detected:
-            return [0,0]
-        return pos
-    
+        # Eigen decomposition
+        eigenvalues, eigenvectors = np.linalg.eig(cov)
+
+        # Sort eigenvectors by eigenvalues (descending)
+        order = np.argsort(eigenvalues)[::-1]
+        eigenvalues = eigenvalues[order]
+        eigenvectors = eigenvectors[:, order]
+
+        # First principal component
+        pc1 = eigenvectors[:, 0]
+        pc2 = eigenvectors[:, 1]
+
+        pc1_ang = math.atan2(pc1[1],pc1[0])%(math.pi)
+        pc2_ang = math.atan2(pc2[1],pc2[0])%(math.pi)
+        print("angles: " + str(pc1_ang) + ", " + str(pc2_ang))
+
+        
+        ##### plotting
+
+        # Show image with principal axes
+        plt.imshow(cv.cvtColor(img, cv.COLOR_BGR2RGB))
+        plt.scatter(points[:, 0], points[:, 1], color='blue')
+
+        # Draw principal components
+        scale = 100
+        plt.quiver(mean[0], mean[1], pc1[0], pc1[1], scale=1, color='red', label='PC1')
+        plt.quiver(mean[0], mean[1], pc2[0], pc2[1], scale=1, color='green', label='PC2')
+        plt.legend()
+       #plt.gca().invert_yaxis()
+        plt.title("PCA of Blue Points (NumPy + OpenCV)")
+        plt.show()
+
+    def detect_shape(self,contours):
+        # Find contours
+        for cnt in contours:
+            print("eplsilon:" + str(0.01 * cv.arcLength(cnt, True),))
+            approx = cv.approxPolyDP(cnt, 0.01 * cv.arcLength(cnt, True), True)
+            area = cv.contourArea(cnt)
+            print("area, approx: " + str(area) + ", " + str(approx))
+
+            if area > 5:  # filter out noise
+                if len(approx) > 8:
+                    print("Probably a sphere (round shape)")
+                    return("sphere")
+                elif 4 <= len(approx) <=8:
+                    print("Probably a cube (polygonal shape)")
+                    return("cube")
+
     def get_center_from_bounding_rect(self, contour):
         x, y, w, h = cv.boundingRect(contour)
         cx = x + w // 2
         cy = y + h // 2
 
         return (cx, cy, x, y, w, h)
-    
+
     def cornerHarris_demo(self,val,src_gray):
             thresh = val    # Detector parameters
             blockSize = 2
@@ -473,11 +432,26 @@ class MinimalService(Node):
             response.message = "Arm not moving correctly"
             return response
 
+    def get_obj_grip(self,obj_class):
+        if obj_class == "cube" or obj_class == "sphere":
+            return 11000
+        elif obj_class == "animal":
+            return 12000
+
+    def angle_cube_to_grip(self,angle):
+        grip_angle = round(math.degrees((math.radians(120)-angle))*100)
+        return grip_angle
+    
+    def angle_animal_to_grip(self, angle):
+        grip_angle = round(math.degrees((math.radians(210)-angle))*100)
+        return grip_angle
+
     async def arm_callback(self, request, response):
         time_data_set = [2000,2000,2000,2000,2000,2000]
         
         msg = Int16MultiArray()
         obj_class = request.obj_class
+        grip_size = self.get_obj_grip(obj_class)
 
         if request.xy[0] == 1: # this is command from client
             self.get_logger().info('moving arm to top')
@@ -492,23 +466,6 @@ class MinimalService(Node):
             response.success = True 
             response.message = 'successful'
             return response
-        
-        elif request.xy[0] == 3: 
-            self.get_logger().info('moving arm to grab')
-            msg.data = self.data_sets[int(request.xy[0]-1)]
-            self.publisher.publish(msg)
-
-            # find inverse kinematics (if ik used)
-            # otherwise convert values to command for planner or perform driving 
-
-            #Publish the grab message
-
-            #Publish arm top message
-
-            # call detection to see if object is in gripper.
-
-            # either send result or fail or restart from look.
-
         elif request.xy[0] == 4: 
             self.get_logger().info('moving arm to drop')
             msg.data = self.data_sets[int(request.xy[0]-1)]
@@ -519,19 +476,11 @@ class MinimalService(Node):
             # move if needed
             # Move object to drop
             # open gripper
-        elif request.xy[0] == 5:
-            msg.data = rob_data_set
-            self.publisher.publish(msg)
-            time.sleep(2.0)
-            print("sleep")
-            rob_data_set[0]=11000
-            msg.data = rob_data_set
-            self.publisher.publish(msg)
         elif request.xy[0] == 6:
             self.get_logger().info('moving arm to look')
             msg.data = self.data_sets[1]
             self.publisher.publish(msg)
-            time.sleep(2.0)
+            time.sleep(3.0)
             arm_pos = self.get_arm_pos()
             
             #response = self.arm_move_check(arm_pos,self.data_sets[1],response)
@@ -539,47 +488,62 @@ class MinimalService(Node):
             #     return response
             # else:
             #     self.get_logger().info(response.message)
-
-            cam_obj_pos = self.get_obj_pos()
-            print("cam obj pos :" + str(cam_obj_pos))
+            #cv.imwrite("sphere.jpg")
+            cam_obj_pos, obj_angle = self.get_obj_pos(obj_class)
+            grip_angle_cube = self.angle_cube_to_grip(obj_angle)
+            grip_angle_animal = self.angle_animal_to_grip(obj_angle)
+            print("cam obj pos :" + str(cam_obj_pos) + ", " + str(grip_angle_animal))
             if cam_obj_pos == []:
                 response.success = False 
                 response.message = "No object detected"
-                return response
+                return response 
             
             obj_pos = self.cam_forward_kinematics(self.transform_from_robot(self.data_sets[1]))
             obj_pos[0] += float(cam_obj_pos[0])
             obj_pos[1] += float(cam_obj_pos[1]) ## this will return a position x,y which the camera sees, should be transformed to arm_base
-            obj_pos.append(-0.16)
+            obj_pos.append(-0.17)
             print("obj pos: " + str(obj_pos))
             cam_angles, garbage = self.inverse_kinematics(obj_pos)
 
             if cam_angles == [0]:
                 response.success = False
                 response.message = "Object too far"
+                response.xyfix = garbage
                 return response
             elif cam_angles == [1]:
                 response.success = False
                 response.message = "Object too close"
+                response.xyfix = garbage
                 return response
             
             print(cam_angles)
+            
+            cam_angles[0] = 2000
+            if obj_class == "sphere":
+                cam_angles[1] = 12000
+            elif obj_class == "cube":
+                cam_angles[1] = grip_angle_cube
             cam_data_set = np.concatenate((cam_angles,time_data_set))
-            cam_data_set[0] = 2000
+            
             self.get_logger().info("computed cam sequence is " + str(cam_data_set))
             
             #await asyncio.sleep(2)
 
             self.safepublish(cam_data_set)
+            time.sleep(4.0)
             #await asyncio.sleep(2)
             print("sleep")
-            cam_data_set[0]=11000
+            cam_data_set[0]=grip_size
             cam_data_set[6]=1000
             msg.data = cam_data_set
             self.publisher.publish(msg)
+            time.sleep(4.0)
             #await asyncio.sleep(2)
             msg.data = self.data_sets[1]
             self.publisher.publish(msg)
+        else:
+            response.success = False
+            response.message = "Send valid input please. (2, 4 or 6)"
 
         
         

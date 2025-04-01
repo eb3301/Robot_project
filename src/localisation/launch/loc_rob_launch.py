@@ -21,12 +21,6 @@ def generate_launch_description():
         name='controller_node'
     ),
 
-    #Lidar node
-    # ExecuteProcess(
-    #     cmd=['ros2', 'run', 'localisation', 'lidar'],
-    #     output='screen',
-    #     name='lidar_node'
-    # ),
 
     #EKF Node
     ExecuteProcess(
@@ -41,6 +35,13 @@ def generate_launch_description():
         output='screen',
         name='ICP_Node'
     ),
+
+        # Path Execution Node
+    ExecuteProcess(
+        cmd=['ros2', 'run', 'steering', 'wheel_control'],
+        output='screen',
+        name='Wheel_Controller_Node'
+    )
     ])
 
 

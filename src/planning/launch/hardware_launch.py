@@ -14,7 +14,6 @@ def generate_launch_description():
             name='motor_launch'
         ),
         
-        
         # Start joystick
         ExecuteProcess(
             cmd=['ros2', 'launch', 'teleop_twist_joy', 'teleop-launch.py'],
@@ -22,7 +21,6 @@ def generate_launch_description():
             name='joystick_launch'
         ),
 
-        
         # Static transform broadcaster for base_link to imu_link
         ExecuteProcess(
             cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher', '--x', '0.00107', '--y', '0', '--z', '0.02361', '--frame-id', 'base_link', '--child-frame-id', 'imu_link'],
@@ -39,25 +37,37 @@ def generate_launch_description():
 
         #Static broadcaster: LiDAR - base_link
         ExecuteProcess(
-            cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher','--x', '0.0', '--y', '0.0815', '--z', '0.115', '--frame-id', 'base_link', '--child-frame-id', 'lidar_link'],
+            cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher','--x', '0.0', '--y', '0.0815', '--z', '0.12', '--frame-id', 'base_link', '--child-frame-id', 'lidar_link'],
             output='screen',
             name='base_to_lidar'
         ),
         
-        # Static broadcaster
+        # Static broadcaster: map - odom
         ExecuteProcess(
             cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher', '--frame-id', 'map', '--child-frame-id', 'odom'],
             output='screen',
             name='static_transform_broadcaster'
         ),
         
-
-        #Lidar Launch
+        # Lidar Launch
         ExecuteProcess(
             cmd=['ros2', 'launch', 'robp_launch', 'lidar_launch.yaml'],
             output='screen',
             name='lidar_launch'
         ),
 
+        # # Arm camera Launch
+        # ExecuteProcess(
+        #     cmd=['ros2', 'launch', 'robp_launch', 'arm_camera_launch.yaml'],
+        #     output='screen',
+        #     name='arm_camera_launch'
+        # ),
+
+        # # Camera Launch
+        # ExecuteProcess(
+        #     cmd=['ros2', 'launch', 'robp_launch', 'rs_d435i_launch.py'],
+        #     output='screen',
+        #     name='camera_launch'
+        # ),
 
     ])

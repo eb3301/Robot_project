@@ -67,7 +67,7 @@ class EKF_Algorithm(Node):
             dt = (t - self.time).nanoseconds * 1e-9
         
         ticks_per_rev = 48 * 64
-        wheel_radius = 0.045 # 9.6cm
+        wheel_radius = 0.048 # 9.6cm   0.039
         base = 0.27 # 29.7cm 
 
         # Ticks since last message
@@ -99,9 +99,10 @@ class EKF_Algorithm(Node):
             # Set noise to 1% of distance traveled
             motion_noise = np.diag([0.01 * v**2, 0.01 * v**2, 0.01 * w**2])
             imu_noise = np.array([[0.01]])
-
+            
             # Predict step
             cov_bar = G @ self.ekf_cov @ G.T + motion_noise
+            
 
             # Update step
             H = np.array([[0.0, 0.0, 1.0]]) # Measurement jacobian (Only yaw)
