@@ -19,6 +19,10 @@ import numpy as np
 from arm_interface.srv import Arm
 from arm_service.arm_client import call_arm_client
 
+from std_srvs.srv import SetBool
+from detect_interfaces.srv import DetectObjects
+import time
+
 class BehaviourTree(Node):
     def __init__(self):
         super().__init__('Behaviour_Tree_Node')
@@ -44,20 +48,20 @@ class BehaviourTree(Node):
         drive_to_obj_2 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this one to box?
         pickup = Pickup(self) # Pickup object
         place = Place() # Place object
-        detection = Detection(self)
+        detection=Detection()
 
-
-        test_seq = pt.composites.Sequence(name = 'Test Sequence', 
-                                          memory = bool,
-                                          children = [create_ws, load_map, drive_parallell, pickup]
-                                          )
         drive_parallell = pt.composites.Parallel(name='Drive parallell',
                                                  policy=pt.common.ParallelPolicy.SuccessOnSelected(drive_to_obj_1),
-                                                 children=[collect_seq, detection]
+                                                 children=[collect_seq]
                                                  )
         collect_seq = pt.composites.Sequence(name = 'Collection Sequence', 
                                           memory = bool,
                                           children = [cube_coor, drive_to_obj_1, pickup, drive_to_obj_2, place]
+                                          )
+        
+        test_seq = pt.composites.Sequence(name = 'Test Sequence', 
+                                          memory = bool,
+                                          children = [create_ws, load_map, drive_parallell, pickup]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -274,6 +278,7 @@ class Get_Coor(pt.behaviour.Behaviour):
         if self.target == 'ICP':
             coor = (6.7, 3.0)
             self.blackboard.set('Target', coor)
+            self.blackboard.set('Target_type', "ICP")
             return pt.common.Status.SUCCESS
 
         # If target is a box: choose closest box
@@ -281,15 +286,16 @@ class Get_Coor(pt.behaviour.Behaviour):
             closest_box = min(boxes, key=lambda box: np.linalg.norm(np.array([self.x, self.y]) - np.array([box[1], box[2]])) )
             coor = (closest_box[1], closest_box[2])
             self.blackboard.set('Target', coor)
+            self.blackboard.set('Target_type', "B")
             return pt.common.Status.SUCCESS
-
+        
         # Determine what object to pick up
         distances = []
         for target in targets: 
             # Distance between robot and target
             targ_to_robot = np.linalg.norm(np.array([self.x, self.y]) - np.array([target[1], target[2]]))
 
-            # Find box closets to target
+            # Find closest box to target
             closest_box = min(boxes, key=lambda box: np.linalg.norm(np.array([target[1], target[2]]) - np.array([box[1], box[2]])) )
             
             # Distance from target to closest box
@@ -302,34 +308,82 @@ class Get_Coor(pt.behaviour.Behaviour):
         coor = (min_targ[1], min_targ[2], min_targ)
         
         self.blackboard.set('Target', coor)
+        self.blackboard.set('Target_type', min_targ[0])
+
         return pt.common.Status.SUCCESS
     
     def pose_callback(self, msg: PoseWithCovarianceStamped):
         pose = msg.pose.pose
         self.x, self.y = pose.position.x, pose.position.y
 
-
-
 class Drive_to_Obj(pt.behaviour.Behaviour):
-    def __init__(self):
+    def __init__(self,node):
         super().__init__('Driving to Object')
+        self.node = node
+
         self.target = None
         self.blackboard = pt.blackboard.Blackboard()
+
+        self.target = None
+        self.detection_active = False
+
         print('Driving behaviour initialised')
+
         
     def update(self):
         # First time ticking update
         if self.status == pt.common.Status.INVALID:
             print(f"Retrieving coordinates for {self.target}")
             self.target = self.blackboard.get('Target')
-            return pt.common.Status.RUNNING
+            self.objects = self.blackboard.get('objects')
+            
+            # Initialise detection
+            self.start_client = self.node.create_client(SetBool, '/start_detection')
+            self.stop_client = self.node.create_client(SetBool, '/stop_detection')
+            self.detect_client = self.node.create_client(DetectObjects, '/detect_objects')
+
+            if self.target is None:
+                print('No target coordinates available...')
+                return pt.common.Status.FAILURE 
+            else: 
+                print('Starting detection client')
+                self.call_set_bool(self.start_client, True)
+                self.detection_active = True
+
+                # TODO: IMPLEMENT DRIVING!
+                # Path definition
+                # Motor commands
+                
+                # Detection for loop
+                if not self.detect_client.wait_for_service(timeout_sec=1.0):
+                    self.get_logger().warn("Service detect objects not available")
+                    return pt.common.Status.FAILURE
+                        
+                self.detect_req = DetectObjects.Request()
+                self.future = self.detect_client.call_async(self.detect_req)
+                return pt.common.Status.RUNNING
         
-        if self.target is None:
-            print('No target coordinates available...')
-            return pt.common.Status.FAILURE 
-        else: 
-            return pt.common.Status.SUCCESS
-            # TODO: IMPLEMENT DRIVING!
+        if hasattr(self, 'future') and self.future.done():
+                res = self.future.result()
+                if res is None:
+                    self.get_logger().error("Service call returned None")
+                    return pt.common.Status.FAILURE
+                try:
+                    for i, (obj_type, pos) in enumerate(zip(res.object_types, res.object_positions)):
+                        for obj in self.objects:
+                            detected_pos = np.array([pos.x, pos.y])
+                            known_pos = np.array([obj[1], obj[2]])
+                            if np.linalg.norm(detected_pos - known_pos) > 0.15:
+                                # if a new object is found and it is far from all the other known object --> re-plan the trajectory
+                                self.node.get_logger().info("New object found - Re-planning needed") 
+                                return pt.common.Status.FAILURE
+                    return pt.common.Status.SUCCESS
+                except Exception as e:
+                    self.get_logger().error(f"Error response detect_objects: {e}")
+                    return pt.common.Status.FAILURE
+                
+        return pt.common.Status.RUNNING
+                
         
 
 class Pickup(pt.behaviour.Behaviour):
@@ -348,7 +402,7 @@ class Pickup(pt.behaviour.Behaviour):
         self.request_sent = False
         self.response = None
         self.req.xy[0] = 6 #  
-        self.req.obj_class = '1' #self.blackboard.get('pickup_obj_class')[0]
+        self.req.obj_class = '1' # self.blackboard.get('Target_type')
         self.future = self.cli.call_async(self.req)
         return self.future.result()
         rclpy.spin_until_future_complete(self, self.future)
@@ -356,7 +410,7 @@ class Pickup(pt.behaviour.Behaviour):
 
     def update(self):
 
-        obj_class = '1'#self.blackboard.get('pickup_obj_class')[0]
+        obj_class = '1' # self.blackboard.get('Target_type')
         if obj_class is None:
             self.node.get_logger().error("No object class specified on blackboard.")
             return pt.common.Status.FAILURE

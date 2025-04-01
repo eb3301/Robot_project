@@ -19,8 +19,6 @@ from nav_msgs.msg import OccupancyGrid
 
 from std_srvs.srv import SetBool
 from detect_interfaces.srv import DetectObjects
-from robp_interfaces.msg import Encoders
-import math
 
 from shapely.geometry import Polygon, LineString
 from shapely.geometry import Point as shapelyPoint
@@ -42,7 +40,6 @@ class BehaviourTree(Node):
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          #children = [create_ws, waypoints, explore_samples, explore_unknown]
                                           children = [create_ws, waypoints, explore_samples, explore_unknown]
                                           )
 
