@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'auto_control = steering.auto_control:main', 
-            'wheel_control = steering.wheel_control:main'
+            'wheel_control = steering.wheel_control:main',
+            'calibrator = steering.calibrator:main'
         ],
     },
 )

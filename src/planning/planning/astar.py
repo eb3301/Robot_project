@@ -2,13 +2,16 @@
 
 import rclpy
 import rclpy.logging
-import numpy as np
-import tf2_ros
-from tf2_ros import TransformException
-import time
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
+
+import tf2_ros
+from tf2_ros import TransformException
 import tf2_geometry_msgs
+
+import time
+import numpy as np
+
 from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
@@ -83,7 +86,7 @@ class Planner(Node):
           y_index = int((self.path[i][1] - origin_y) // resolution)
           if map_data[y_index][x_index] == 100:
             self.planned = False
-            self.get_logger().info(f"Path obstructed at ({x_index}, {y_index})")
+            self.get_logger().info(f"Path obstructed at ({self.path[i][0]}, {self.path[i][1]})")
             break
         #self.get_logger().info(f"Path is good")
         
