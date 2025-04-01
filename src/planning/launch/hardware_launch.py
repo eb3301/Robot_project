@@ -21,28 +21,28 @@ def generate_launch_description():
             name='joystick_launch'
         ),
 
-        # Static broadcaster: base_link - imu_link
+        # Static transform broadcaster for base_link to imu_link
         ExecuteProcess(
             cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher', '--x', '0.00107', '--y', '0', '--z', '0.02361', '--frame-id', 'base_link', '--child-frame-id', 'imu_link'],
             output='screen',
             name='base_to_imu'
         ),
         
-        # Static broadcaster: base_link - camera_link (rs_d435i)
+        # Static transform broadcaster for base_link to camera_link (rs_d435i)
         ExecuteProcess(
             cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher', '--x', '0.08987', '--y', '0.0175', '--z', '0.10456', '--frame-id', 'base_link', '--child-frame-id', 'camera_link'],
             output='screen',
             name='base_to_rs_d435i'
         ),
 
-        # Static broadcaster: LiDAR - base_link
+        #Static broadcaster: LiDAR - base_link
         ExecuteProcess(
-            cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher','--x', '0.0', '--y', '0.1', '--z', '0.1', '--frame-id', 'base_link', '--child-frame-id', 'lidar_link'],
+            cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher','--x', '0.0', '--y', '0.0815', '--z', '0.12', '--frame-id', 'base_link', '--child-frame-id', 'lidar_link'],
             output='screen',
-            name='baselink_to_lidar'
+            name='base_to_lidar'
         ),
         
-        # Static broadcaster: Map - odom
+        # Static broadcaster: map - odom
         ExecuteProcess(
             cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher', '--frame-id', 'map', '--child-frame-id', 'odom'],
             output='screen',

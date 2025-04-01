@@ -7,28 +7,28 @@ from launch_ros.actions import Node
 def generate_launch_description():
     return LaunchDescription([
 
-    #Start Rviz
+    # Start Rviz
     ExecuteProcess(
         cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/group1/dd2419_ws/src/global_planner/launch/rviz/exploration.rviz'],
         output='screen',
         name='rviz'
     ),
 
-    #EKF Node
+    # EKF Node
     ExecuteProcess(
         cmd=['ros2', 'run', 'localisation', 'EKF'],
         output='screen',
         name='EKF_Node'
     ),
 
-    #ICP Node
+    # ICP Node
     ExecuteProcess(
         cmd=['ros2', 'run', 'localisation', 'ICP'],
         output='screen',
         name='ICP_Node'
     ),
 
-    #Occupancy grid node
+    # Occupancy grid node
     ExecuteProcess(
         cmd=['ros2', 'run', 'occupancy_grid', 'occupancy_grid'],
         output='screen',

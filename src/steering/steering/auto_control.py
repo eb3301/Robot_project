@@ -106,7 +106,7 @@ class AutoControll(Node):
 
             # Calculate the lookahead distance
             self.resolution = np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
-            self.lookahead_distance = 2*self.resolution
+            self.lookahead_distance = 3*self.resolution
 
             # Convert path to a NumPy array
             self.pose_list = np.array(self.pose_list)
@@ -151,8 +151,6 @@ class AutoControll(Node):
         target_point_idx = current_point_idx
         curr_x = path[current_point_idx][0]
         curr_y = path[current_point_idx][1]
-        # print(distances)
-        # print(lookahead_distance*2)
 
         # Find target index
         while target_point_idx + 1 < len(path) and np.sqrt((path[target_point_idx + 1][0] - curr_x)**2 + (path[target_point_idx + 1][1] - curr_y)**2) < 2*lookahead_distance:
@@ -164,9 +162,6 @@ class AutoControll(Node):
         # Get the target point
         target_point = path[target_point_idx]
         #self.get_logger().info(f'Index is: {target_point_idx}')
-        # print(f'Pose is: {current_position}')
-        # print(f'Target is: {target_point}')
-        # print(f'Index is: {target_point_idx}')
 
         # Calculate the steering angle to the target point
         steering_angle = calculate_steering_angle(current_position, current_heading, target_point)
@@ -204,7 +199,7 @@ def calculate_steering_angle(current_position, current_heading, target_point):
     # Steering angle is the difference between the vehicle's heading and the angle to the target
     steering_angle = angle_to_target - current_heading
 
-    # Constrain the steering angle to be within the range of -pi/2 to pi/2
+    # Constrain the steering angle to be within the range of -pi/2 to pi/2 to not drive backwards
     if steering_angle > np.pi / 2:
         steering_angle = np.pi / 2
     elif steering_angle < -np.pi / 2:
