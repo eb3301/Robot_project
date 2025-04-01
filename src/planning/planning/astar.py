@@ -83,7 +83,7 @@ class Planner(Node):
           y_index = int((self.path[i][1] - origin_y) // resolution)
           if map_data[y_index][x_index] == 100:
             self.planned = False
-            self.get_logger().info(f"Path obstructed at ({x_index}, {y_index})")
+            self.get_logger().info(f"Path obstructed at ({self.path[i][0]}, {self.path[i][1]})")
             break
         #self.get_logger().info(f"Path is good")
         

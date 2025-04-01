@@ -106,7 +106,7 @@ class AutoControll(Node):
 
             # Calculate the lookahead distance
             self.resolution = np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
-            self.lookahead_distance = 3*self.resolution
+            self.lookahead_distance = 4*self.resolution
 
             # Convert path to a NumPy array
             self.pose_list = np.array(self.pose_list)
@@ -220,10 +220,6 @@ def calculate_steering_angle(current_position, current_heading, target_point):
 def main():
     rclpy.init()
     node = AutoControll()
-    # _ = input("Press enter to start moving!")
-    # # Using MultiThreadedExecutor to spin multiple threads
-    # executor = rclpy.executors.MultiThreadedExecutor(num_threads=2)
-    # executor.add_node(node)
     try:
         rclpy.spin(node)
     except rclpy.exceptions.ROSInterruptException:
