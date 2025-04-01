@@ -274,12 +274,12 @@ class ICPNode(Node):
             self.fitness_counter = 0
             self.transform = result.transformation
 
-            self.get_logger().info(f"RUNNING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
+            # self.get_logger().info(f"RUNNING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
 
             end_time = time.time()
             #self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
         else:
-            self.get_logger().info(f"IGNORING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} ") 
+            # self.get_logger().info(f"IGNORING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} ") 
             self.fitness_counter += 1
             
             if self.fitness_counter == 3:
@@ -293,10 +293,11 @@ class ICPNode(Node):
                     min_distance = min(min_distance, dist)
 
                 if min_distance < 1.5:  # Adjust threshold as needed
-                    self.get_logger().info(f"Skipping new reference cloud: closest existing cloud is {min_distance:.2f}m away")
+                    # self.get_logger().info(f"Skipping new reference cloud: closest existing cloud is {min_distance:.2f}m away")
+                    pass
                 else:
                     self.pub_ref = True
-                    self.get_logger().info(f"Creating new reference cloud: nearest cloud was {min_distance:.2f}m away")
+                    # self.get_logger().info(f"Creating new reference cloud: nearest cloud was {min_distance:.2f}m away")
 
                 self.fitness_counter = 0
 
