@@ -54,17 +54,15 @@ def generate_launch_description():
         cmd=['ros2', 'run', 'steering', 'wheel_control'],
         output='screen',
         name='Wheel_Controller_Node'
+    ),
+
+    # Path Execution Node
+    ExecuteProcess(
+        cmd=['ros2', 'run', 'steering', 'auto_control'],
+        output='screen',
+        name='Auto_Controller_Node'
     )
 
-    # # Path Execution Node
-    # ExecuteProcess(
-    #     cmd=['ros2', 'run', 'steering', 'auto_control'],
-    #     output='screen',
-    #     name='Auto_Controller_Node'
-    # ),
-
-
-    
 
 
     ])
