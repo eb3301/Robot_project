@@ -52,8 +52,8 @@ class Planner(Node):
 
     # Target coordinates
     self.goal_received = True
-    self.xt = 0.5
-    self.yt = 0.6
+    self.xt = 0.0
+    self.yt = 0.2
 
     # Path
     self.planned = False
