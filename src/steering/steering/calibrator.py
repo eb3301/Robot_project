@@ -55,7 +55,7 @@ def main():
     node = Calibrator()
     try:
         rclpy.spin(node)
-        node.straight()
+        node.turn()
         # node.turn()
     except rclpy.exceptions.ROSInterruptException:
         pass
