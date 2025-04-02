@@ -38,19 +38,19 @@ def main(args=None):
     command = int(sys.argv[1])
     if command == 6:
         print("6")
-        look = arm_client.send_request(2,[]) 
-        print("success: "+ str(look.success))
-        if look.success:
+        response = arm_client.send_request(2,[]) 
+        print("success: "+ str(response.success))
+        if response.success:
             print("going to pick now")
             #rclpy.spin_once(timeout_sec=0.1)
             time.sleep(2.5)
-            move_to_obj = arm_client.send_request(6,[]) # sys.argv is from terminal
-            if move_to_obj.success:
+            response = arm_client.send_request(6,[]) # sys.argv is from terminal
+            if response.success:
                 print("Grabbing now")
                 time.sleep(1.0)
-                grab = arm_client.send_request(7,move_to_obj.arm_pos)
+                response = arm_client.send_request(7,response.arm_pos)
     else:
-        response = arm_client.send_request(command) 
+        response = arm_client.send_request(command,[]) 
     arm_client.get_logger().info(
         'Response from arm is: ' + str(response.success) + " and " + response.message)
 

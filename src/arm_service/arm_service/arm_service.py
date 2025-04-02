@@ -52,7 +52,7 @@ class MinimalService(Node):
         self.latest_image_time = self.get_clock().now()
 
     def arm_pos_callback(self,arr):
-        self.curr_arm_pos = arr
+        self.curr_arm_pos = arr.position
         self.curr_arm_pos_time = self.get_clock().now()
 
     def wait_for_fresh_image(self, after_time, timeout=2.0):
@@ -255,12 +255,12 @@ class MinimalService(Node):
 
     def get_obj_pos(self,obj_class):
         pos = []
-        #image = self.latest_image
+        image = self.latest_image
         
-        #bridge = CvBridge()
         #Convert ROS Image message to OpenCV format
-        #frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
-        frame = cv.imread(os.getcwd() + "/animaltop.jpg")
+        bridge = CvBridge()
+        frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
+        #frame = cv.imread(os.getcwd() + "/animaltop.jpg")
 
         with open(os.getcwd() + '/src/robp_robot/usb_cam/config/camera_info.yaml') as f:
             calib = yaml.safe_load(f)
@@ -336,15 +336,15 @@ class MinimalService(Node):
         cv.drawContours(cropped_frame, [box], 0, (0, 255, 0), 2)
         cv.circle(cropped_frame, ([cx,cy]), 5, (0, 0, 255), -1)
         
-
+        cv.imwrite('latest2.jpg', cropped_frame)
         # if len(centers)>=2:
         #     self.frame_PCA(cropped_frame,centers)
         # elif len(centers) == 1:
         #     shape = self.detect_shape(filtered_contours) #max(filtered_contours, key=cv.contourArea))
         #     print(shape)
 
-        tmpx = round((cx/310-0.5)*9.45,3)/100#round((cntr[0]/640-0.5)*30,3)/100
-        tmpy = round(((1-cy/260)-0.5)*9.45+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
+        tmpx = round((cx/440-0.5)*9.25,3)/100#round((cntr[0]/640-0.5)*30,3)/100
+        tmpy = round(((1-cy/370)-0.5)*8+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
         #cntr_pos.append([tmpx,tmpy])
         print("x,y: "+str(tmpx) + ", " + str(tmpy))
         if math.sqrt(tmpx**2+tmpy**2)<= 0.15:
@@ -471,7 +471,7 @@ class MinimalService(Node):
             return 12000
 
     def angle_cube_to_grip(self,angle):
-        grip_angle = round((210-angle)*100)
+        grip_angle = round((angle+30)*100)
         return grip_angle
     
     def angle_animal_to_grip(self, angle):
@@ -542,7 +542,7 @@ class MinimalService(Node):
             obj_pos = self.cam_forward_kinematics(self.transform_from_robot(self.data_sets[1]))
             obj_pos[0] += float(cam_obj_pos[0])
             obj_pos[1] += float(cam_obj_pos[1]) ## this will return a position x,y which the camera sees, should be transformed to arm_base
-            obj_pos.append(-0.17)
+            obj_pos.append(-0.18)
             print("obj pos: " + str(obj_pos))
             cam_angles, garbage = self.inverse_kinematics(obj_pos)
 
@@ -581,10 +581,10 @@ class MinimalService(Node):
             if arm_ok:
                 grab_data_set = np.concatenate((request.arm_pos,time_data_set))
             
-            
+            print(grab_data_set)
             grab_data_set[0]=grip_size
             grab_data_set[6]=1000
-            msg.data = grab_data_set
+            msg.data = grab_data_set.astype(np.int16).tolist()
             print("Grabbing")
             self.publisher.publish(msg)
             time.sleep(2.0)
@@ -601,7 +601,8 @@ class MinimalService(Node):
         #self.get_logger().info('Incoming request\na: %d b: %d' % (request.xy[0]))
         response.success = True#"success"
         response.message = 'successful'
-        response.arm_pos = cam_data_set[0:6]
+        if request.xy[0] == 6:
+            response.arm_pos = cam_data_set[0:6]
         return response
 
 
