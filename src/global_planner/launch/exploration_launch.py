@@ -61,8 +61,14 @@ def generate_launch_description():
         cmd=['ros2', 'run', 'steering', 'auto_control'],
         output='screen',
         name='Auto_Controller_Node'
-    )
+    ),
 
+    # Detection Service
+    ExecuteProcess(
+        cmd=['ros2', 'run', 'py_srvcli', 'detection_service'],
+        output='screen',
+        name='Detection_Service'
+    ) 
 
 
     ])

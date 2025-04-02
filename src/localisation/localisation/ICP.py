@@ -157,8 +157,6 @@ class ICPNode(Node):
         min_range, max_range = 0.25, 3
         msg.ranges = [r if max_range >= r >= min_range else float('nan') for r in msg.ranges]
 
-
-
         # Project lidar to point cloud
         cloud = self.proj.projectLaser(msg)
 
@@ -184,7 +182,7 @@ class ICPNode(Node):
                     self.accumulated_scans.append(points)
                     self.ref_cloud_pub.publish(cloud_out)
             else:
-                if self.counter % 6 == 0:
+                if self.counter % 4 == 0:
                     self.counter += 1
                     self.lidar_pub.publish(cloud_out)
                     source_pcd = self.pointcloud_2_open3d(cloud_out)
@@ -238,7 +236,7 @@ class ICPNode(Node):
 
             # Find the closest cloud
             closest_index = min(distances, key=lambda x: x[0])[1]
-            self.get_logger().info(f'Using reference cloud {closest_index} at distance {distances[closest_index][0]}')
+            #sself.get_logger().info(f'Using reference cloud {closest_index} at distance {distances[closest_index][0]}')
 
             target_pcd = self.target_pcd_list[closest_index][0]             
 
@@ -270,16 +268,16 @@ class ICPNode(Node):
 
         translation = result.transformation[:3, 3]
         dist = np.linalg.norm(translation)
-        if result.fitness > 0.2 and result.inlier_rmse < 0.04 and dist < 0.5: 
+        if result.fitness > 0.02 and result.inlier_rmse < 0.04 and dist < 0.5: 
             self.fitness_counter = 0
             self.transform = result.transformation
 
-            # self.get_logger().info(f"RUNNING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
+            #self.get_logger().info(f"RUNNING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
 
             end_time = time.time()
             #self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
         else:
-            # self.get_logger().info(f"IGNORING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} ") 
+            #self.get_logger().info(f"IGNORING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} ") 
             self.fitness_counter += 1
             
             if self.fitness_counter == 3:
@@ -301,9 +299,6 @@ class ICPNode(Node):
                     # self.get_logger().info(f"Creating new reference cloud: nearest cloud was {min_distance:.2f}m away")
 
                 self.fitness_counter = 0
-
-
-
 
     
     def publish_pose(self, pose_msg):

@@ -13,6 +13,13 @@ def generate_launch_description():
             output='screen',
             name='motor_launch'
         ),
+
+        # Camera Launch
+        ExecuteProcess(
+            cmd=['ros2', 'launch', 'robp_launch', 'rs_d435i_launch.py'],
+            output='screen',
+            name='camera_launch'
+        ),
         
         
         # Start joystick
