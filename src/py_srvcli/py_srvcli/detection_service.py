@@ -338,8 +338,8 @@ class Detection(Node):
             marker.pose.position.z = float(bbox_center[2])
             marker.scale.x = float(bbox_size[0])
             marker.scale.y = float(bbox_size[1])
-            marker.scale.z = float(bbox_size[2])
-            marker.color.a = 0.5  # Semi-transparent
+            marker.scale.z = float(bbox_size[2]) * 4
+            marker.color.a = 1.0 # Semi-transparent
             marker.color.r = 1.0
             marker.color.g = 0.0
             marker.color.b = 0.0
