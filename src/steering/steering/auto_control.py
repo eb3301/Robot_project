@@ -43,7 +43,7 @@ class AutoControll(Node):
         self.listener = tf2_ros.TransformListener(self.buffer, self, spin_thread = True)
 
         # Preallocation
-        self.current_position = (0.125, 0.175)
+        self.current_position = (0.0, 0.0)
         self.current_heading = 0
         self.pose_list = []
         self.start = False
