@@ -30,8 +30,8 @@ class Controller(Node):
         joy_vel_y = msg.axes[2] 
 
         # Robot paramters
-        wheel_radius = 0.04915 # m
-        base = 0.31 # m
+        wheel_radius = 0.046 # 0.04915
+        base = 0.3 # 0.30
         
         # Maximum velocities
         max_factor = 1 / 4

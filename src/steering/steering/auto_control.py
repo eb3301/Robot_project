@@ -43,7 +43,7 @@ class AutoControll(Node):
         self.listener = tf2_ros.TransformListener(self.buffer, self, spin_thread = True)
 
         # Preallocation
-        self.current_position = (0.125, 0.175)
+        self.current_position = (0.0, 0.0)
         self.current_heading = 0
         self.pose_list = []
         self.start = False
@@ -106,7 +106,7 @@ class AutoControll(Node):
 
             # Calculate the lookahead distance
             self.resolution = np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
-            self.lookahead_distance = 4*self.resolution
+            self.lookahead_distance = 6*self.resolution
 
             # Convert path to a NumPy array
             self.pose_list = np.array(self.pose_list)
@@ -167,11 +167,11 @@ class AutoControll(Node):
         steering_angle = calculate_steering_angle(current_position, current_heading, target_point)
 
         # Robot paramters
-        wheel_radius = 0.04915 # m
-        base = 0.31 # m
+        wheel_radius = 0.046 # 0.04915
+        base = 0.3 # 0.30
         
         # Maximum velocities
-        max_factor = 1 / 8
+        max_factor = 1 / 6
         max_vel = wheel_radius * max_factor # m/s
         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
 

@@ -10,6 +10,7 @@ class WheelController(Node):
 
     def __init__(self):
         super().__init__("Wheel_Controller") 
+        self.get_logger().info("Start wheel control")
 
         # Create subscription to /cmd_vel for Twist messages
         self.cmd_vel_sub = self.create_subscription(Twist, '/cmd_vel', self.twist_callback, 10)
@@ -33,8 +34,8 @@ class WheelController(Node):
 
     def publish_duty_cycles(self):
         # Given parameters
-        wheel_radius = 0.04915 # 0.04921
-        base = 0.31 # 0.30
+        wheel_radius = 0.046 # 0.04915
+        base = 0.3 # 0.30
 
         # Steer geometry, from velocity to wheel velocity
         u_w = self.vel_x / (wheel_radius)
@@ -50,7 +51,7 @@ class WheelController(Node):
         w_r = u_w + u_phi/2
 
         # Corrections for uneven motors
-        correct_factor = 0.014
+        correct_factor = 0 #0.006
         if u_w >= 0:
             if -0.25 < u_phi < 0:
                 w_r = w_r - (correct_factor)/(0.25)*u_phi - correct_factor
@@ -68,6 +69,7 @@ class WheelController(Node):
 
         # Create message
         duty_cycles_msg = DutyCycles()
+        # self.get_logger().info(f"Dudty cycle: ({w_l}, {w_r})")
               
         duty_cycles_msg.duty_cycle_left = w_l
         duty_cycles_msg.duty_cycle_right = w_r
