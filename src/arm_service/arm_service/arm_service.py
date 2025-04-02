@@ -5,6 +5,7 @@ import time
 import asyncio
 import cv2 as cv
 from cv_bridge import CvBridge
+import yaml
 import rclpy
 from rclpy.node import Node
 
@@ -254,16 +255,25 @@ class MinimalService(Node):
 
     def get_obj_pos(self,obj_class):
         pos = []
-        image = self.latest_image
+        #image = self.latest_image
         
-        bridge = CvBridge()
+        #bridge = CvBridge()
         #Convert ROS Image message to OpenCV format
-        frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
-        #frame = cv.imread(os.getcwd() + "/animal6.jpg")
+        #frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
+        frame = cv.imread(os.getcwd() + "/animaltop.jpg")
+
+        with open(os.getcwd() + '/src/robp_robot/usb_cam/config/camera_info.yaml') as f:
+            calib = yaml.safe_load(f)
+
+        # Convert data to NumPy arrays
+        camera_matrix = np.array(calib['camera_matrix']['data']).reshape((3, 3))
+        dist_coeffs = np.array(calib['distortion_coefficients']['data'])
+        undistorted = cv.undistort(frame, camera_matrix, dist_coeffs)
+        
         #cv.imwrite('animaltop.jpg', frame)
         N = 50 # pixels to remove from bottom
         #cropped_frame = frame[:frame.shape[0] - N, :]
-        cropped_frame = frame[90:340, 160:480]   
+        cropped_frame = undistorted[30:400, 100:540]   
         #image_path = os.getcwd() + "/src/arm_service/arm_service/sphere.jpg"
         # print("Current Working Directory:", os.getcwd())
         plt.imshow(cropped_frame)
@@ -310,9 +320,17 @@ class MinimalService(Node):
         rect = cv.minAreaRect(all_points)
         box = cv.boxPoints(rect)
         box = np.int0(box)
-        print(rect[0])
+
+        ((cx, cy), (w, h), angle) = rect
+
+        # Force consistent edge direction
+        if w < h:
+            angle += 90
+        
+        print(angle)
         print(rect)
-        angle = math.radians(rect[2])
+        #angle = math.radians(rect[2])
+        #anglePCA = self.frame_PCA(all_points, cropped_frame)
         cx = round(rect[0][0])
         cy = round(rect[0][1])
         cv.drawContours(cropped_frame, [box], 0, (0, 255, 0), 2)
@@ -341,48 +359,37 @@ class MinimalService(Node):
 
         return []
 
-    def frame_PCA(self, img, points):
-        # Center the data
-        points = np.array(points)
-        mean = np.mean(points, axis=0)
-        centered = points - mean
-        print("centered: "+str(centered))
-        print("mean: "+str(mean))
+    def frame_PCA(self, contour, img):
+        # Flatten and convert to np.array
+        data_pts = np.array(contour, dtype=np.float32).reshape(-1, 2)
+        mean = np.mean(data_pts, axis=0)
+        print("Contour shape:", np.array(contour).shape)
+        # Subtract mean (center the points)
+        centered = data_pts - mean
 
-        # Compute covariance matrix
+        # PCA
         cov = np.cov(centered.T)
-
-        # Eigen decomposition
         eigenvalues, eigenvectors = np.linalg.eig(cov)
-
-        # Sort eigenvectors by eigenvalues (descending)
-        order = np.argsort(eigenvalues)[::-1]
-        eigenvalues = eigenvalues[order]
-        eigenvectors = eigenvectors[:, order]
 
         # First principal component
         pc1 = eigenvectors[:, 0]
-        pc2 = eigenvectors[:, 1]
+        if pc1[0] < 0:
+            pc1 = -pc1
 
-        pc1_ang = math.atan2(pc1[1],pc1[0])%(math.pi)
-        pc2_ang = math.atan2(pc2[1],pc2[0])%(math.pi)
-        print("angles: " + str(pc1_ang) + ", " + str(pc2_ang))
+        angle_rad = np.arctan2(pc1[1], pc1[0])
+        angle_deg = np.degrees(angle_rad) % 180
+        print("angles deg, rad: " + str(angle_deg) + ", " + str(angle_rad))
 
-        
-        ##### plotting
-
-        # Show image with principal axes
         plt.imshow(cv.cvtColor(img, cv.COLOR_BGR2RGB))
-        plt.scatter(points[:, 0], points[:, 1], color='blue')
-
-        # Draw principal components
-        scale = 100
-        plt.quiver(mean[0], mean[1], pc1[0], pc1[1], scale=1, color='red', label='PC1')
-        plt.quiver(mean[0], mean[1], pc2[0], pc2[1], scale=1, color='green', label='PC2')
+        
+        plt.quiver(mean[0], mean[1], pc1[0], pc1[1], angles='xy', scale_units='xy',
+                   scale=0.01, color='r', width=0.015, label='PC1')
+        plt.title(f"PCA Angle: {round(angle_deg, 2)}°")
+        plt.axis('equal')
         plt.legend()
-       #plt.gca().invert_yaxis()
-        plt.title("PCA of Blue Points (NumPy + OpenCV)")
+        plt.gca().invert_yaxis() 
         plt.show()
+        return angle_deg
 
     def detect_shape(self,contours):
         # Find contours
@@ -464,7 +471,7 @@ class MinimalService(Node):
             return 12000
 
     def angle_cube_to_grip(self,angle):
-        grip_angle = round(math.degrees((math.radians(120)-angle))*100)
+        grip_angle = round((210-angle)*100)
         return grip_angle
     
     def angle_animal_to_grip(self, angle):
@@ -520,13 +527,13 @@ class MinimalService(Node):
             #     self.get_logger().info(response.message)
             #cv.imwrite("sphere.jpg")
             #rclpy.spin_once(self,timeout_sec=1.0)
-            move_time1 = self.get_clock().now()
-            self.wait_for_fresh_image(move_time1)
+            #move_time1 = self.get_clock().now()
+            #self.wait_for_fresh_image(move_time1)
 
             cam_obj_pos, obj_angle = self.get_obj_pos(obj_class)
             grip_angle_cube = self.angle_cube_to_grip(obj_angle)
             grip_angle_animal = self.angle_animal_to_grip(obj_angle)
-            print("cam obj pos :" + str(cam_obj_pos) + ", " + str(grip_angle_animal))
+            print("cam obj pos :" + str(cam_obj_pos) + ", " + str(grip_angle_cube))
             if cam_obj_pos == []:
                 response.success = False 
                 response.message = "No object detected"
@@ -555,8 +562,9 @@ class MinimalService(Node):
             cam_angles[0] = 2000
             if obj_class == "sphere":
                 cam_angles[1] = 12000
-            elif obj_class == "cube":
+            elif obj_class == "cube" or obj_class == "animal":
                 cam_angles[1] = grip_angle_cube
+            print("cam_angles: "+str(cam_angles))
             cam_data_set = np.concatenate((cam_angles,time_data_set))
             
             self.get_logger().info("computed cam sequence is " + str(cam_data_set))
@@ -565,21 +573,25 @@ class MinimalService(Node):
             move_time = self.get_clock().now()
 
             self.safepublish(cam_data_set)
-            self.wait_for_fresh_joint_state(move_time)
-            arm_ok = self.arm_move_check(self.curr_arm_pos,cam_data_set,response)
-            if arm_ok.success == True:
-
-                time.sleep(2.0)
-                #await asyncio.sleep(2)
-                print("sleep")
-                cam_data_set[0]=grip_size
-                cam_data_set[6]=1000
-                msg.data = cam_data_set
-                self.publisher.publish(msg)
-                time.sleep(4.0)
-                #await asyncio.sleep(2)
-                msg.data = self.data_sets[0]
-                self.publisher.publish(msg)
+            time.sleep(3.0)
+            
+        elif request.xy[0] == 7:
+            #self.wait_for_fresh_joint_state(move_time)
+            arm_ok = self.arm_move_check(self.curr_arm_pos[0:6],request.arm_pos,response)
+            if arm_ok:
+                grab_data_set = np.concatenate((request.arm_pos,time_data_set))
+            
+            
+            grab_data_set[0]=grip_size
+            grab_data_set[6]=1000
+            msg.data = grab_data_set
+            print("Grabbing")
+            self.publisher.publish(msg)
+            time.sleep(2.0)
+            #await asyncio.sleep(2)
+            msg.data = self.data_sets[0]
+            print("Raising arm")
+            self.publisher.publish(msg)
         else:
             response.success = False
             response.message = "Send valid input please. (2, 4 or 6)"
@@ -589,6 +601,7 @@ class MinimalService(Node):
         #self.get_logger().info('Incoming request\na: %d b: %d' % (request.xy[0]))
         response.success = True#"success"
         response.message = 'successful'
+        response.arm_pos = cam_data_set[0:6]
         return response
 
 

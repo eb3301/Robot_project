@@ -1,8 +1,10 @@
 # Goal 
 float32[2] xy
+float32[6] arm_pos
 string obj_class
 ---
 # result
 bool success
 string message
 float32[2] xyfix
+float32[6] arm_pos
