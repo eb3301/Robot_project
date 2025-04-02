@@ -48,9 +48,27 @@ class MinimalService(Node):
 
     def image_callback(self,image):
         self.latest_image = image
+        self.latest_image_time = self.get_clock().now()
 
     def arm_pos_callback(self,arr):
         self.curr_arm_pos = arr
+        self.curr_arm_pos_time = self.get_clock().now()
+
+    def wait_for_fresh_image(self, after_time, timeout=2.0):
+        start = time.time()
+        while time.time() - start < timeout:
+            rclpy.spin_once(self, timeout_sec=0.1)
+            if self.latest_image_time and self.latest_image_time > after_time:
+                return True
+        return False
+
+    def wait_for_fresh_joint_state(self, after_time, timeout=2.0):
+        start = time.time()
+        while time.time() - start < timeout:
+            rclpy.spin_once(self, timeout_sec=0.1)
+            if self.curr_arm_pos_time and self.curr_arm_pos_time > after_time:
+                return True
+        return False
         
     def get_arm_pos(self):
         #jointstate = rospy.wait_for_message('/servo_pos_publisher', JointState)
