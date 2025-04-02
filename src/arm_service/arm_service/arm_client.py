@@ -3,6 +3,7 @@ import sys # used to get input
 from arm_interface.srv import Arm
 import rclpy
 from rclpy.node import Node
+import time
 
 
 class ArmClient(Node):
@@ -40,6 +41,8 @@ def main(args=None):
         print("success: "+ str(look.success))
         if look.success:
             print("going to pick now")
+            #rclpy.spin_once(timeout_sec=0.1)
+            time.sleep(2.5)
             response = arm_client.send_request(6) # sys.argv is from terminal
     else:
         response = arm_client.send_request(command) 

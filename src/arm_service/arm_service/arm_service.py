@@ -520,7 +520,9 @@ class MinimalService(Node):
             #     self.get_logger().info(response.message)
             #cv.imwrite("sphere.jpg")
             #rclpy.spin_once(self,timeout_sec=1.0)
-            
+            move_time1 = self.get_clock().now()
+            self.wait_for_fresh_image(move_time1)
+
             cam_obj_pos, obj_angle = self.get_obj_pos(obj_class)
             grip_angle_cube = self.angle_cube_to_grip(obj_angle)
             grip_angle_animal = self.angle_animal_to_grip(obj_angle)
@@ -560,19 +562,24 @@ class MinimalService(Node):
             self.get_logger().info("computed cam sequence is " + str(cam_data_set))
             
             #await asyncio.sleep(2)
+            move_time = self.get_clock().now()
 
             self.safepublish(cam_data_set)
-            time.sleep(4.0)
-            #await asyncio.sleep(2)
-            print("sleep")
-            cam_data_set[0]=grip_size
-            cam_data_set[6]=1000
-            msg.data = cam_data_set
-            self.publisher.publish(msg)
-            time.sleep(4.0)
-            #await asyncio.sleep(2)
-            msg.data = self.data_sets[0]
-            self.publisher.publish(msg)
+            self.wait_for_fresh_joint_state(move_time)
+            arm_ok = self.arm_move_check(self.curr_arm_pos,cam_data_set,response)
+            if arm_ok.success == True:
+
+                time.sleep(2.0)
+                #await asyncio.sleep(2)
+                print("sleep")
+                cam_data_set[0]=grip_size
+                cam_data_set[6]=1000
+                msg.data = cam_data_set
+                self.publisher.publish(msg)
+                time.sleep(4.0)
+                #await asyncio.sleep(2)
+                msg.data = self.data_sets[0]
+                self.publisher.publish(msg)
         else:
             response.success = False
             response.message = "Send valid input please. (2, 4 or 6)"
