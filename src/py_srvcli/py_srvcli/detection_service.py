@@ -17,6 +17,7 @@ from tf_transformations import quaternion_matrix
 import colorsys
 import struct
 import ctypes
+from rclpy.qos import QoSProfile, QoSDurabilityPolicy, QoSReliabilityPolicy
 
 
 
@@ -26,7 +27,11 @@ class Detection(Node):
 
         # Publishers
         self._pub = self.create_publisher(PointCloud2, '/detected_objects', 10)
-        self._marker_pub = self.create_publisher(MarkerArray, '/bounding_boxes', 10)
+        qos = QoSProfile(
+            reliability=QoSReliabilityPolicy.RELIABLE, 
+            durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  
+            depth=10        ) 
+        self._marker_pub = self.create_publisher(MarkerArray, '/bounding_boxes', qos)
         
         # Service definition
         self.srv = self.create_service(DetectObjects, 'detect_objects', self.detect_objects_callback)
@@ -169,7 +174,7 @@ class Detection(Node):
         filtered_colors = colors[mask]
 
         if filtered_points.shape[0] == 0:
-            self.get_logger().info("No points after filtering")
+            # self.get_logger().info("No points after filtering")
             return
 
         db = DBSCAN(eps=0.03, min_samples=80)
@@ -193,7 +198,7 @@ class Detection(Node):
             cluster_points = filtered_points[cluster_mask]
             cluster_colors = filtered_colors[cluster_mask]
             cluster_indices = filtered_indices[cluster_mask]
-            self.get_logger().info(f"Cluster #{label} → {cluster_points.shape[0]} punti")
+            # self.get_logger().info(f"Cluster #{label} → {cluster_points.shape[0]} punti")
 
 
             if cluster_points.shape[0] < 10:

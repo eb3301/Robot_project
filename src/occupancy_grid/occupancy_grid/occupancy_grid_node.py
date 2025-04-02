@@ -57,7 +57,7 @@ class OccupancyGridPublisher(Node):
 
         # Initialize map
         # Adjust grid size based on workspace dimensions
-        self.workspace_coordinates = self.read_workspace_coordinates("/home/robot/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
+        self.workspace_coordinates = self.read_workspace_coordinates("/home/group1/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
         self.grid_size_x, self.grid_size_y, self.origin_x, self.origin_y = self.calculate_grid_size_and_origin(self.workspace_coordinates)
 
         # Initialize map data
@@ -102,7 +102,7 @@ class OccupancyGridPublisher(Node):
             # Process the detected objects from the response
             if response.object_types:
                 self.detected_objects = list(zip(response.object_types, response.object_positions))
-                self.get_logger().info(f"Detected {len(self.detected_objects)} objects.")
+                # self.get_logger().info(f"Detected {len(self.detected_objects)} objects.")
 
                 # Convert flat map to 2D grid for easier manipulation
                 grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
@@ -135,7 +135,7 @@ class OccupancyGridPublisher(Node):
                                         if grid[ny, nx] != obstacle_value:
                                             grid[ny, nx] = border_value
 
-                        self.get_logger().info(f"Object {obj_type} placed at grid cell ({gx}, {gy})")
+                        # self.get_logger().info(f"Object {obj_type} placed at grid cell ({gx}, {gy})")
 
                 # Update the flattened map data
                 self.map_data = grid.flatten().tolist()
@@ -152,7 +152,8 @@ class OccupancyGridPublisher(Node):
     def get_detected_objects_info(self):
         """ Print out the information of detected objects. """
         for i, (obj_type, obj_position) in enumerate(self.detected_objects):
-            self.get_logger().info(f"Object {i + 1}: Type: {obj_type}, Position: {obj_position}")
+            pass
+            # self.get_logger().info(f"Object {i + 1}: Type: {obj_type}, Position: {obj_position}")
 
     def calculate_grid_size_and_origin(self, coordinates):
         """Calculate grid size and origin based on workspace coordinates."""
@@ -217,7 +218,7 @@ class OccupancyGridPublisher(Node):
                     else:
                         grid[gy, gx] = -1  # Free (unexplored) space
 
-        self.get_logger().info(f"Value at grid[10,10] before = {grid[10,10]}")
+        # self.get_logger().info(f"Value at grid[10,10] before = {grid[10,10]}")
         #grid[20,30] = 100
 
         return grid.flatten().tolist()
@@ -420,7 +421,7 @@ class OccupancyGridPublisher(Node):
         marker.color.g = 0.0
         marker.color.b = 1.0
 
-        file_path = "/home/robot/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
+        file_path = "/home/group1/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
         coordinates = self.read_workspace_coordinates(file_path)
 
         first_point = None

@@ -4,8 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
-        - /Status1
+        - /MarkerArray1/Topic1
       Splitter Ratio: 0.5
     Tree Height: 549
   - Class: rviz_common/Selection
@@ -137,7 +136,7 @@ Visualization Manager:
       Enabled: true
       Name: Marker
       Namespaces:
-        {}
+        Target_Marker: true
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -145,6 +144,18 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /goal_marker
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Topic:
+        Depth: 10
+        Durability Policy: Transient Local
+        History Policy: Keep All
+        Reliability Policy: Reliable
+        Value: /bounding_boxes
       Value: true
   Enabled: true
   Global Options:
@@ -192,7 +203,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.5647130012512207
+      Distance: 4.468014240264893
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -228,5 +239,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 389
-  Y: 82
+  X: 767
+  Y: 126

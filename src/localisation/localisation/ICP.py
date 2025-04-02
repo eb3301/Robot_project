@@ -149,8 +149,8 @@ class ICPNode(Node):
                 msg_time
             )
         except TransformException as ex:
-            self.get_logger().info(
-                f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')     
+            #self.get_logger().info(
+                #f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')     
             return
         
         # Filter scans based on range

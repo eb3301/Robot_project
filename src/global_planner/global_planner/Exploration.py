@@ -158,6 +158,9 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
             vertices.append(vertices[0])
         polygon = Polygon(vertices)
 
+        Padding_value = 0.17
+        polygon = polygon.buffer(-Padding_value)
+
         UNIFORMITY_RADIUS = 1.30  # distanza minima tra candidati (Poisson disk)
         NUM_UNCOVERED_SAMPLES = 100
 
@@ -461,7 +464,7 @@ class ExploreUknownSpace(pt.behaviour.Behaviour):
         unknown_coords = []
         for gy in range(self.grid.shape[0]):
             for gx in range(self.grid.shape[1]):
-                if self.grid[gy, gx] == 0:
+                if self.grid[gy, gx] == -1:
                     # Convert from cell index to world coordinates
                     wx = self.origin_x + gx * self.resolution
                     wy = self.origin_y + gy * self.resolution

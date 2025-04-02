@@ -67,8 +67,8 @@ class EKF_Algorithm(Node):
             dt = (t - self.time).nanoseconds * 1e-9
         
         ticks_per_rev = 48 * 64
-        wheel_radius = 0.045 #9.6cm  
-        base = 0.27 # 29.7cm 
+        wheel_radius = 0.048 #9.6cm  
+        base = 0.30 # 29.7cm 
 
         # Ticks since last message
         delta_ticks_left = msg.delta_encoder_left
