@@ -37,8 +37,8 @@ class OccupancyGridPublisher(Node):
         # Add service client to call the detect_objects service
         self.detect_objects_client = self.create_client(DetectObjects, 'detect_objects')
         # Wait for the service to be available
-        while not self.detect_objects_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('DetectObjects service not available, waiting again...')
+        if not self.detect_objects_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('DetectObjects service not available...')
         # Add a timer to periodically get the detected objects
         self.timer = self.create_timer(1.0, self.fetch_detected_objects)
         
@@ -57,15 +57,15 @@ class OccupancyGridPublisher(Node):
 
         # Initialize map
         # Adjust grid size based on workspace dimensions
-        self.workspace_coordinates = self.read_workspace_coordinates("/home/kristoffer-germalm/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
+        self.workspace_coordinates = self.read_workspace_coordinates("/home/robot/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
         self.grid_size_x, self.grid_size_y, self.origin_x, self.origin_y = self.calculate_grid_size_and_origin(self.workspace_coordinates)
 
         # Initialize map data
         self.map_data = self.generate_room_map()
         
         # Timer to publish occupancy grid
-        self.marker_timer = self.create_timer(1.0, self.publish_workspace_marker)
-        self.publish_workspace_marker()
+        #self.marker_timer = self.create_timer(1.0, self.publish_workspace_marker)
+        #self.publish_workspace_marker()
 
         self.timer = self.create_timer(1.0, self.publish_map)
         self.grid_update_timer = self.create_timer(0.5, self.update_grid_regularly)
@@ -143,7 +143,8 @@ class OccupancyGridPublisher(Node):
                 self.get_detected_objects_info()
 
             else:
-                self.get_logger().warn("No objects detected.")
+                pass
+                #self.get_logger().warn("No objects detected.")
 
         except Exception as e:
             self.get_logger().error(f"Service call failed: {e}")
@@ -275,23 +276,23 @@ class OccupancyGridPublisher(Node):
                 
             # Convert PointCloud2 to numpy array
             points = np.array(list(pc2.read_points(cloud_transformed, field_names=("x", "y"), skip_nans=True)))
+            
+            # # Distance thresholding relative to the robot's position
+            # min_distance = 0.4 # Minimum distance, 0.35 enough to remove the arm from the lidar
+            # max_distance = 2.5  # Maximum distance (e.g., 10 meters)
 
-            # Distance thresholding relative to the robot's position
-            min_distance = 0.4 # Minimum distance, 0.35 enough to remove the arm from the lidar
-            max_distance = 2.5  # Maximum distance (e.g., 10 meters)
+            # # Filter points based on distance threshold relative to the robot
+            # filtered_points = []
+            # for point in points:
+            #     # Calculate distance from the robot (in the map frame)
+            #     distance = np.sqrt((point[0] - robot_x)**2 + (point[1] - robot_y)**2)
 
-            # Filter points based on distance threshold relative to the robot
-            filtered_points = []
-            for point in points:
-                # Calculate distance from the robot (in the map frame)
-                distance = np.sqrt((point[0] - robot_x)**2 + (point[1] - robot_y)**2)
-
-                # Apply the distance thresholding (ignore points too close or too far from the robot)
-                if min_distance <= distance <= max_distance:
-                    filtered_points.append(point)
+            #     # Apply the distance thresholding (ignore points too close or too far from the robot)
+            #     if min_distance <= distance <= max_distance:
+            #         filtered_points.append(point)
 
             # Update the occupancy grid with filtered points
-            self.update_occupancy_grid(filtered_points)
+            self.update_occupancy_grid(points)
 
         except Exception as e:
             self.get_logger().warn(f"Transform failed: {e}")
@@ -419,7 +420,7 @@ class OccupancyGridPublisher(Node):
         marker.color.g = 0.0
         marker.color.b = 1.0
 
-        file_path = "/home/kristoffer-germalm/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
+        file_path = "/home/robot/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
         coordinates = self.read_workspace_coordinates(file_path)
 
         first_point = None

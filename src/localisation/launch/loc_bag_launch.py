@@ -49,17 +49,11 @@ def generate_launch_description():
         
         #Static broadcaster: LiDAR - base_link
         ExecuteProcess(
-            cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher','--x', '0.0', '--y', '0.0815', '--z', '0.12', '--frame-id', 'base_link', '--child-frame-id', 'lidar_link'],
+            cmd=['ros2', 'run', 'tf2_ros', 'static_transform_publisher','--x', '0.0', '--y', '0.0815', '--z', '0.115', '--frame-id', 'base_link', '--child-frame-id', 'lidar_link'],
             output='screen',
             name='base_to_lidar'
         ),
 
-        # #Lidar node
-        # ExecuteProcess(
-        #     cmd=['ros2', 'run', 'localisation', 'lidar'],
-        #     output='screen',
-        #     name='lidar_node'
-        # ),
 
         #EKF Node
         ExecuteProcess(
@@ -87,5 +81,13 @@ def generate_launch_description():
             cmd=['ros2', 'run', 'mapping', 'mapping'],
             output='screen',
             name='Mapping_Node'
-        )
+        ),
+
+        # Detection Service
+        ExecuteProcess(
+            cmd=['ros2', 'run', 'py_srvcli', 'detection_service'],
+            output='screen',
+            name='Detection_Service'
+        ),
+
     ])

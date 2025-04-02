@@ -87,19 +87,19 @@ class Detection(Node):
 
         if abs(w) > rot_threshold or abs(v) > vel_threshold: 
             if self.active:
-                self.get_logger().info("Rotating robot: stop detection")
+                #self.get_logger().info("Rotating robot: stop detection")
                 self.active = False
-                self.get_logger().info(f"omega: {w}")
+                #self.get_logger().info(f"omega: {w}")
         elif not self.active:
-                self.get_logger().info("Robot still or in linear motion: start detection.")
+                #self.get_logger().info("Robot still or in linear motion: start detection.")
                 self.active = True
 
     def detect_objects_callback(self, request, response):
         """Service callback that returns the detected objects and their positions."""
-        self.get_logger().info("Detecting objects...")
+        #self.get_logger().info("Detecting objects...")
 
         if not self.ObjectList:
-            self.get_logger().warn("No detected objects available.")
+            #self.get_logger().warn("No detected objects available.")
             return response  # Return empty response if no objects detected
 
         # Populate response with object types and positions
