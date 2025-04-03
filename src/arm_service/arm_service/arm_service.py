@@ -25,6 +25,8 @@ import math
 import ipywidgets as widgets
 import serial
 
+from geometry_msgs.msg import Twist
+
 import matplotlib.pyplot as plt
 from robp_interfaces.msg import DutyCycles
 
@@ -35,6 +37,7 @@ class MinimalService(Node):
         super().__init__('arm_service')
         self.srv = self.create_service(Arm, 'arm', self.arm_callback)
         self.publisher = self.create_publisher(Int16MultiArray, 'multi_servo_cmd_sub', 10)
+        self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
         self.imagesubscriber = self.create_subscription(Image, "/arm_camera/image_raw", self.image_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)) ## frame id is arm_camera_link
         self.servo_sub = self.create_subscription(JointState,'/servo_pos_publisher',self.arm_pos_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         self.duty_pub = self.create_publisher(DutyCycles, "/motor/duty_cycles", 10)
@@ -480,25 +483,53 @@ class MinimalService(Node):
 
     def drive_to_obj(self,pos):
         x,y = pos
+         # Robot paramters
+        wheel_radius = 0.046 # 0.04915
+        base = 0.3 # 0.30
+        
+        # Maximum velocities
+        max_factor = 1 / 6
+        max_vel = wheel_radius * max_factor # m/s
+        max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
+        
+
         # if object far forward
         # elIf object far left/right --> rotate l/r
         #   then drive forward if too fowrard
         # call self again and again until object can be reached
         if abs(x) <= 0.1 and y>0.15: # drive forward
             # send command to drive straight 1 cm?
-            pass
+            linear_velocity = max_vel*0.5
+            angular_velocity = 0 
         elif abs(x) <= 0.1 and y < 0.15:
             #send command to back up 1 cm?
-            pass
+            linear_velocity = -max_vel*0.5
+            angular_velocity = 0 
         else:
             if x>= 0.1:
                 #rotate right 5 deg
                 #then restart, drive_to_obj(get_obj_pos)
-                pass
+                angular_velocity = max_rot*0.5
+                linear_velocity = 0
             elif x<= 0.1:
                 #rotate left 5 deg
                 #then restart, drive_to_obj(get_obj_pos)
-                pass
+                angular_velocity = -max_rot*0.5
+                linear_velocity = 0
+
+        twist_msg = Twist()
+        twist_msg.linear.z = max_factor
+        twist_msg.linear.x = linear_velocity
+        twist_msg.angular.z = angular_velocity
+        self.cmd_vel_pub.publish(twist_msg)
+        print("driving lin, ang: " + str(linear_velocity) + ", " + str(angular_velocity))
+        time.sleep(0.2) # may need another one if nothing happens
+        twist_msg = Twist()
+        self.cmd_vel_pub.publish(twist_msg)
+        print("Stopping")
+
+        return
+
 
         #either this, or we can look at the pos and set values accordingly.
 
@@ -511,22 +542,22 @@ class MinimalService(Node):
         obj_class = request.obj_class
         grip_size = self.get_obj_grip(obj_class)
 
-        if request.xy[0] == 1: # this is command from client
+        if request.command == 1: # this is command from client
             self.get_logger().info('moving arm to top')
-            msg.data = self.data_sets[int(request.xy[0]-1)]
+            msg.data = self.data_sets[int(request.command-1)]
             self.publisher.publish(msg)
-        elif request.xy[0] == 2:
+        elif request.command == 2:
             self.get_logger().info('moving arm to look')
-            print(int(request.xy[0]-1))
-            msg.data = self.data_sets[int(request.xy[0]-1)]
+            print(int(request.command-1))
+            msg.data = self.data_sets[int(request.command-1)]
             self.publisher.publish(msg)
 
             response.success = True 
             response.message = 'successful'
             return response
-        elif request.xy[0] == 4: 
+        elif request.command == 4: 
             self.get_logger().info('moving arm to drop')
-            msg.data = self.data_sets[int(request.xy[0]-1)]
+            msg.data = self.data_sets[int(request.command-1)]
             self.publisher.publish(msg)
             time.sleep(2.0)
             msg.data[0] = 2000
@@ -538,7 +569,7 @@ class MinimalService(Node):
             # move if needed
             # Move object to drop
             # open gripper
-        elif request.xy[0] == 6:
+        elif request.command == 6:
             # self.get_logger().info('moving arm to look')
             # msg.data = self.data_sets[1]
             # self.publisher.publish(msg)
@@ -601,7 +632,7 @@ class MinimalService(Node):
             self.safepublish(cam_data_set)
             time.sleep(3.0)
             
-        elif request.xy[0] == 7:
+        elif request.command == 7:
             #self.wait_for_fresh_joint_state(move_time)
             arm_ok = self.arm_move_check(self.curr_arm_pos[0:6],request.arm_pos,response)
             if arm_ok:
@@ -618,16 +649,20 @@ class MinimalService(Node):
             msg.data = self.data_sets[0]
             print("Raising arm")
             self.publisher.publish(msg)
+        elif request.command == 8:
+            self.drive_to_obj(request.xy)
         else:
             response.success = False
             response.message = "Send valid input please. (2, 4 or 6)"
+        
+        
 
         
         
-        #self.get_logger().info('Incoming request\na: %d b: %d' % (request.xy[0]))
+        #self.get_logger().info('Incoming request\na: %d b: %d' % (request.command))
         response.success = True#"success"
         response.message = 'successful'
-        if request.xy[0] == 6:
+        if request.command == 6:
             response.arm_pos = cam_data_set[0:6]
         return response
 

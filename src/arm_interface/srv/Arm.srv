@@ -1,4 +1,5 @@
 # Goal 
+float32 command
 float32[2] xy
 float32[6] arm_pos
 string obj_class

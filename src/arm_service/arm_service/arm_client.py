@@ -15,10 +15,11 @@ class ArmClient(Node):
             self.get_logger().info('service not available, waiting again...')
         self.req = Arm.Request()
 
-    def send_request(self, command, arm_pos):
-        self.req.xy[0] = command
+    def send_request(self, command, arm_pos, xyfix):
+        self.req.command = command
         self.req.obj_class = "cube"
         self.req.arm_pos = arm_pos
+        self.req.xy = xyfix
         self.future = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
@@ -38,19 +39,23 @@ def main(args=None):
     command = int(sys.argv[1])
     if command == 6:
         print("6")
-        response = arm_client.send_request(2,[]) 
+        response = arm_client.send_request(2,[],[]) 
         print("success: "+ str(response.success))
         if response.success:
             print("going to pick now")
             #rclpy.spin_once(timeout_sec=0.1)
             time.sleep(2.5)
-            response = arm_client.send_request(6,[]) # sys.argv is from terminal
+            response = arm_client.send_request(6,[],[]) # sys.argv is from terminal
             if response.success:
                 print("Grabbing now")
                 time.sleep(1.0)
                 response = arm_client.send_request(7,response.arm_pos)
+            else:
+                print("Driving now")
+                time.sleep(1.0)
+                response = arm_client.send_request(7,[], response.xyfix)
     else:
-        response = arm_client.send_request(command,[]) 
+        response = arm_client.send_request(command,[],[]) 
     arm_client.get_logger().info(
         'Response from arm is: ' + str(response.success) + " and " + response.message)
 
