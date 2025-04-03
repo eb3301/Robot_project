@@ -51,7 +51,7 @@ def main(args=None):
                 if response.success:
                     print("Grabbing now")
                     time.sleep(1.0)
-                    response = arm_client.send_request(7,response.arm_pos)
+                    response = arm_client.send_request(7,response.arm_pos,[])
                     if response.success:
                         obj_grabbed = True
                         break

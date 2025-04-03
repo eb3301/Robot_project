@@ -280,8 +280,8 @@ class MinimalService(Node):
         cropped_frame = undistorted[30:400, 100:540]   
         #image_path = os.getcwd() + "/src/arm_service/arm_service/sphere.jpg"
         # print("Current Working Directory:", os.getcwd())
-        plt.imshow(cropped_frame)
-        plt.show()
+        #plt.imshow(cropped_frame)
+        #plt.show()
         
         edges = cv.Canny(cropped_frame,200,500)
         contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
@@ -358,10 +358,10 @@ class MinimalService(Node):
         if math.sqrt(tmpx**2+tmpy**2)<= 0.15:
             
             # plt.subplot(1,2,1)
-            plt.imshow(cropped_frame)
+            #plt.imshow(cropped_frame)
             # plt.subplot(1,2,2)
             # plt.imshow(edges,cmap='gray')
-            plt.show()
+            #plt.show()
             return [tmpx,tmpy],angle
         
 
