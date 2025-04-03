@@ -42,18 +42,23 @@ def main(args=None):
         response = arm_client.send_request(2,[],[]) 
         print("success: "+ str(response.success))
         if response.success:
+            obj_grabbed = False
             print("going to pick now")
-            #rclpy.spin_once(timeout_sec=0.1)
-            time.sleep(2.5)
-            response = arm_client.send_request(6,[],[]) # sys.argv is from terminal
-            if response.success:
-                print("Grabbing now")
-                time.sleep(1.0)
-                response = arm_client.send_request(7,response.arm_pos)
-            else:
-                print("Driving now")
-                time.sleep(1.0)
-                response = arm_client.send_request(7,[], response.xyfix)
+            while not obj_grabbed:
+                #rclpy.spin_once(timeout_sec=0.1)
+                time.sleep(2.5)
+                response = arm_client.send_request(6,[],[]) # sys.argv is from terminal
+                if response.success:
+                    print("Grabbing now")
+                    time.sleep(1.0)
+                    response = arm_client.send_request(7,response.arm_pos)
+                    if response.success:
+                        obj_grabbed = True
+                        break
+                else:
+                    print("Driving now, error is: " + response.message)
+                    time.sleep(1.0)
+                    response = arm_client.send_request(7,[], response.xyfix)
     else:
         response = arm_client.send_request(command,[],[]) 
     arm_client.get_logger().info(

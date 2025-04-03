@@ -37,6 +37,7 @@ class MinimalService(Node):
         super().__init__('arm_service')
         self.srv = self.create_service(Arm, 'arm', self.arm_callback)
         self.publisher = self.create_publisher(Int16MultiArray, 'multi_servo_cmd_sub', 10)
+        self.img_publisher = self.create_publisher(Image, 'arm_image', 10)
         self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
         self.imagesubscriber = self.create_subscription(Image, "/arm_camera/image_raw", self.image_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)) ## frame id is arm_camera_link
         self.servo_sub = self.create_subscription(JointState,'/servo_pos_publisher',self.arm_pos_callback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
@@ -88,7 +89,7 @@ class MinimalService(Node):
         x, y, z = target_position
         print("check: " + str(target_position))
         return (
-            np.all([0.12 <= y <= 0.22, -0.15 <= x <= 0.15])
+            np.all([0.12 <= y <= 0.20, -0.15 <= x <= 0.15])
             #and (-0.01 <= z <= 0.3)
         )
 
@@ -350,6 +351,10 @@ class MinimalService(Node):
         tmpy = round(((1-cy/370)-0.5)*8+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
         #cntr_pos.append([tmpx,tmpy])
         print("x,y: "+str(tmpx) + ", " + str(tmpy))
+        det_img = Image()
+        det_img = bridge.cv2_to_imgmsg(cropped_frame, encoding='bgr8')
+        self.img_publisher.publish(det_img)
+        
         if math.sqrt(tmpx**2+tmpy**2)<= 0.15:
             
             # plt.subplot(1,2,1)
@@ -497,11 +502,11 @@ class MinimalService(Node):
         # elIf object far left/right --> rotate l/r
         #   then drive forward if too fowrard
         # call self again and again until object can be reached
-        if abs(x) <= 0.1 and y>0.15: # drive forward
+        if abs(x) <= 0.08 and y>0.18: # drive forward
             # send command to drive straight 1 cm?
             linear_velocity = max_vel*0.5
             angular_velocity = 0 
-        elif abs(x) <= 0.1 and y < 0.15:
+        elif abs(x) <= 0.08 and y < 0.14:
             #send command to back up 1 cm?
             linear_velocity = -max_vel*0.5
             angular_velocity = 0 
@@ -535,7 +540,7 @@ class MinimalService(Node):
 
         
 
-    async def arm_callback(self, request, response):
+    def arm_callback(self, request, response):
         time_data_set = [2000,2000,2000,2000,2000,2000]
         
         msg = Int16MultiArray()
@@ -651,6 +656,8 @@ class MinimalService(Node):
             self.publisher.publish(msg)
         elif request.command == 8:
             self.drive_to_obj(request.xy)
+            response.success = True
+            response.message = "Drove once"
         else:
             response.success = False
             response.message = "Send valid input please. (2, 4 or 6)"
