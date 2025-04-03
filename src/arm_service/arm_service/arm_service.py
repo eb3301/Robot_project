@@ -478,6 +478,32 @@ class MinimalService(Node):
         grip_angle = round(math.degrees((math.radians(210)-angle))*100)
         return grip_angle
 
+    def drive_to_obj(self,pos):
+        x,y = pos
+        # if object far forward
+        # elIf object far left/right --> rotate l/r
+        #   then drive forward if too fowrard
+        # call self again and again until object can be reached
+        if abs(x) <= 0.1 and y>0.15: # drive forward
+            # send command to drive straight 1 cm?
+            pass
+        elif abs(x) <= 0.1 and y < 0.15:
+            #send command to back up 1 cm?
+            pass
+        else:
+            if x>= 0.1:
+                #rotate right 5 deg
+                #then restart, drive_to_obj(get_obj_pos)
+                pass
+            elif x<= 0.1:
+                #rotate left 5 deg
+                #then restart, drive_to_obj(get_obj_pos)
+                pass
+
+        #either this, or we can look at the pos and set values accordingly.
+
+        
+
     async def arm_callback(self, request, response):
         time_data_set = [2000,2000,2000,2000,2000,2000]
         
