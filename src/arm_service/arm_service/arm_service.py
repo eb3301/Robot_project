@@ -89,7 +89,7 @@ class MinimalService(Node):
         x, y, z = target_position
         print("check: " + str(target_position))
         return (
-            np.all([0.12 <= y <= 0.20, -0.15 <= x <= 0.15])
+            np.all([0.14 <= y <= 0.195, -0.135 <= x <= 0.135])
             #and (-0.01 <= z <= 0.3)
         )
 
@@ -277,7 +277,7 @@ class MinimalService(Node):
         #cv.imwrite('animaltop.jpg', frame)
         N = 50 # pixels to remove from bottom
         #cropped_frame = frame[:frame.shape[0] - N, :]
-        cropped_frame = undistorted[30:400, 100:540]   
+        cropped_frame = undistorted[20:420, 60:580]   
         #image_path = os.getcwd() + "/src/arm_service/arm_service/sphere.jpg"
         # print("Current Working Directory:", os.getcwd())
         #plt.imshow(cropped_frame)
@@ -347,8 +347,8 @@ class MinimalService(Node):
         #     shape = self.detect_shape(filtered_contours) #max(filtered_contours, key=cv.contourArea))
         #     print(shape)
 
-        tmpx = round((cx/440-0.5)*9.25,3)/100#round((cntr[0]/640-0.5)*30,3)/100
-        tmpy = round(((1-cy/370)-0.5)*8+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
+        tmpx = round((cx/440-0.5)*30,3)/100#round((cntr[0]/640-0.5)*30,3)/100
+        tmpy = round(((1-cy/370)-0.5)*10+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
         #cntr_pos.append([tmpx,tmpy])
         print("x,y: "+str(tmpx) + ", " + str(tmpy))
         det_img = Image()
@@ -487,40 +487,43 @@ class MinimalService(Node):
         return grip_angle
 
     def drive_to_obj(self,pos):
+        a,b,c =self.arm_length
         x,y = pos
          # Robot paramters
         wheel_radius = 0.046 # 0.04915
         base = 0.3 # 0.30
+        dist = math.sqrt(x**2+y**2) # distance to point
         
         # Maximum velocities
-        max_factor = 1 / 6
+        max_factor = 1 / 3
         max_vel = wheel_radius * max_factor # m/s
         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
+        
         
 
         # if object far forward
         # elIf object far left/right --> rotate l/r
         #   then drive forward if too fowrard
         # call self again and again until object can be reached
-        if abs(x) <= 0.08 and y>0.18: # drive forward
+        if abs(x) <= 0.07 and dist > a+b: # drive forward
             # send command to drive straight 1 cm?
-            linear_velocity = max_vel*0.5
-            angular_velocity = 0 
-        elif abs(x) <= 0.08 and y < 0.14:
+            linear_velocity = max_vel*0.4
+            angular_velocity = 0.0
+        elif abs(x) <= 0.07 and y  <= 0.14 :
             #send command to back up 1 cm?
-            linear_velocity = -max_vel*0.5
-            angular_velocity = 0 
+            linear_velocity = -max_vel*0.4
+            angular_velocity = 0.0
         else:
-            if x>= 0.1:
+            if x>= 0.07:
                 #rotate right 5 deg
                 #then restart, drive_to_obj(get_obj_pos)
-                angular_velocity = max_rot*0.5
-                linear_velocity = 0
-            elif x<= 0.1:
+                angular_velocity = -max_rot
+                linear_velocity = 0.0
+            elif x<= 0.07:
                 #rotate left 5 deg
                 #then restart, drive_to_obj(get_obj_pos)
-                angular_velocity = -max_rot*0.5
-                linear_velocity = 0
+                angular_velocity = max_rot
+                linear_velocity = 0.0
 
         twist_msg = Twist()
         twist_msg.linear.z = max_factor
@@ -575,11 +578,6 @@ class MinimalService(Node):
             # Move object to drop
             # open gripper
         elif request.command == 6:
-            # self.get_logger().info('moving arm to look')
-            # msg.data = self.data_sets[1]
-            # self.publisher.publish(msg)
-            # time.sleep(5.0)
-            
             #arm_pos = self.get_arm_pos()
             
             #response = self.arm_move_check(arm_pos,self.data_sets[1],response)
@@ -636,6 +634,10 @@ class MinimalService(Node):
 
             self.safepublish(cam_data_set)
             time.sleep(3.0)
+            response.success = True
+            response.message = "Object grabbed"
+                
+
             
         elif request.command == 7:
             #self.wait_for_fresh_joint_state(move_time)
