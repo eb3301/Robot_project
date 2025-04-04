@@ -261,6 +261,9 @@ class MinimalService(Node):
         pos = []
         image = self.latest_image
         
+        centers = []
+        all_points = []
+        rect = []
         #Convert ROS Image message to OpenCV format
         bridge = CvBridge()
         frame = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
@@ -273,11 +276,12 @@ class MinimalService(Node):
         camera_matrix = np.array(calib['camera_matrix']['data']).reshape((3, 3))
         dist_coeffs = np.array(calib['distortion_coefficients']['data'])
         undistorted = cv.undistort(frame, camera_matrix, dist_coeffs)
-        
+        blur_undistorted = cv.blur(undistorted,(2,2))
+
         #cv.imwrite('animaltop.jpg', frame)
         N = 50 # pixels to remove from bottom
         #cropped_frame = frame[:frame.shape[0] - N, :]
-        cropped_frame = undistorted[20:420, 60:580]   
+        cropped_frame = blur_undistorted[20:420, 60:580]   
         #image_path = os.getcwd() + "/src/arm_service/arm_service/sphere.jpg"
         # print("Current Working Directory:", os.getcwd())
         #plt.imshow(cropped_frame)
@@ -292,7 +296,7 @@ class MinimalService(Node):
         #     cx = int(Mc['m10'] / Mc['m00'])
         #     cy = int(Mc['m01'] / Mc['m00'])
         #centers =[[cx,cy]]
-        centers = []
+        
         filtered_contours = [cnt for cnt in contours if cv.arcLength(cnt, True) > 10]
         for cnt in filtered_contours:
             M = cv.moments(cnt)
@@ -317,7 +321,7 @@ class MinimalService(Node):
         for pnt in centers: 
             cv.circle(cropped_frame, (pnt), 5, (0, 0, 255), -1)
         print(centers)
-
+        
         all_points = np.vstack(contours)
         # x, y, w, h = cv.boundingRect(all_points)
         # cv.rectangle(cropped_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -347,8 +351,8 @@ class MinimalService(Node):
         #     shape = self.detect_shape(filtered_contours) #max(filtered_contours, key=cv.contourArea))
         #     print(shape)
 
-        tmpx = round((cx/440-0.5)*30,3)/100#round((cntr[0]/640-0.5)*30,3)/100
-        tmpy = round(((1-cy/370)-0.5)*10+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
+        tmpx = round((cx/520-0.5)*20-1,3)/100#round((cntr[0]/640-0.5)*30,3)/100
+        tmpy = round(((1-cy/400)-0.5)*10+1,3)/100#round(((1-cntr[1]/430)-0.5)*20+0.01,3)/100
         #cntr_pos.append([tmpx,tmpy])
         print("x,y: "+str(tmpx) + ", " + str(tmpy))
         det_img = Image()
@@ -602,7 +606,7 @@ class MinimalService(Node):
             obj_pos = self.cam_forward_kinematics(self.transform_from_robot(self.data_sets[1]))
             obj_pos[0] += float(cam_obj_pos[0])
             obj_pos[1] += float(cam_obj_pos[1]) ## this will return a position x,y which the camera sees, should be transformed to arm_base
-            obj_pos.append(-0.18)
+            obj_pos.append(-0.17)
             print("obj pos: " + str(obj_pos))
             cam_angles, garbage = self.inverse_kinematics(obj_pos)
 
@@ -636,9 +640,7 @@ class MinimalService(Node):
             time.sleep(3.0)
             response.success = True
             response.message = "Object grabbed"
-                
 
-            
         elif request.command == 7:
             #self.wait_for_fresh_joint_state(move_time)
             arm_ok = self.arm_move_check(self.curr_arm_pos[0:6],request.arm_pos,response)
