@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+import os
 import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid
@@ -12,6 +15,7 @@ import matplotlib.path as mpl_path
 from scipy.ndimage import gaussian_filter
 from detect_interfaces.srv import DetectObjects
 from tf_transformations import euler_from_quaternion
+from ament_index_python import get_package_share_directory
 
 class OccupancyGridPublisher(Node):
     # Constants for grid and object properties
@@ -37,8 +41,8 @@ class OccupancyGridPublisher(Node):
         # Add service client to call the detect_objects service
         self.detect_objects_client = self.create_client(DetectObjects, 'detect_objects')
         # Wait for the service to be available
-        while not self.detect_objects_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('DetectObjects service not available, waiting again...')
+        # while not self.detect_objects_client.wait_for_service(timeout_sec=1.0):
+        #     self.get_logger().info('DetectObjects service not available, waiting again...')
         # Add a timer to periodically get the detected objects
         self.timer = self.create_timer(1.0, self.fetch_detected_objects)
         
@@ -56,12 +60,14 @@ class OccupancyGridPublisher(Node):
         self.resolution = 0.03
 
         # Initialize map
+        package_share_dir = get_package_share_directory('global_planner')
+        ws_path = os.path.join(package_share_dir, 'data', 'workspace_2.tsv')
+        if os.path.exists(ws_path):
+            self.workspace_coordinates = self.read_workspace_coordinates(ws_path)
+        else:
+            self.get_logger().error(f"Workspace file {ws_path} not found.")
+
         # Adjust grid size based on workspace dimensions
-<<<<<<< HEAD
-        self.workspace_coordinates = self.read_workspace_coordinates("/home/kristoffer-germalm/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
-=======
-        self.workspace_coordinates = self.read_workspace_coordinates("/home/robot/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
->>>>>>> d2e8336b (idk)
         self.grid_size_x, self.grid_size_y, self.origin_x, self.origin_y = self.calculate_grid_size_and_origin(self.workspace_coordinates)
 
         # Initialize map data
@@ -430,12 +436,14 @@ class OccupancyGridPublisher(Node):
         marker.color.g = 0.0
         marker.color.b = 1.0
 
-<<<<<<< HEAD
-        file_path = "/home/kristoffer-germalm/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
-=======
-        file_path = "/home/robot/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
->>>>>>> d2e8336b (idk)
-        coordinates = self.read_workspace_coordinates(file_path)
+        package_share_dir = get_package_share_directory('global_planner')
+        ws_path = os.path.join(package_share_dir, 'data', 'workspace_2.tsv')
+        if os.path.exists(ws_path):
+            self.workspace_coordinates = self.read_workspace_coordinates(ws_path)
+        else:
+            self.get_logger().error(f"Workspace file {ws_path} not found.")
+
+        coordinates = self.read_workspace_coordinates(ws_path)
 
         first_point = None
 
