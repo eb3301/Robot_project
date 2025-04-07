@@ -61,6 +61,7 @@ class Planner(Node):
     # Path
     self.planned = False
     self.path = []
+    self.timeout = 5
 
   def map_callback(self, msg : OccupancyGrid):
     if self.goal_received:
@@ -97,7 +98,7 @@ class Planner(Node):
 
   def plan_path(self, map_data, resolution, time):
     # Path planning algortim
-    path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, resolution, self.origin)
+    path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, resolution, self.origin, self.timeout)
     self.path = path
     
     # Path message
@@ -245,11 +246,12 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
             
       if step_collided_with_obsticale(obsticales, xn, yn, resolution, origin):
         feasible = False
-        # break
+        break
     
     # Create new node
     new_node = Plan_node(xn, yn, thetan)
-    new_node_key = (round(new_node.x*10000)/10000, round(new_node.y*10000)/10000)
+    factor = 10**(len(str(resolution).split('.')[1])+1)
+    new_node_key = (round(new_node.x*factor)/factor, round(new_node.y*factor)/factor)
     
     # Check if the point already is visited
     if new_node_key not in closed_set:
@@ -287,10 +289,10 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
           open_set[new_node_key] = new_node
 
 
-def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
+def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin, timeout):
   # Parameters
   steps = 1
-  start = 0
+  start_time = time.time()
 
   # Ensure grid compatibility, start at a center cell
   x0, y0 = start_center(x0, y0, resolution)
@@ -300,7 +302,8 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
   start_node = Plan_node(x0, y0, theta0) 
   start_node.h = np.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2))
   start_node.f = start_node.g + start_node.h * 2
-  start_node_key = (round(start_node.x*10000)/10000, round(start_node.y*10000)/10000)
+  factor = 10**(len(str(resolution).split('.')[1])+1) # To round on a relible way
+  start_node_key = (round(start_node.x*factor)/factor, round(start_node.y*factor)/factor)
   
   # Innit and preallocate sets
   open_set = dict()
@@ -311,6 +314,11 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
 
   # For avalible points
   while open_set:
+    # Check elapsed time every iteration
+    elapsed_time = time.time() - start_time
+    if elapsed_time > timeout: 
+      return None
+        
     # Find and take out the lowest cost point
     current_node_key = min(open_set, key=lambda node: open_set[node].f)
     current_node = open_set[current_node_key]
@@ -324,7 +332,8 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
       
       # Take out the path
       while current_node:
-          path.append((round(current_node.x*10000)/10000, round(current_node.y*10000)/10000))#, current_node.theta)) # /(resolution*10))*(resolution*10)
+          factor = 10**(len(str(resolution).split('.')[1])+1)
+          path.append((round(current_node.x*factor)/factor, round(current_node.y*factor)/factor))#, current_node.theta)) # /(resolution*10))*(resolution*10)
           current_node = current_node.parent
       # path.pop(-1) # The robots position, should be included?
       # x, y, theta = path[-1]
@@ -332,11 +341,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
       return path[::-1] #, closed_set, open_set
 
     # For the start node explore all directions then only in front of
-    if start == 0:
-      directions = 4
-      start = 1
-    else:
-      directions = 3
+    directions = 4 if len(closed_set) == 0 else 3
 
     # Get new nodes
     get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions, origin)
@@ -377,7 +382,7 @@ def main2():
   #         grid[x, y] = 100
 
   start_time = time.time()
-  path = solution(x0, y0, 0, xt, yt, grid, 1/100, (0,0)) # , closed_set, open_set
+  path = solution(x0, y0, 0, xt, yt, grid, 1/100, (0,0), timeout=10) # , closed_set, open_set
   end_time = time.time()
   elapsed_time = end_time - start_time
 
@@ -428,17 +433,17 @@ def main2():
   plt.title(f"Path calculation at time: {elapsed_time:.4f} seconds")
   plt.show()
 
-# main2() # need to change x and y index in find_grid_index
+main2() # need to change x and y index in find_grid_index
 
 
-def main():
-    rclpy.init()
-    node = Planner()
-    try:
-        rclpy.spin(node)
-    except rclpy.exceptions.ROSInterruptException:
-        pass
-    rclpy.shutdown()
+# def main():
+#     rclpy.init()
+#     node = Planner()
+#     try:
+#         rclpy.spin(node)
+#     except rclpy.exceptions.ROSInterruptException:
+#         pass
+#     rclpy.shutdown()
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
