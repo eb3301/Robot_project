@@ -11,6 +11,7 @@ from builtin_interfaces.msg import Duration
 from ament_index_python import get_package_share_directory
 
 from std_msgs.msg import Header
+from nav_msgs.msg import OccupancyGrid
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point, PoseWithCovarianceStamped
 
@@ -18,10 +19,12 @@ from tf_transformations import quaternion_from_euler
 import numpy as np
 from arm_interface.srv import Arm
 from arm_service.arm_client import call_arm_client
+import matplotlib.pyplot as plt
 
 from std_srvs.srv import SetBool
 from detect_interfaces.srv import DetectObjects
 import time
+
 
 class BehaviourTree(Node):
     def __init__(self):
@@ -36,32 +39,34 @@ class BehaviourTree(Node):
         load_map = Load_Map(self)
 
         # Get target coordinates
-        '''Mapping: Box:     'B'
-                    Cube:    '1'
-                    Sphere:  '2'
-                    Plushie: '3'
-                    ICP:    'ICP'    '''
-        cube_coor = Get_Coor('ICP', self)
+        ''' Possible arguments:
+            'object' -- Any object
+            '1' -- Box
+            '2' -- Sphere
+            '3' -- Plushie
+            'B' -- Box        
+            '''
+        goto_target = Goto_Target(self, 'object')
 
 
-        drive_to_obj_1 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this to obj
-        drive_to_obj_2 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this one to box?
-        pickup = Pickup(self) # Pickup object
-        place = Place() # Place object
-        detection=Detection()
+        # drive_to_obj_1 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this to obj
+        # drive_to_obj_2 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this one to box?
+        # pickup = Pickup(self) # Pickup object
+        # place = Place() # Place object
+        # detection=Detection()
 
-        drive_parallell = pt.composites.Parallel(name='Drive parallell',
-                                                 policy=pt.common.ParallelPolicy.SuccessOnSelected(drive_to_obj_1),
-                                                 children=[collect_seq]
-                                                 )
-        collect_seq = pt.composites.Sequence(name = 'Collection Sequence', 
-                                          memory = bool,
-                                          children = [cube_coor, drive_to_obj_1, pickup, drive_to_obj_2, place]
-                                          )
+        # drive_parallell = pt.composites.Parallel(name='Drive parallell',
+        #                                          policy=pt.common.ParallelPolicy.SuccessOnSelected(drive_to_obj_1),
+        #                                          children=[collect_seq]
+        #                                          )
+        # collect_seq = pt.composites.Sequence(name = 'Collection Sequence', 
+        #                                   memory = bool,
+        #                                   children = [goto_target, drive_to_obj_1, pickup, drive_to_obj_2, place]
+                                        #   )
         
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          children = [create_ws, load_map, drive_parallell, pickup]
+                                          children = [create_ws, load_map, goto_target]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -99,7 +104,7 @@ class Create_ws(pt.behaviour.Behaviour):
         self.done = True
 
         package_share_dir = get_package_share_directory('global_planner')
-        ws_path = os.path.join(package_share_dir, 'data', 'workspace_2.tsv')
+        ws_path = os.path.join(package_share_dir, 'data', 'workspace_3.tsv')
         
         if not os.path.exists(ws_path):
                 self.node.get_logger().error(f"Workspace file {ws_path} not found.")
@@ -180,7 +185,7 @@ class Load_Map(pt.behaviour.Behaviour):
         self.done = True
 
         package_share_dir = get_package_share_directory('global_planner')
-        map_path = os.path.join(package_share_dir, 'data', 'map_1.tsv')
+        map_path = os.path.join(package_share_dir, 'data', 'map_3.tsv')
 
         if not os.path.exists(map_path):
             print(f"Map file {map_path} not found.")
@@ -248,73 +253,181 @@ class Load_Map(pt.behaviour.Behaviour):
             print(f'Publishing marker ID: {marker.id} at x={marker.pose.position.x}, y={marker.pose.position.y}')
 
 
-class Get_Coor(pt.behaviour.Behaviour):
+class Goto_Target(pt.behaviour.Behaviour):
     '''Retrieves coordinates '''
-    def __init__(self, object_type: str, node):
-        super().__init__("Retrieving Coordinate")
+    def __init__(self, node, target: str):
+        super().__init__("Go to Target")
         self.node = node
-
-        self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/map_pose', self.pose_callback, 10)
-
+        self.target = target
         self.blackboard = pt.blackboard.Blackboard()
-        self.target = object_type
+
+        self.objects = None
+        self.targets = None
+        self.sampled_point = None
+        self.target_point = None
+        self.candidates = None
+        # Initialise grid
+        self.grid = None
+        self.resolution = None
+        self.origin_x = None
+        self.origin_y = None
         print('Initialising Coordinate Retriever...')
 
     def update(self):
-        # Get list of objects
-        #self.blackboard.register_key('objects', access = pt.common.Access.READ_WRITE)
-        objects = self.blackboard.get('objects')
-        print(objects)
         # First time ticking update
         if self.status == pt.common.Status.INVALID:
-            print(f"Retrieving coordinate for {self.target}")
-            return pt.common.Status.RUNNING
-        
-        #Extract boxes and target object
-        boxes = [obj for obj in objects if "B" in obj[0]]
-        targets = [obj for obj in objects if self.target in obj[0]]
-
-        # If target is ICP reference cloud
-        if self.target == 'ICP':
-            coor = (6.7, 3.0)
-            self.blackboard.set('Target', coor)
-            self.blackboard.set('Target_type', "ICP")
-            return pt.common.Status.SUCCESS
-
-        # If target is a box: choose closest box
-        if self.target == 'B':
-            closest_box = min(boxes, key=lambda box: np.linalg.norm(np.array([self.x, self.y]) - np.array([box[1], box[2]])) )
-            coor = (closest_box[1], closest_box[2])
-            self.blackboard.set('Target', coor)
-            self.blackboard.set('Target_type', "B")
-            return pt.common.Status.SUCCESS
-        
-        # Determine what object to pick up
-        distances = []
-        for target in targets: 
-            # Distance between robot and target
-            targ_to_robot = np.linalg.norm(np.array([self.x, self.y]) - np.array([target[1], target[2]]))
-
-            # Find closest box to target
-            closest_box = min(boxes, key=lambda box: np.linalg.norm(np.array([target[1], target[2]]) - np.array([box[1], box[2]])) )
+            self.grid_sub = self.node.create_subscription(OccupancyGrid, 'map', self.grid_callback, 10)
+            self.objects = self.blackboard.get('objects')
             
-            # Distance from target to closest box
-            closest_box_dist = np.linalg.norm(np.array([target[1], target[2]]) - np.array([closest_box[1], closest_box[2]]))
+            # Save targets in list
+            if self.target == 'object': # Any object (not box)
+                self.targets = [obj for obj in self.objects if obj[0] != 'B']
+            else:    
+                self.targets = [obj for obj in self.objects if self.target in obj[0]]
+            #self.visualise_grid_and_targets()
+            print(f"Retriving Target")
+            return pt.common.Status.RUNNING
 
-            distances.append(targ_to_robot + closest_box_dist)
-
-        i = np.argmin(distances)
-        min_targ = targets[i]
-        coor = (min_targ[1], min_targ[2], min_targ)
+        if self.grid is None:
+            self.node.get_logger().info("No grid recieved")
+            return pt.common.Status.RUNNING
+        if self.objects is None:
+            self.node.get_logger().info("No objects in list!")
+            return pt.common.Status.FAILURE
         
-        self.blackboard.set('Target', coor)
-        self.blackboard.set('Target_type', min_targ[0])
+        # TODO: Pick target out of list
+        target = self.targets[0]
 
+        # list of tuples (grid_x, grid_y) on a circle around target
+        candidates = self.candidate_points(target) 
+        
+        # Target in grid indices
+        t_x = int((target[1] - self.origin_x) / self.resolution)
+        t_y = int((target[2] - self.origin_y) / self.resolution)
+        self.target_point = (t_x, t_y)
+
+        # Find the best candidate
+        best_candidate = None
+        max_free_cells = -1
+        for point in candidates:
+            # Count free cells around this candidate
+            free_cells = self.count_free_cells_around(point, radius = 5)
+
+            # Update best candidate
+            if free_cells > max_free_cells:
+                max_free_cells = free_cells
+                best_candidate = point
+                
+        self.sampled_point = best_candidate    
+        
+        self.visualise_grid_and_targets()
         return pt.common.Status.SUCCESS
     
-    def pose_callback(self, msg: PoseWithCovarianceStamped):
-        pose = msg.pose.pose
-        self.x, self.y = pose.position.x, pose.position.y
+    def grid_callback(self, msg: OccupancyGrid):
+        width = msg.info.width
+        height = msg.info.height
+        data = np.array(msg.data, dtype=np.int8)  
+        self.resolution = msg.info.resolution
+        self.origin_x = msg.info.origin.position.x
+        self.origin_y = msg.info.origin.position.y
+
+        # 2D np.array(). Unknown space = -1, free space  = 0, occupied = 100
+        self.grid = data.reshape((height, width))  
+
+
+    def candidate_points(self, target, distance = 0.25, angle_step = 15):
+        '''Sample points on a circle with 5 cells radius around the target'''
+        x0, y0 = target[1], target[2]
+        self.candidates = []
+        for angle_deg in range(0, 360, angle_step):
+            angle_rad = np.radians(angle_deg)
+            x = x0 + distance * np.cos(angle_rad)
+            y = y0 + distance * np.sin(angle_rad)
+            grid_x = int((x - self.origin_x) / self.resolution)
+            grid_y = int((y - self.origin_y) / self.resolution)
+            self.candidates.append((grid_x, grid_y))
+        return self.candidates
+    
+
+    def count_free_cells_around(self, point, radius):
+        free_count = 0
+        x, y = point  # candidate = (grid_x, grid_y)
+
+        # Iterate over the neighborhood in a square defined by the radius
+        for dy in range(-radius, radius + 1):
+            for dx in range(-radius, radius + 1):
+                ny, nx = y + dy, x + dx  # Check this neighboring cell (y, x)
+
+                # Ensure the cell is within bounds and free
+                if 0 <= ny < self.grid.shape[0] and 0 <= nx < self.grid.shape[1]:
+                    if self.grid[ny, nx] <= 0:  # Free space
+                        free_count += 1
+        return free_count
+
+
+    def visualise_grid_and_targets(self):
+        """
+        Visualises occupancy grid and overlays targets and origin on top.
+        """
+        if self.grid is None:
+            print("Grid is empty, can't visualise.")
+            return
+
+        fig, ax = plt.subplots(figsize=(10, 10))
+
+        # Show the occupancy grid
+        display_grid = self.grid.copy()
+        display_grid = np.where(display_grid == -1, 127, display_grid)  # Make unknown gray
+        ax.imshow(display_grid, cmap='gray', origin='lower')
+
+        # Plot origin
+        origin_col = int((0 - self.origin_x) / self.resolution)
+        origin_row = int((0 - self.origin_y) / self.resolution)
+        if 0 <= origin_row < self.grid.shape[0] and 0 <= origin_col < self.grid.shape[1]:
+            ax.plot(origin_col, origin_row, 'b*', markersize=12, label='Origin')
+            ax.text(origin_col + 1, origin_row + 1, 'Origin', color='blue', fontsize=8)
+        else:
+            print("Origin is out of grid bounds, skipping.")
+
+        # Plot targets
+        for name, x, y, yaw in self.targets:
+            col = int((x - self.origin_x) / self.resolution)
+            row = int((y - self.origin_y) / self.resolution)
+
+            if 0 <= row < self.grid.shape[0] and 0 <= col < self.grid.shape[1]:
+                ax.plot(col, row, 'ro')  # red dot
+                ax.text(col + 1, row + 1, name, color='red', fontsize=8)
+            else:
+                print(f"Target {name} is out of grid bounds, skipping.")
+
+        # Plot the sampled point
+        if self.sampled_point:
+            print("SAMPLED A POINT!=!=!")
+            sp_x, sp_y = self.sampled_point[0], self.sampled_point[1]  # (row,col)
+            ax.plot(sp_x, sp_y, 'go', markersize=8, label='Sampled Point')  # green dot
+            ax.text(sp_x + 1, sp_y + 1, 'Sampled', color='green', fontsize=8)
+
+        # Plot the target point
+        if self.target_point:
+            tp_x, tp_y = self.target_point[0], self.target_point[1]  # (col, row)
+            ax.plot(tp_x, tp_y, 'bx', markersize=8, label='Target Grid')  # blue X
+            ax.text(tp_x + 1, tp_y + 1, 'Target', color='blue', fontsize=8)
+
+        # Plot all candidate points
+        if self.candidates:
+            for gx, gy in self.candidates:  # grid_x, grid_y
+                if 0 <= gy < self.grid.shape[0] and 0 <= gx < self.grid.shape[1]:
+                    ax.plot(gx, gy, 'y.', markersize=4)  # yellow dots
+
+
+        ax.set_title("Occupancy Grid with Targets and Origin")
+        plt.grid(False)
+        plt.tight_layout()
+        plt.show()
+
+
+
+
 
 class Drive_to_Obj(pt.behaviour.Behaviour):
     def __init__(self,node):

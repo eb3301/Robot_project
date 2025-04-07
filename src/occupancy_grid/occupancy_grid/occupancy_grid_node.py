@@ -60,8 +60,8 @@ class OccupancyGridPublisher(Node):
         self.resolution = 0.03
 
         # Initialize map
-        package_share_dir = get_package_share_directory('global_planner')
-        ws_path = os.path.join(package_share_dir, 'data', 'workspace_2.tsv')
+        package_share_dir = get_package_share_directory('occupancy_grid')
+        ws_path = os.path.join(package_share_dir, 'data', 'workspace_3.tsv')
         if os.path.exists(ws_path):
             self.workspace_coordinates = self.read_workspace_coordinates(ws_path)
         else:
@@ -436,8 +436,8 @@ class OccupancyGridPublisher(Node):
         marker.color.g = 0.0
         marker.color.b = 1.0
 
-        package_share_dir = get_package_share_directory('global_planner')
-        ws_path = os.path.join(package_share_dir, 'data', 'workspace_2.tsv')
+        package_share_dir = get_package_share_directory('occupancy_grid')
+        ws_path = os.path.join(package_share_dir, 'data', 'workspace_3.tsv')
         if os.path.exists(ws_path):
             self.workspace_coordinates = self.read_workspace_coordinates(ws_path)
         else:

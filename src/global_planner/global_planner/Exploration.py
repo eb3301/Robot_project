@@ -36,11 +36,12 @@ class BehaviourTree(Node):
         create_ws = Create_ws(self)
         waypoints = Sample_Waypoints(self)
         explore_samples = ExploreSamples(self)
-        explore_unknown = ExploreUknownSpace((self)) 
+
+        #explore_unknown = ExploreUknownSpace((self)) --- Break in case of emergency
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          children = [create_ws, waypoints, explore_samples, explore_unknown]
+                                          children = [create_ws, waypoints, explore_samples]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -158,14 +159,9 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
             vertices.append(vertices[0])
         polygon = Polygon(vertices)
 
-<<<<<<< HEAD
-        Padding_value = 0.17
-        polygon = polygon.buffer(-Padding_value)
-=======
         # Add padding to the walls
         PADDING_VALUE = 0.17
         polygon = polygon.buffer(-PADDING_VALUE)
->>>>>>> 840b4f75 (idk)
 
         UNIFORMITY_RADIUS = 1.30  # distanza minima tra candidati (Poisson disk)
         NUM_UNCOVERED_SAMPLES = 100
