@@ -84,7 +84,7 @@ class Planner(Node):
         for i in range(len(self.path)):
           x_index = int((self.path[i][0] - origin_x) // resolution)  
           y_index = int((self.path[i][1] - origin_y) // resolution)
-          if map_data[y_index][x_index] == 100:
+          if map_data[y_index][x_index] <= 80:
             self.planned = False
             self.get_logger().info(f"Path obstructed at ({self.path[i][0]}, {self.path[i][1]})")
             break
@@ -220,7 +220,7 @@ def step(x, y, theta, phi, resolution):
 def step_collided_with_obsticale(obsticales, x, y, resolution, origin):
   # Check if cell is occupied
   x_index, y_index = find_cell_index(x, y, resolution, origin)
-  if obsticales[x_index, y_index] == 100:
+  if obsticales[x_index, y_index] <= 80:
     return True
   return False
     
