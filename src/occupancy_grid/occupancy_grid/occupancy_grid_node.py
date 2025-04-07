@@ -21,8 +21,8 @@ class OccupancyGridPublisher(Node):
     SEEN_VALUE = 0
     BORDER_THICKNESS = 0.2
     OBJECT_VALUE = 80
-    OBJECT_INFLATION_RADIUS = 2
-    OBJECT_INFLATION_VALUE = 40
+    OBJECT_INFLATION_RADIUS = 4
+    OBJECT_INFLATION_VALUE = 100
 
     def __init__(self):
         super().__init__('occupancy_grid')

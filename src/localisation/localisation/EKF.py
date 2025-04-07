@@ -51,7 +51,7 @@ class EKF_Algorithm(Node):
         # None
         self.yaw_offset = None
         self.imu_yaw = 0
-
+        
         self.get_logger().info("Initialised EKF node...")
 
 
