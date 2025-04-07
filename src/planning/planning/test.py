@@ -23,8 +23,7 @@ def smooth(points):
 
     return smoothed_path
 
-
-def extract_segments(path, resolution=1):
+def extract_segments(path, resolution):
     horizontal_segments = []
     vertical_segments = []
     diagonal_segments = []
@@ -51,7 +50,6 @@ def extract_segments(path, resolution=1):
                 i += 1
             vertical_segments.append((path[start:i + 2], i))
 
-
         elif (np.isclose(abs(x2 - x1), resolution) and np.isclose(abs(y2 - y1), 0) and np.isclose(abs(x3 - x2), 0) and np.isclose(abs(y3 - y2), resolution)) or \
              (np.isclose(abs(x2 - x1), 0) and np.isclose(abs(y2 - y1), resolution) and np.isclose(abs(x3 - x2), resolution) and np.isclose(abs(y3 - y2), 0)):        
             start = i
@@ -69,18 +67,31 @@ def extract_segments(path, resolution=1):
 
 # Function to combine adjacent segments
 def combine_segments(sorted_segments):
+    # Combine so every segment is longer than 8
+    i = 0
+    while i < len(sorted_segments) - 1:
+        # Check if the current segment has less than 8 elements
+        if len(sorted_segments[i]) < 8:
+            # How many elements we need to reach 8
+            needed = 8 - len(sorted_segments[i])
+            # Extend the current segment with elements from the next one
+            sorted_segments[i].extend(sorted_segments[i + 1][:needed])
+            # Remove the elements we just took from the next segment
+            sorted_segments[i + 1] = sorted_segments[i + 1][needed:]
+            
+            # If the next segment becomes empty, remove it
+            if len(sorted_segments[i + 1]) == 0:
+                sorted_segments.pop(i + 1)
+        else:
+            # Move to the next segment
+            i += 1
+
     new_segments = []
+    # Merging the joints of the segments
     for i in range(1, len(sorted_segments)):
         # Get the last two points of the previous segment
         prev_segment = sorted_segments[i - 1]
         next_segment = sorted_segments[i]
-
-        # Skip if segments don't have enough points to merge
-        if len(prev_segment) < 4 or len(next_segment) < 4:
-            print('Short')
-            # print(prev_segment)
-            # print(next_segment)
-            # continue
         
         # Take the last two points from the previous segment
         prev_end_points = prev_segment[-3:]
@@ -92,24 +103,24 @@ def combine_segments(sorted_segments):
         merge_segment = prev_end_points + next_start_points
 
         # Add the non-modified segments to the list, if the segment is long enough
-        if len(prev_segment) > 4:
-            new_segments.append(prev_segment[2:-2])
+        new_segments.append(prev_segment[2:-2])
 
         # Add the merge segment
         new_segments.append(merge_segment)
 
     # Add the last segment and update the first to include the start
     new_segments[0] = sorted_segments[0][:-2]
-    new_segments.append(sorted_segments[-1][2:])
+    if len(sorted_segments[-1]) > 3:
+        new_segments.append(sorted_segments[-1][2:])
     return new_segments
 
 
-def create_god_path(path):
+def create_god_path(path, resolution):
     # Extract segments
-    horizontal, vertical, diagonal = extract_segments(path)
-    print(f'Horizontal {horizontal}')
-    print(f'Vertical {vertical}')
-    print(f'Diagonal {diagonal}')
+    horizontal, vertical, diagonal = extract_segments(path, resolution)
+    # print(f'Horizontal {horizontal}')
+    # print(f'Vertical {vertical}')
+    # print(f'Diagonal {diagonal}')
 
     # Combine segments
     combined_segments = diagonal + horizontal + vertical
@@ -120,10 +131,10 @@ def create_god_path(path):
     # Remove the sorting index (only keep the segments)
     sorted_segments = [segment[0] for segment in combined_segments_sorted]
 
-    # Output the new combined segments
-    print("New Combined Segments:")
-    for segment in sorted_segments:
-        print(segment)
+    # # Output the new combined segments
+    # print("New Combined Segments:")
+    # for segment in sorted_segments:
+    #     print(segment)
 
     if len(sorted_segments) > 2:
         # Combine adjacent segments by taking out the last two and first two points
@@ -147,12 +158,13 @@ def create_god_path(path):
 
 
 # Example path
-# path = [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
-#         (4, 4), (4, 5), (5, 5), (5, 6), (6, 6), (6, 7), (7, 7), (7, 8), 
-#         (8, 8), (8, 9), (8, 10),(8, 11),(8, 12),(8, 13),(8, 14),(8, 15),
-#         (9, 15),(10,15),(11,15),(12,15),(13,15),(14,15),(15,15),(16,15),
-#         (16,14),(16,13),(16,12),(16,11),(16,10),(16, 9),(16, 8),(16, 7),
-#         (15,7), (14, 7),(13, 7),(12, 7),(11, 7),(10, 7),(9, 7), (8, 7)]
+path = [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
+        (4, 4), (4, 5), (5, 5), (5, 6), (6, 6), (6, 7), (7, 7), (7, 8), 
+        (8, 8), (8, 9), (8, 10),(8, 11),(8, 12),(8, 13),(8, 14),(8, 15),
+        (9, 15),(10,15),(11,15),(12,15),(13,15),(14,15),(15,15),(16,15),
+        (16,14),(16,13),(16,12),(16,11),(16,10),(16, 9),(16, 8),(16, 7),
+        (15,7), (14, 7),(13, 7),(12, 7),(11, 7),(10, 7),(9, 7), (8, 7),
+        (8, 6), (8, 5), (8, 4), (8, 3), (7, 3), (7, 2), (6, 2), (6, 1)]
 
 # path = [
 #     (0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
@@ -165,12 +177,12 @@ def create_god_path(path):
 #     (3, 1), (2, 1), (2, 0), (1, 0), (0, 0)
 # ]
 
-path = [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
-        (4, 4), (4, 5), (5, 5), (5, 6), (6, 6), (6, 7), (7, 7), (7, 8)]
+# path = [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
+#         (4, 4), (4, 5), (5, 5), (5, 6), (6, 6), (6, 7), (7, 7), (7, 8)]
 
 
 
-smoothed_path = create_god_path(path)
+smoothed_path = create_god_path(path, resolution=1)
 # print(smoothed_path)
 
 # Convert path to NumPy array for plotting
@@ -192,3 +204,71 @@ plt.title('Original vs Smoothed Sorted Path')
 
 # Show the plot
 plt.show()
+
+
+
+
+
+        # # Check each direction explicitly
+        # if np.isclose(x2 - x1, resolution) and np.isclose(y2 - y1, 0) and np.isclose(x3 - x2, 0) and np.isclose(y3 - y2, resolution):  # Right and up
+        #     start = i
+        #     while i + 2 < len(path) and (
+        #         np.isclose(path[i + 1][0] - path[i][0], resolution) and np.isclose(path[i + 1][1] - path[i][1], 0) and
+        #         np.isclose(path[i + 2][0] - path[i + 1][0], 0) and np.isclose(path[i + 2][1] - path[i + 1][1], resolution)
+        #     ):
+        #         i += 1
+        #     diagonal_segments.append((path[start:i + 2], i))
+
+        # elif np.isclose(x2 - x1, 0) and np.isclose(y2 - y1, resolution) and np.isclose(x3 - x2, resolution) and np.isclose(y3 - y2, 0):  # Up and right
+        #     start = i
+        #     while i + 2 < len(path) and (
+        #         np.isclose(path[i + 1][0] - path[i][0], 0) and np.isclose(path[i + 1][1] - path[i][1], resolution) and
+        #         np.isclose(path[i + 2][0] - path[i + 1][0], resolution) and np.isclose(path[i + 2][1] - path[i + 1][1], 0)
+        #     ):
+        #         i += 1
+        #     diagonal_segments.append((path[start:i + 2], i))
+
+        # elif np.isclose(x2 - x1, -resolution) and np.isclose(y2 - y1, 0) and np.isclose(x3 - x2, 0) and np.isclose(y3 - y2, -resolution):  # Left and down
+        #     start = i
+        #     while i + 2 < len(path) and (
+        #         np.isclose(path[i + 1][0] - path[i][0], -resolution) and np.isclose(path[i + 1][1] - path[i][1], 0) and
+        #         np.isclose(path[i + 2][0] - path[i + 1][0], 0) and np.isclose(path[i + 2][1] - path[i + 1][1], -resolution)
+        #     ):
+        #         i += 1
+        #     diagonal_segments.append((path[start:i + 2], i))
+
+        # elif np.isclose(x2 - x1, 0) and np.isclose(y2 - y1, -resolution) and np.isclose(x3 - x2, -resolution) and np.isclose(y3 - y2, 0):  # Down and left
+        #     start = i
+        #     while i + 2 < len(path) and (
+        #         np.isclose(path[i + 1][0] - path[i][0], 0) and np.isclose(path[i + 1][1] - path[i][1], -resolution) and
+        #         np.isclose(path[i + 2][0] - path[i + 1][0], -resolution) and np.isclose(path[i + 2][1] - path[i + 1][1], 0)
+        #     ):
+        #         i += 1
+        #     diagonal_segments.append((path[start:i + 2], i))
+
+        # elif np.isclose(x2 - x1, resolution) and np.isclose(y2 - y1, 0) and np.isclose(x3 - x2, -resolution) and np.isclose(y3 - y2, 0):  # Right and left (move right and then left)
+        #     start = i
+        #     while i + 2 < len(path) and (
+        #         np.isclose(path[i + 1][0] - path[i][0], resolution) and np.isclose(path[i + 1][1] - path[i][1], 0) and
+        #         np.isclose(path[i + 2][0] - path[i + 1][0], -resolution) and np.isclose(path[i + 2][1] - path[i + 1][1], 0)
+        #     ):
+        #         i += 1
+        #     diagonal_segments.append((path[start:i + 2], i))
+
+        # elif np.isclose(x2 - x1, 0) and np.isclose(y2 - y1, resolution) and np.isclose(x3 - x2, 0) and np.isclose(y3 - y2, -resolution):  # Up and down (move up then down)
+        #     start = i
+        #     while i + 2 < len(path) and (
+        #         np.isclose(path[i + 1][0] - path[i][0], 0) and np.isclose(path[i + 1][1] - path[i][1], resolution) and
+        #         np.isclose(path[i + 2][0] - path[i + 1][0], 0) and np.isclose(path[i + 2][1] - path[i + 1][1], -resolution)
+        #     ):
+        #         i += 1
+        #     diagonal_segments.append((path[start:i + 2], i))
+
+        # elif np.isclose(x2 - x1, resolution) and np.isclose(y2 - y1, -resolution) and np.isclose(x3 - x2, 0) and np.isclose(y3 - y2, 0):  # Right and down (move right and then down)
+        #     start = i
+        #     while i + 2 < len(path) and (
+        #         np.isclose(path[i + 1][0] - path[i][0], resolution) and np.isclose(path[i + 1][1] - path[i][1], -resolution) and
+        #         np.isclose(path[i + 2][0] - path[i + 1][0], 0) and np.isclose(path[i + 2][1] - path[i + 1][1], 0)
+        #     ):
+        #         i += 1
+        #     diagonal_segments.append((path[start:i + 2], i))

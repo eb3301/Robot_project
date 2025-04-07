@@ -84,7 +84,7 @@ class Planner(Node):
         for i in range(len(self.path)):
           x_index = int((self.path[i][0] - origin_x) // resolution)  
           y_index = int((self.path[i][1] - origin_y) // resolution)
-          if map_data[y_index][x_index] == 100:
+          if map_data[y_index][x_index] >= 80:
             self.planned = False
             self.get_logger().info(f"Path obstructed at ({self.path[i][0]}, {self.path[i][1]})")
             break
@@ -220,7 +220,7 @@ def step(x, y, theta, phi, resolution):
 def step_collided_with_obsticale(obsticales, x, y, resolution, origin):
   # Check if cell is occupied
   x_index, y_index = find_cell_index(x, y, resolution, origin)
-  if obsticales[x_index, y_index] == 100:
+  if obsticales[y_index, x_index] >= 80: # Change
     return True
   return False
     
@@ -324,7 +324,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
       
       # Take out the path
       while current_node:
-          path.append((current_node.x, current_node.y))#, current_node.theta))
+          path.append((round(current_node.x*10000)/10000, round(current_node.y*10000)/10000))#, current_node.theta)) # /(resolution*10))*(resolution*10)
           current_node = current_node.parent
       # path.pop(-1) # The robots position, should be included?
       # x, y, theta = path[-1]
@@ -352,8 +352,8 @@ def main2():
 
   x0 = 0.1 # start x position
   y0 = 0.1 # start y position
-  xt = 0.05 # target x position
-  yt = 0.32 # target y position
+  xt = 0.9 # target x position
+  yt = 0.3 # target y position
 
   # Mark the start (x0, y0) and goal (xt, yt) points with green (value 50)
   start_x_index = int(x0 * 100)
@@ -427,30 +427,6 @@ def main2():
   plt.legend()
   plt.title(f"Path calculation at time: {elapsed_time:.4f} seconds")
   plt.show()
-
-  # smoothed_path = create_god_path(path, 1/100)
-
-  # Convert path to NumPy array for plotting
-  # path = np.array(path)
-
-
-  # # Plot the original staircase path (connecting the points)
-  # plt.plot(path[:, 0], path[:, 1], 'o-', label='Original Path (Staircase)', color='r')
-
-  # # Plot the smoothed path
-  # # for smoothed_segment in smoothed_path:
-  # #     plt.plot(smoothed_segment[:, 0], smoothed_segment[:, 1], label='Smoothed Path', color='b')
-
-  # # Add title and labels
-  # plt.legend()
-  # plt.xlabel('X')
-  # plt.ylabel('Y')
-  # plt.title('Original vs Smoothed Sorted Path')
-
-  # # Show the plot
-  # plt.show()
-
- # points = [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4), (4,4), (4,5), (5,5), (5,6), (6,6), (6,7), (7,7), (7,9)]
 
 # main2() # need to change x and y index in find_grid_index
 
