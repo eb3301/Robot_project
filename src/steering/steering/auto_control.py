@@ -4,7 +4,6 @@ import numpy as np
 
 import rclpy
 import rclpy.logging
-import time
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
@@ -30,10 +29,10 @@ class AutoControll(Node):
         self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
 
         # Subscribe to current pose
-        self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/ekf_pose', self.pose_callback, 10) # This might need to be restricted
+        self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/ekf_pose', self.pose_callback, 10)
 
         # Subscribe to goal pose
-        self.path_sub = self.create_subscription(Path, "/planned_path", self.path_callback, qos) # latched topic
+        self.path_sub = self.create_subscription(Path, "/planned_path", self.path_callback, qos)
 
         # Create timer
         self.timer = self.create_timer(0.2, self.execution)  # 5 Hz Frequency
@@ -74,7 +73,7 @@ class AutoControll(Node):
             # Get position of robot
             x = map_pose.position.x
             y = map_pose.position.y
-            #self.get_logger().info(f'Pose received, ({x},{y})')
+
             self.current_position = (x, y)
             self.current_heading = self.compute_heading(map_pose.orientation)
         except TransformException:
@@ -161,7 +160,6 @@ class AutoControll(Node):
 
         # Get the target point
         target_point = path[target_point_idx]
-        #self.get_logger().info(f'Index is: {target_point_idx}')
 
         # Calculate the steering angle to the target point
         steering_angle = calculate_steering_angle(current_position, current_heading, target_point)

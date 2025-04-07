@@ -11,7 +11,7 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 import tf2_geometry_msgs
 from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
-from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped, Twist
 # from tf_transformations import quaternion_from_euler
 
 import matplotlib.pyplot as plt
@@ -41,6 +41,9 @@ class Planner(Node):
     # Publish the planned path
     self.path_pub = self.create_publisher(Path, "/planned_path", qos)
 
+    # Init publisher
+    self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
+
     # TF2
     self.buffer = tf2_ros.Buffer()
     self.listener = tf2_ros.TransformListener(self.buffer, self, spin_thread = True)
@@ -52,8 +55,8 @@ class Planner(Node):
 
     # Target coordinates
     self.goal_received = False
-    self.xt = 3.0
-    self.yt = 0.0
+    self.xt = 0.5
+    self.yt = 0.5
 
     # Path
     self.planned = False
@@ -85,8 +88,7 @@ class Planner(Node):
             self.planned = False
             self.get_logger().info(f"Path obstructed at ({self.path[i][0]}, {self.path[i][1]})")
             break
-        #self.get_logger().info(f"Path is good")
-        
+      # Replan
       if not self.planned:
         self.get_logger().info("Planning new path")
         self.plan_path(map_data, resolution, time)
@@ -154,12 +156,16 @@ class Planner(Node):
       self.get_logger().info('No transform found')
 
 
-  def goal_callback(self, msg : Marker):
+  def goal_callback(self, msg : Marker): # Maybe add a stop here? While planning
     # Get position of goal
     self.xt = msg.pose.position.x
     self.yt = msg.pose.position.y
     self.goal_received = True
     self.planned = False
+
+    # Publish zero velocity when planning
+    msg = Twist()
+    self.cmd_vel_pub.publish(msg)
 
     # Stop planning
     if msg.pose.position.z == -1:
@@ -182,14 +188,15 @@ class Plan_node(object):
     self.feasible = True
 
 def reached_target(x, y, xt, yt, resolution):
-  if np.sqrt(((x - xt)**2 + (y - yt)**2)) <= resolution/2: # change distance to target np.abs(x - xt) < 0.01 and np.abs(y - yt) < 0.01:
+  # Check distance to target - maybe add start_center to this?
+  if np.sqrt(((x - xt)**2 + (y - yt)**2)) <= resolution/2:
     return True
   return False
 
 def find_cell_index(x, y, resolution, origin):
   # Find grid index from map coordinate
-  x_index = int((x - origin[0]) // resolution)  
-  y_index = int((y - origin[1]) // resolution)  
+  x_index = int((x - origin[0]) / resolution)  
+  y_index = int((y - origin[1]) / resolution)  
   return (y_index, x_index)
 
 def start_center(x, y, resolution):
@@ -238,11 +245,11 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
             
       if step_collided_with_obsticale(obsticales, xn, yn, resolution, origin):
         feasible = False
-        break
+        # break
     
-    # Calculate new node
+    # Create new node
     new_node = Plan_node(xn, yn, thetan)
-    new_node_key = (new_node.x, new_node.y)
+    new_node_key = (round(new_node.x*10000)/10000, round(new_node.y*10000)/10000)
     
     # Check if the point already is visited
     if new_node_key not in closed_set:
@@ -251,15 +258,18 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
         new_node.feasible = False
         closed_set[new_node_key] = new_node 
       else:
-        # Cost functions
+        # Assinge cost functions
         new_node.g = current_node.g + resolution 
         x_index, y_index = find_cell_index(xn, yn, resolution, origin) 
-        new_node.c = obsticales[x_index, y_index]
+        cost = obsticales[x_index, y_index]
+        if cost == -1:
+          cost = -resolution
+        new_node.c = cost
         
         # Check if the point is in the open set 
         if new_node_key in open_set:
           node = open_set[new_node_key]
-          # Check if the cost is smaller
+          # Check if the cost is smaller for the new node then replace it
           if node.g + node.c > new_node.g + new_node.c:
             new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2)) 
             new_node.f = new_node.g + new_node.h * 2 + new_node.c
@@ -290,7 +300,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
   start_node = Plan_node(x0, y0, theta0) 
   start_node.h = np.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2))
   start_node.f = start_node.g + start_node.h * 2
-  start_node_key = (start_node.x, start_node.y)
+  start_node_key = (round(start_node.x*10000)/10000, round(start_node.y*10000)/10000)
   
   # Innit and preallocate sets
   open_set = dict()
@@ -319,7 +329,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
       # path.pop(-1) # The robots position, should be included?
       # x, y, theta = path[-1]
       # path[-1] = (x - 0.5 * resolution, y - 0.5 * resolution)
-      return path[::-1]#, closed_set, open_set
+      return path[::-1] #, closed_set, open_set
 
     # For the start node explore all directions then only in front of
     if start == 0:
@@ -342,8 +352,8 @@ def main2():
 
   x0 = 0.1 # start x position
   y0 = 0.1 # start y position
-  xt = 0.40 # target x position
-  yt = 0.60 # target y position
+  xt = 0.05 # target x position
+  yt = 0.32 # target y position
 
   # Mark the start (x0, y0) and goal (xt, yt) points with green (value 50)
   start_x_index = int(x0 * 100)
@@ -352,9 +362,9 @@ def main2():
   goal_y_index = int(yt * 100)
 
   # # Add some custom patterns or corridors
-  # for i in range(0, 60):
+  # for i in range(0, 70):
   #   grid[i, 20:30] = 100  # Add vertical wall
-  # for i in range(20, 50):
+  # for i in range(20, 70):
   #   grid[70:80, i] = 100  # Add horizontal wall
 
   # # Add random obstacles inside the room
@@ -442,7 +452,7 @@ def main2():
 
  # points = [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4), (4,4), (4,5), (5,5), (5,6), (6,6), (6,7), (7,7), (7,9)]
 
-# main2()
+# main2() # need to change x and y index in find_grid_index
 
 
 def main():

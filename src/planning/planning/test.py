@@ -61,6 +61,7 @@ def extract_segments(path, resolution=1):
             ):
                 i += 1
             diagonal_segments.append((path[start:i + 2], i))
+
         i += 1
 
     return horizontal_segments, vertical_segments, diagonal_segments
@@ -106,6 +107,9 @@ def combine_segments(sorted_segments):
 def create_god_path(path):
     # Extract segments
     horizontal, vertical, diagonal = extract_segments(path)
+    print(f'Horizontal {horizontal}')
+    print(f'Vertical {vertical}')
+    print(f'Diagonal {diagonal}')
 
     # Combine segments
     combined_segments = diagonal + horizontal + vertical
@@ -121,17 +125,20 @@ def create_god_path(path):
     for segment in sorted_segments:
         print(segment)
 
-    # Combine adjacent segments by taking out the last two and first two points
-    combined_segments_with_gaps = combine_segments(sorted_segments)
+    if len(sorted_segments) > 2:
+        # Combine adjacent segments by taking out the last two and first two points
+        combined_segments = combine_segments(sorted_segments)
 
-    # Output the new combined segments
-    print("New Combined Segments after merge:")
-    for segment in combined_segments_with_gaps:
-        print(segment)
+        # Output the new combined segments
+        print("New Combined Segments after merge:")
+        for segment in combined_segments:
+            print(segment)
+    else:
+        combined_segments = sorted_segments
 
     # Now, smooth the segments and create the new path (as a list of tuples)
     smoothed_path = []
-    for segment in combined_segments_with_gaps:
+    for segment in combined_segments:
         smoothed_segment = smooth(segment)
         smoothed_path.extend(smoothed_segment)  # Add the smoothed points to the final list
 
@@ -147,16 +154,19 @@ def create_god_path(path):
 #         (16,14),(16,13),(16,12),(16,11),(16,10),(16, 9),(16, 8),(16, 7),
 #         (15,7), (14, 7),(13, 7),(12, 7),(11, 7),(10, 7),(9, 7), (8, 7)]
 
-path = [
-    (0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
-    (4, 4), (5, 4), (5, 5), (6, 5), (6, 6), (7, 6), (7, 7), (8, 7),
-    (8, 8), (9, 8), (9, 9), (10, 9), (10, 10), (11, 10), (11, 9), (12, 9),
-    (12, 8), (13, 8), (13, 7), (14, 7), (14, 6), (15, 6), (15, 5), (16, 5),
-    (16, 4), (15, 4), (15, 3), (14, 3), (14, 2), (13, 2), (13, 1), (12, 1),
-    (12, 0), (11, 0), (10, 0), (9, 0), (9, 1), (8, 1), (8, 2), (7, 2),
-    (7, 3), (6, 3), (6, 4), (5, 4), (5, 3), (4, 3), (4, 2), (3, 2),
-    (3, 1), (2, 1), (2, 0), (1, 0), (0, 0)
-]
+# path = [
+#     (0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
+#     (4, 4), (5, 4), (5, 5), (6, 5), (6, 6), (7, 6), (7, 7), (8, 7),
+#     (8, 8), (9, 8), (9, 9), (10, 9), (10, 10), (11, 10), (11, 9), (12, 9),
+#     (12, 8), (13, 8), (13, 7), (14, 7), (14, 6), (15, 6), (15, 5), (16, 5),
+#     (16, 4), (15, 4), (15, 3), (14, 3), (14, 2), (13, 2), (13, 1), (12, 1),
+#     (12, 0), (11, 0), (10, 0), (9, 0), (9, 1), (8, 1), (8, 2), (7, 2),
+#     (7, 3), (6, 3), (6, 4), (5, 4), (5, 3), (4, 3), (4, 2), (3, 2),
+#     (3, 1), (2, 1), (2, 0), (1, 0), (0, 0)
+# ]
+
+path = [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4),
+        (4, 4), (4, 5), (5, 5), (5, 6), (6, 6), (6, 7), (7, 7), (7, 8)]
 
 
 
