@@ -391,42 +391,71 @@ class Pickup(pt.behaviour.Behaviour):
         super().__init__("Pickup")
         self.node = node
         self.cli = self.node.create_client(Arm, 'arm')
-        while not self.cli.wait_for_service(timeout_sec=1.0):
-            self.node.get_logger().info('service not available, waiting again...')
+        if not self.cli.wait_for_service(timeout_sec=1.0):
+            self.node.get_logger().info('Arm service not available, waiting again...')
         self.req = Arm.Request()
         self.blackboard = pt.blackboard.Blackboard()
         self.request_sent = False
-        self.response = None
-    
-    def initialise(self):
-        self.request_sent = False
-        self.response = None
-        self.req.xy[0] = 6 #  
-        self.req.obj_class = '1' # self.blackboard.get('Target_type')
-        self.future = self.cli.call_async(self.req)
-        return self.future.result()
-        rclpy.spin_until_future_complete(self, self.future)
-        #return self.future.result()
+        self.look_response = None
+        self.grab_pos_response = None
+        self.grab_response = None
+        self.drive_response = None
+        self.sent_look = False
+        self.sent_pick = False
+        self.sent_grab = False
+        self.progress = 0
 
     def update(self):
-
-        obj_class = '1' # self.blackboard.get('Target_type')
-        if obj_class is None:
-            self.node.get_logger().error("No object class specified on blackboard.")
-            return pt.common.Status.FAILURE
-
-        # Send pickup request once
-        if not self.request_sent:
+        if self.progress == 0:
+            obj_class = self.blackboard.get('Target_type')
             
-            self.req = Arm.Request()
-            self.req.xy[0] = 2 # sending a look command
+            if obj_class is None:
+                self.node.get_logger().error("No object class specified on blackboard.")
+                return pt.common.Status.FAILURE
             self.req.obj_class = obj_class
-            self.future = self.cli.call_async(self.req)
-            self.request_sent = True
+            self.progress = 1
+        elif self.progress == 1: # Here the robot will look and return if it sees
+            print("6")
+            if not self.sent_look:
+                self.look_response = self.cli.send_request(2,[],[]) 
+                self.sent_look = True
+            if self.look_response != None and self.look_response.success:
+                self.progress = 3
+                print("success: "+ str(self.look_response.success))
+                self.look_response.success = False
+        elif self.progress == 3:
+            self.obj_grabbed = False
+            print("going to pick now")
+            time.sleep(2.5) # might swith to checking that time is 2.5 more than at start
+            if not self.sent_pick:
+                self.grab_pos_response = self.cli.send_request(6,[],[]) 
+                self.sent_pick = True
+            if self.grab_pos_response != None and self.grab_pos_response.success:
+                self.progress = 4
+            elif self.look_response != None and not self.look_response.success:
+                self.progress = 5
+        elif self.progress == 4:
+            time.sleep(2.0)
+            print("Grabbing now")
+            time.sleep(1.0)
+            if not self.sent_grab:
+                self.grab_response = self.cli.send_request(7,self.grab_pos_response.arm_pos,[])
+                self.sent_grab = True
+            if self.grab_response != None and self.grab_response.success:
+                self.progress = 6
+                response = self.cli.send_request(8,[], self.grab_response.xyfix)
+        elif self.progress == 5:
+            print("Driving now, error is: " + self.grab_response.message + " and obj is at: " + str(self.grab_response.xyfix))
 
-            #rclpy.spin_until_future_complete(self.node, self.node.future)
-            # req.object_id = target  # or whatever field your service requires
-            # self.response = self.client.call(req)
+            if not self.sent_drive:
+                self.drive_response = self.cli.send_request(8,[],self.grab_response.xyfix) 
+                self.sent_drive = True
+            
+            if self.drive_response != None and self.drive_response.success:
+                self.progress == 3
+        elif self.progress == 6:
+            return pt.common.Status.SUCCESS
+        
 
         if self.future.done():
             if self.future.result() is not None:
@@ -438,8 +467,9 @@ class Pickup(pt.behaviour.Behaviour):
                     self.node.get_logger().info("pickup failed: " + response.message)
                     return pt.common.Status.FAILURE
             else:
-                self.node.get_logger().error(f"Service call failed:")# {e}")
+                self.node.get_logger().error(f"Service call failed:")
                 return pt.common.Status.FAILURE
+            
         
         # waiting
         return pt.common.Status.RUNNING
