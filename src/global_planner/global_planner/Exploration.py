@@ -158,8 +158,14 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
             vertices.append(vertices[0])
         polygon = Polygon(vertices)
 
+<<<<<<< HEAD
         Padding_value = 0.17
         polygon = polygon.buffer(-Padding_value)
+=======
+        # Add padding to the walls
+        PADDING_VALUE = 0.17
+        polygon = polygon.buffer(-PADDING_VALUE)
+>>>>>>> 840b4f75 (idk)
 
         UNIFORMITY_RADIUS = 1.30  # distanza minima tra candidati (Poisson disk)
         NUM_UNCOVERED_SAMPLES = 100
@@ -168,7 +174,7 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
         self.waypoints = self.greedy_visibility_coverage(polygon, candidates, resolution=NUM_UNCOVERED_SAMPLES)
         #self.node.get_logger().info(f"{self.waypoints}")
         
-        #self.plot_workspace()
+        self.plot_workspace()
         
         # Save waypoints
         self.blackboard.set('waypoints', self.waypoints)
