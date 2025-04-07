@@ -16,12 +16,12 @@ from tf_transformations import euler_from_quaternion
 class OccupancyGridPublisher(Node):
     # Constants for grid and object properties
     OBSTACLE_VALUE = 100
-    INFLATION_VALUE = 40
-    INFLATION_RADIUS = 2
+    INFLATION_VALUE = 80
+    INFLATION_RADIUS = 5
     SEEN_VALUE = 0
     BORDER_THICKNESS = 0.2
-    OBJECT_VALUE = 80
-    OBJECT_INFLATION_RADIUS = 6
+    OBJECT_VALUE = 100
+    OBJECT_INFLATION_RADIUS = 5
     OBJECT_INFLATION_VALUE = 80
 
     def __init__(self):
@@ -37,8 +37,8 @@ class OccupancyGridPublisher(Node):
         # Add service client to call the detect_objects service
         self.detect_objects_client = self.create_client(DetectObjects, 'detect_objects')
         # Wait for the service to be available
-        if not self.detect_objects_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('DetectObjects service not available...')
+        while not self.detect_objects_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('DetectObjects service not available, waiting again...')
         # Add a timer to periodically get the detected objects
         self.timer = self.create_timer(1.0, self.fetch_detected_objects)
         
@@ -57,15 +57,15 @@ class OccupancyGridPublisher(Node):
 
         # Initialize map
         # Adjust grid size based on workspace dimensions
-        self.workspace_coordinates = self.read_workspace_coordinates("/home/group1/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
+        self.workspace_coordinates = self.read_workspace_coordinates("/home/kristoffer-germalm/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv")
         self.grid_size_x, self.grid_size_y, self.origin_x, self.origin_y = self.calculate_grid_size_and_origin(self.workspace_coordinates)
 
         # Initialize map data
         self.map_data = self.generate_room_map()
         
         # Timer to publish occupancy grid
-        #self.marker_timer = self.create_timer(1.0, self.publish_workspace_marker)
-        #self.publish_workspace_marker()
+        self.marker_timer = self.create_timer(1.0, self.publish_workspace_marker)
+        self.publish_workspace_marker()
 
         self.timer = self.create_timer(1.0, self.publish_map)
         self.grid_update_timer = self.create_timer(0.5, self.update_grid_regularly)
@@ -102,15 +102,14 @@ class OccupancyGridPublisher(Node):
             # Process the detected objects from the response
             if response.object_types:
                 self.detected_objects = list(zip(response.object_types, response.object_positions))
-                # self.get_logger().info(f"Detected {len(self.detected_objects)} objects.")
+                self.get_logger().info(f"Detected {len(self.detected_objects)} objects.")
 
                 # Convert flat map to 2D grid for easier manipulation
                 grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
 
                 # Parameters
-                obstacle_value = obstacle_value
-                border_value = border_value
-                inflation_radius = object_inflation_radius  # Border thickness in cells
+                inflation_radius = object_inflation_radius  # Solid border thickness in cells
+                gradient_radius = inflation_radius + 6       # Gradient fade-out radius
 
                 for obj_type, obj_position in self.detected_objects:
                     object_x = obj_position.x
@@ -123,19 +122,29 @@ class OccupancyGridPublisher(Node):
                         # Mark the object cell as occupied
                         grid[gy, gx] = obstacle_value
 
-                        # Inflate border around the object
-                        for dx in range(-inflation_radius, inflation_radius + 1):
-                            for dy in range(-inflation_radius, inflation_radius + 1):
+                        # Inflate border with gradient
+                        for dx in range(-gradient_radius, gradient_radius + 1):
+                            for dy in range(-gradient_radius, gradient_radius + 1):
                                 nx = gx + dx
                                 ny = gy + dy
 
                                 if 0 <= nx < self.grid_size_x and 0 <= ny < self.grid_size_y:
                                     distance_sq = dx**2 + dy**2
-                                    if distance_sq <= inflation_radius**2:
-                                        if grid[ny, nx] != obstacle_value:
-                                            grid[ny, nx] = border_value
+                                    distance = np.sqrt(distance_sq)
 
-                        # self.get_logger().info(f"Object {obj_type} placed at grid cell ({gx}, {gy})")
+                                    if distance <= gradient_radius:
+                                        if distance <= inflation_radius:
+                                            # Solid inflation
+                                            if grid[ny, nx] != obstacle_value:
+                                                grid[ny, nx] = border_value
+                                        else:
+                                            # Gradient inflation
+                                            decay = 1 - ((distance - inflation_radius) / (gradient_radius - inflation_radius))
+                                            value = int(border_value * decay)
+                                            if grid[ny, nx] < value:
+                                                grid[ny, nx] = value  # Only update if value is stronger
+
+                        self.get_logger().info(f"Object {obj_type} placed at grid cell ({gx}, {gy})")
 
                 # Update the flattened map data
                 self.map_data = grid.flatten().tolist()
@@ -143,8 +152,7 @@ class OccupancyGridPublisher(Node):
                 self.get_detected_objects_info()
 
             else:
-                pass
-                #self.get_logger().warn("No objects detected.")
+                self.get_logger().warn("No objects detected.")
 
         except Exception as e:
             self.get_logger().error(f"Service call failed: {e}")
@@ -152,8 +160,7 @@ class OccupancyGridPublisher(Node):
     def get_detected_objects_info(self):
         """ Print out the information of detected objects. """
         for i, (obj_type, obj_position) in enumerate(self.detected_objects):
-            pass
-            # self.get_logger().info(f"Object {i + 1}: Type: {obj_type}, Position: {obj_position}")
+            self.get_logger().info(f"Object {i + 1}: Type: {obj_type}, Position: {obj_position}")
 
     def calculate_grid_size_and_origin(self, coordinates):
         """Calculate grid size and origin based on workspace coordinates."""
@@ -218,7 +225,7 @@ class OccupancyGridPublisher(Node):
                     else:
                         grid[gy, gx] = -1  # Free (unexplored) space
 
-        # self.get_logger().info(f"Value at grid[10,10] before = {grid[10,10]}")
+        self.get_logger().info(f"Value at grid[10,10] before = {grid[10,10]}")
         #grid[20,30] = 100
 
         return grid.flatten().tolist()
@@ -277,23 +284,23 @@ class OccupancyGridPublisher(Node):
                 
             # Convert PointCloud2 to numpy array
             points = np.array(list(pc2.read_points(cloud_transformed, field_names=("x", "y"), skip_nans=True)))
-            
-            # # Distance thresholding relative to the robot's position
-            # min_distance = 0.4 # Minimum distance, 0.35 enough to remove the arm from the lidar
-            # max_distance = 2.5  # Maximum distance (e.g., 10 meters)
 
-            # # Filter points based on distance threshold relative to the robot
-            # filtered_points = []
-            # for point in points:
-            #     # Calculate distance from the robot (in the map frame)
-            #     distance = np.sqrt((point[0] - robot_x)**2 + (point[1] - robot_y)**2)
+            # Distance thresholding relative to the robot's position
+            min_distance = 0.4 # Minimum distance, 0.35 enough to remove the arm from the lidar
+            max_distance = 2.5  # Maximum distance (e.g., 10 meters)
 
-            #     # Apply the distance thresholding (ignore points too close or too far from the robot)
-            #     if min_distance <= distance <= max_distance:
-            #         filtered_points.append(point)
+            # Filter points based on distance threshold relative to the robot
+            filtered_points = []
+            for point in points:
+                # Calculate distance from the robot (in the map frame)
+                distance = np.sqrt((point[0] - robot_x)**2 + (point[1] - robot_y)**2)
+
+                # Apply the distance thresholding (ignore points too close or too far from the robot)
+                if min_distance <= distance <= max_distance:
+                    filtered_points.append(point)
 
             # Update the occupancy grid with filtered points
-            self.update_occupancy_grid(points)
+            self.update_occupancy_grid(filtered_points)
 
         except Exception as e:
             self.get_logger().warn(f"Transform failed: {e}")
@@ -341,38 +348,36 @@ class OccupancyGridPublisher(Node):
         if self.workspace_explored:
             self.get_logger().info("The entire workspace has been explored!")
 
-    def mark_area_in_front_of_robot(self, robot_x, robot_y, robot_yaw, length=1, width=0.6, seen_value=SEEN_VALUE):
+    def mark_area_in_front_of_robot(self, robot_x, robot_y, robot_yaw, length=1.5, width=0.6, seen_value=SEEN_VALUE, cone_angle=np.radians(30)):
         """
-        Mark a rectangular area in front of the robot as seen.
+        Mark a cone-shaped area in front of the robot as seen.
         - `length`: how far in front of the robot to mark [m]
-        - `width`: how wide the area is [m]
+        - `cone_angle`: the full angle of the cone [radians]
         """
         grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
+        
+        # Angular resolution and radial resolution
+        angle_steps = int(cone_angle / np.radians(2))  # e.g., 2 degree steps
+        distance_steps = int(length / self.resolution)
 
-        # Generate a grid of points inside the rectangle
-        dys = np.linspace(-width / 2, width / 2, int(width / self.resolution))
-        start_offset = 0.2  # Start 20 cm in front of the robot
-        dxs = np.linspace(start_offset, length + start_offset, int(length / self.resolution))
+        angles = np.linspace(-cone_angle / 2, cone_angle / 2, angle_steps)
+        distances = np.linspace(0.2, length, distance_steps)  # Start slightly ahead of the robot
 
-        # Rotation matrix from robot orientation (yaw)
-        cos_yaw = np.cos(robot_yaw)
-        sin_yaw = np.sin(robot_yaw)
-
-        for dy in dys:
-            for dx in dxs:
-                # Calculate the world coordinates of the point in front of the robot
-                x = robot_x + dx * cos_yaw - dy * sin_yaw  # Corrected to rotate around the yaw axis
-                y = robot_y + dx * sin_yaw + dy * cos_yaw  # Corrected to rotate around the yaw axis
+        for angle in angles:
+            abs_angle = robot_yaw + angle
+            cos_a = np.cos(abs_angle)
+            sin_a = np.sin(abs_angle)
+            for dist in distances:
+                x = robot_x + dist * cos_a
+                y = robot_y + dist * sin_a
 
                 gx = int((x - self.origin_x) / self.resolution)
                 gy = int((y - self.origin_y) / self.resolution)
 
                 if 0 <= gx < self.grid_size_x and 0 <= gy < self.grid_size_y:
-                    # Only overwrite if not an obstacle
-                    if grid[gy, gx] < 10:  # Check if not an obstacle
+                    if grid[gy, gx] < 10:  # Don't overwrite obstacles
                         grid[gy, gx] = seen_value
 
-        # Update the map data with the modified grid
         self.map_data = grid.flatten().tolist()
 
     def publish_map(self):
@@ -421,7 +426,7 @@ class OccupancyGridPublisher(Node):
         marker.color.g = 0.0
         marker.color.b = 1.0
 
-        file_path = "/home/group1/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
+        file_path = "/home/kristoffer-germalm/dd2419_ws/src/occupancy_grid/occupancy_grid/workspace_2.tsv"  # Update this path if necessary
         coordinates = self.read_workspace_coordinates(file_path)
 
         first_point = None
@@ -444,14 +449,12 @@ class OccupancyGridPublisher(Node):
         self.marker_publisher.publish(marker)
         self.get_logger().info("Published workspace marker from file")
 
-
 def main(args=None):
     rclpy.init(args=args)
     node = OccupancyGridPublisher()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
