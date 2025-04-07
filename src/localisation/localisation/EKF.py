@@ -69,11 +69,7 @@ class EKF_Algorithm(Node):
         # Rosbag -- drove 243cm
         ticks_per_rev = 48 * 64
         wheel_radius = 0.048 #9.6cm  
-<<<<<<< HEAD
         base = 0.30 # 29.7cm 
-=======
-        base = 0.32 # 29.7cm 
->>>>>>> 840b4f75 (idk)
 
         # Ticks since last message
         delta_ticks_left = msg.delta_encoder_left
