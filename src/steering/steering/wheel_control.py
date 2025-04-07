@@ -35,7 +35,7 @@ class WheelController(Node):
     def publish_duty_cycles(self):
         # Given parameters
         wheel_radius = 0.046 # 0.04915
-        base = 0.3 # 0.30
+        base = 0.30 # 0.30
 
         # Steer geometry, from velocity to wheel velocity
         u_w = self.vel_x / (wheel_radius)
