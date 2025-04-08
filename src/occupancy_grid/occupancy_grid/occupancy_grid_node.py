@@ -25,7 +25,7 @@ class OccupancyGridPublisher(Node):
     SEEN_VALUE = 0
     BORDER_THICKNESS = 0.2
     OBJECT_VALUE = 100
-    OBJECT_INFLATION_RADIUS = 5
+    OBJECT_INFLATION_RADIUS = 6
     OBJECT_INFLATION_VALUE = 80
 
     def __init__(self):
@@ -61,7 +61,7 @@ class OccupancyGridPublisher(Node):
 
         # Initialize map
         package_share_dir = get_package_share_directory('occupancy_grid')
-        ws_path = os.path.join(package_share_dir, 'data', 'workspace_3.tsv')
+        ws_path = os.path.join(package_share_dir, 'data', 'workspace_2.tsv')
         if os.path.exists(ws_path):
             self.workspace_coordinates = self.read_workspace_coordinates(ws_path)
         else:
@@ -112,7 +112,7 @@ class OccupancyGridPublisher(Node):
             # Process the detected objects from the response
             if response.object_types:
                 self.detected_objects = list(zip(response.object_types, response.object_positions))
-                self.get_logger().info(f"Detected {len(self.detected_objects)} objects.")
+                # self.get_logger().info(f"Detected {len(self.detected_objects)} objects.")
 
                 # Convert flat map to 2D grid for easier manipulation
                 grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
@@ -154,12 +154,12 @@ class OccupancyGridPublisher(Node):
                                             if grid[ny, nx] < value:
                                                 grid[ny, nx] = value  # Only update if value is stronger
 
-                        self.get_logger().info(f"Object {obj_type} placed at grid cell ({gx}, {gy})")
+                        # self.get_logger().info(f"Object {obj_type} placed at grid cell ({gx}, {gy})")
 
                 # Update the flattened map data
                 self.map_data = grid.flatten().tolist()
 
-                self.get_detected_objects_info()
+                # self.get_detected_objects_info()
 
             else:
                 self.get_logger().warn("No objects detected.")
@@ -167,10 +167,10 @@ class OccupancyGridPublisher(Node):
         except Exception as e:
             self.get_logger().error(f"Service call failed: {e}")
 
-    def get_detected_objects_info(self):
-        """ Print out the information of detected objects. """
-        for i, (obj_type, obj_position) in enumerate(self.detected_objects):
-            self.get_logger().info(f"Object {i + 1}: Type: {obj_type}, Position: {obj_position}")
+    # def get_detected_objects_info(self):
+    #     """ Print out the information of detected objects. """
+    #     for i, (obj_type, obj_position) in enumerate(self.detected_objects):
+    #         self.get_logger().info(f"Object {i + 1}: Type: {obj_type}, Position: {obj_position}")
 
     def calculate_grid_size_and_origin(self, coordinates):
         """Calculate grid size and origin based on workspace coordinates."""
@@ -235,7 +235,7 @@ class OccupancyGridPublisher(Node):
                     else:
                         grid[gy, gx] = -1  # Free (unexplored) space
 
-        self.get_logger().info(f"Value at grid[10,10] before = {grid[10,10]}")
+        # self.get_logger().info(f"Value at grid[10,10] before = {grid[10,10]}")
         #grid[20,30] = 100
 
         return grid.flatten().tolist()
@@ -437,7 +437,7 @@ class OccupancyGridPublisher(Node):
         marker.color.b = 1.0
 
         package_share_dir = get_package_share_directory('occupancy_grid')
-        ws_path = os.path.join(package_share_dir, 'data', 'workspace_3.tsv')
+        ws_path = os.path.join(package_share_dir, 'data', 'workspace_2.tsv')
         if os.path.exists(ws_path):
             self.workspace_coordinates = self.read_workspace_coordinates(ws_path)
         else:
@@ -463,7 +463,7 @@ class OccupancyGridPublisher(Node):
             marker.points.append(first_point)
 
         self.marker_publisher.publish(marker)
-        self.get_logger().info("Published workspace marker from file")
+        # self.get_logger().info("Published workspace marker from file")
 
 def main(args=None):
     rclpy.init(args=args)

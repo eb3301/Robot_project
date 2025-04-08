@@ -105,7 +105,7 @@ class AutoControll(Node):
 
             # Calculate the lookahead distance
             self.resolution = np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
-            self.lookahead_distance = 6*self.resolution
+            self.lookahead_distance = 8*self.resolution
 
             smoothed_path = create_god_path(self.pose_list, self.resolution)
 
@@ -124,7 +124,7 @@ class AutoControll(Node):
             # Calculate distance to goal
             distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(self.final_point))
 
-            if distance_to_goal > self.resolution:
+            if distance_to_goal > 0.1: # self.resolution:
                 # Compute the velocity command using the Pure Pursuit algorithm
                 twist_msg = self.pure_pursuit_velocity(self.current_position, self.current_heading, self.pose_list, self.lookahead_distance)
                 
@@ -158,7 +158,7 @@ class AutoControll(Node):
             target_point_idx += 1
 
         if target_point_idx == 0:
-            target_point_idx = 1  # Skip the first point, as it is the vehicle's current position
+            target_point_idx = 1  # Skip the first point
 
         # Get the target point
         target_point = path[target_point_idx]
@@ -206,6 +206,11 @@ def calculate_steering_angle(current_position, current_heading, target_point):
     if steering_angle > np.pi / 2:
         steering_angle = np.pi / 2
     elif steering_angle < -np.pi / 2:
+        steering_angle = -np.pi / 2
+    # Constrain the steering angle to not turn as much
+    elif np.pi / 4 < steering_angle <= np.pi / 2:
+        steering_angle = np.pi / 2
+    elif -np.pi / 2 <= steering_angle < -np.pi / 4:
         steering_angle = -np.pi / 2
 
     return steering_angle

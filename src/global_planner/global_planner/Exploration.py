@@ -282,16 +282,16 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
             way_x, way_y = [], []
 
         
-        # Plot
-        plt.figure(figsize=(6,6))
-        plt.plot(x_vals, y_vals, marker='o', linestyle='-', color='b', label='Workspace Boundary')
-        plt.scatter(way_x, way_y, color='r', marker='x', label='Sampled Waypoints')
-        plt.xlabel("X-axis")
-        plt.ylabel("Y-axis")
-        plt.title("Workspace and Sampled Waypoints")
-        plt.grid(True, linestyle="--", linewidth=0.5)
-        plt.legend()
-        plt.show()
+        # # Plot
+        # plt.figure(figsize=(6,6))
+        # plt.plot(x_vals, y_vals, marker='o', linestyle='-', color='b', label='Workspace Boundary')
+        # plt.scatter(way_x, way_y, color='r', marker='x', label='Sampled Waypoints')
+        # plt.xlabel("X-axis")
+        # plt.ylabel("Y-axis")
+        # plt.title("Workspace and Sampled Waypoints")
+        # plt.grid(True, linestyle="--", linewidth=0.5)
+        # plt.legend()
+        # plt.show()
 
 
 
@@ -358,7 +358,7 @@ class ExploreSamples(pt.behaviour.Behaviour):
             dx, dy = np.abs(self.target[0] - x), np.abs(self.target[1] - y)
             dist = np.linalg.norm(np.array([dx, dy]))
 
-            if dist < 0.3:
+            if dist < 0.1:
                 print('Arrived at target!')
                 self.target = None        
 

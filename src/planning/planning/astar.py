@@ -78,7 +78,7 @@ class Planner(Node):
       if self.planned: 
         try:
           if not self.path:
-            self.get_logger().info(f"Path is empty")
+            self.get_logger().info(f"Path is empty, should replan")
         except:
           self.get_logger().info(f"Path is empty")
 
@@ -125,7 +125,7 @@ class Planner(Node):
       self.get_logger().info("Publishing path")
       self.path_pub.publish(message)
     else: # If no path exist, publish empty path
-      self.get_logger().info('Path empty')
+      self.get_logger().info('Publishing empty path')
 
 
   def pose_callback(self, msg : PoseWithCovarianceStamped):
@@ -165,8 +165,8 @@ class Planner(Node):
     self.planned = False
 
     # Publish zero velocity when planning
-    msg = Twist()
-    self.cmd_vel_pub.publish(msg)
+    twist_msg = Twist()
+    self.cmd_vel_pub.publish(twist_msg)
 
     # Stop planning
     if msg.pose.position.z == -1:
@@ -198,7 +198,7 @@ def find_cell_index(x, y, resolution, origin):
   # Find grid index from map coordinate
   x_index = int((x - origin[0]) / resolution)  
   y_index = int((y - origin[1]) / resolution)  
-  return (y_index, x_index)
+  return (x_index, y_index)
 
 def start_center(x, y, resolution):
   # Adjust the coordinates to the center of the grid cell
@@ -250,8 +250,7 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
     
     # Create new node
     new_node = Plan_node(xn, yn, thetan)
-    factor = 10**(len(str(resolution).split('.')[1])+1)
-    new_node_key = (round(new_node.x*factor)/factor, round(new_node.y*factor)/factor)
+    new_node_key = (round(new_node.x*10000)/10000, round(new_node.y*10000)/10000)
     
     # Check if the point already is visited
     if new_node_key not in closed_set:
@@ -263,9 +262,9 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
         # Assinge cost functions
         new_node.g = current_node.g + resolution 
         x_index, y_index = find_cell_index(xn, yn, resolution, origin) 
-        cost = obsticales[x_index, y_index]
+        cost = obsticales[y_index, x_index]
         if cost == -1:
-          cost = -resolution
+          cost = -resolution # 0
         new_node.c = cost
         
         # Check if the point is in the open set 
@@ -302,8 +301,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin, timeout):
   start_node = Plan_node(x0, y0, theta0) 
   start_node.h = np.sqrt(((start_node.x - xt)**2 + (start_node.y - yt)**2))
   start_node.f = start_node.g + start_node.h * 2
-  factor = 10**(len(str(resolution).split('.')[1])+1) # To round on a relible way
-  start_node_key = (round(start_node.x*factor)/factor, round(start_node.y*factor)/factor)
+  start_node_key = (round(start_node.x*10000)/10000, round(start_node.y*10000)/10000)
   
   # Innit and preallocate sets
   open_set = dict()
@@ -315,9 +313,9 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin, timeout):
   # For avalible points
   while open_set:
     # Check elapsed time every iteration
-    elapsed_time = time.time() - start_time
-    if elapsed_time > timeout: 
-      return None
+    # elapsed_time = time.time() - start_time
+    # if elapsed_time > timeout: 
+    #   return None
         
     # Find and take out the lowest cost point
     current_node_key = min(open_set, key=lambda node: open_set[node].f)
@@ -332,8 +330,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin, timeout):
       
       # Take out the path
       while current_node:
-          factor = 10**(len(str(resolution).split('.')[1])+1)
-          path.append((round(current_node.x*factor)/factor, round(current_node.y*factor)/factor))#, current_node.theta)) # /(resolution*10))*(resolution*10)
+          path.append((round(current_node.x*10000)/10000, round(current_node.y*10000)/10000))#, current_node.theta)) # /(resolution*10))*(resolution*10)
           current_node = current_node.parent
       # path.pop(-1) # The robots position, should be included?
       # x, y, theta = path[-1]

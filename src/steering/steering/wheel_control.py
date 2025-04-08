@@ -51,7 +51,7 @@ class WheelController(Node):
         w_r = u_w + u_phi/2
 
         # Corrections for uneven motors
-        correct_factor = 0 #0.006
+        correct_factor = 0.006 #0.006
         if u_w >= 0:
             if -0.25 < u_phi < 0:
                 w_r = w_r - (correct_factor)/(0.25)*u_phi - correct_factor

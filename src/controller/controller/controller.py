@@ -34,7 +34,7 @@ class Controller(Node):
         base = 0.3 # 0.30
         
         # Maximum velocities
-        max_factor = 1 / 4
+        max_factor = 1 / 6
         max_vel = wheel_radius * max_factor # m/s
         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
 
