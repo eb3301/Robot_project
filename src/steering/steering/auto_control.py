@@ -5,6 +5,7 @@ import numpy as np
 import rclpy
 import rclpy.logging
 from rclpy.node import Node
+import time
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
 from tf_transformations import euler_from_quaternion
@@ -46,6 +47,7 @@ class AutoControll(Node):
         self.current_heading = 0
         self.pose_list = []
         self.start = False
+        self.count = 0
 
     # Get position of robot
     def pose_callback(self, msg : PoseWithCovarianceStamped):
@@ -105,7 +107,7 @@ class AutoControll(Node):
 
             # Calculate the lookahead distance
             self.resolution = np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
-            self.lookahead_distance = 6*self.resolution
+            self.lookahead_distance = 8*self.resolution
 
             smoothed_path = create_god_path(self.pose_list, self.resolution)
 
@@ -124,7 +126,7 @@ class AutoControll(Node):
             # Calculate distance to goal
             distance_to_goal = np.linalg.norm(np.array(self.current_position) - np.array(self.final_point))
 
-            if distance_to_goal > self.resolution:
+            if distance_to_goal > 0.1: # self.resolution:
                 # Compute the velocity command using the Pure Pursuit algorithm
                 twist_msg = self.pure_pursuit_velocity(self.current_position, self.current_heading, self.pose_list, self.lookahead_distance)
                 
@@ -158,13 +160,13 @@ class AutoControll(Node):
             target_point_idx += 1
 
         if target_point_idx == 0:
-            target_point_idx = 1  # Skip the first point, as it is the vehicle's current position
+            target_point_idx = 1  # Skip the first point
 
         # Get the target point
         target_point = path[target_point_idx]
 
         # Calculate the steering angle to the target point
-        steering_angle = calculate_steering_angle(current_position, current_heading, target_point)
+        steering_angle = self.calculate_steering_angle(current_position, current_heading, target_point)
 
         # Robot paramters
         wheel_radius = 0.046 # 0.04915
@@ -183,32 +185,42 @@ class AutoControll(Node):
 
         # Create a ROS Twist message
         twist_msg = Twist()
-        twist_msg.linear.x = linear_velocity
-        twist_msg.linear.z = max_factor
-        twist_msg.angular.z = angular_velocity
+        if self.count <= 5:
+            twist_msg.linear.x = linear_velocity
+            twist_msg.linear.z = max_factor
+            twist_msg.angular.z = angular_velocity
+        else:
+            self.count = 0
         
         return twist_msg
 
-def calculate_steering_angle(current_position, current_heading, target_point):
-    # Vector from current position to target point
-    vector_to_target = target_point - np.array(current_position)
+    def calculate_steering_angle(self, current_position, current_heading, target_point):
+        # Vector from current position to target point
+        vector_to_target = target_point - np.array(current_position)
 
-    # Calculate the angle to the target point
-    angle_to_target = np.arctan2(vector_to_target[1], vector_to_target[0])
+        # Calculate the angle to the target point
+        angle_to_target = np.arctan2(vector_to_target[1], vector_to_target[0])
 
-    # Steering angle is the difference between the vehicle's heading and the angle to the target
-    steering_angle = angle_to_target - current_heading
+        # Steering angle is the difference between the vehicle's heading and the angle to the target
+        steering_angle = angle_to_target - current_heading
 
-    # Normalize the steering angle to be in the range of -pi to pi
-    steering_angle = (steering_angle + np.pi) % (2 * np.pi) - np.pi
+        # Normalize the steering angle to be in the range of -pi to pi
+        steering_angle = (steering_angle + np.pi) % (2 * np.pi) - np.pi
+        if abs(steering_angle) > np.pi/4:
+            self.count += 1
 
-    # Constrain the steering angle to be within the range of -pi/2 to pi/2 to not drive backwards
-    if steering_angle > np.pi / 2:
-        steering_angle = np.pi / 2
-    elif steering_angle < -np.pi / 2:
-        steering_angle = -np.pi / 2
+        # Constrain the steering angle to be within the range of -pi/2 to pi/2 to not drive backwards
+        if steering_angle > np.pi / 2:
+            steering_angle = np.pi / 2
+        elif steering_angle < -np.pi / 2:
+            steering_angle = -np.pi / 2
+        # Constrain the steering angle to not turn as much
+        elif np.pi / 4 < steering_angle <= np.pi / 2:
+            steering_angle = np.pi / 2
+        elif -np.pi / 2 <= steering_angle < -np.pi / 4:
+            steering_angle = -np.pi / 2
 
-    return steering_angle
+        return steering_angle
 
 def cubic_bezier(t, P0, P1, P2, P3):
     return (1 - t)**3 * P0 + 3 * (1 - t)**2 * t * P1 + 3 * (1 - t) * t**2 * P2 + t**3 * P3
