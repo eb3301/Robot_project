@@ -270,7 +270,7 @@ class Detection(Node):
 
                 if should_add:
                     self.ObjectList.append([obj_type, new_obj_position])
-            self.get_logger().info(f'Detected {len(self.ObjectList)} objects from the detection node start')
+            # self.get_logger().info(f'Detected {len(self.ObjectList)} objects from the detection node start')
 
             detected_indices.append(cluster_indices)
 

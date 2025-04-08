@@ -433,17 +433,17 @@ def main2():
   plt.title(f"Path calculation at time: {elapsed_time:.4f} seconds")
   plt.show()
 
-main2() # need to change x and y index in find_grid_index
+# main2() # need to change x and y index in find_grid_index
 
 
-# def main():
-#     rclpy.init()
-#     node = Planner()
-#     try:
-#         rclpy.spin(node)
-#     except rclpy.exceptions.ROSInterruptException:
-#         pass
-#     rclpy.shutdown()
+def main():
+    rclpy.init()
+    node = Planner()
+    try:
+        rclpy.spin(node)
+    except rclpy.exceptions.ROSInterruptException:
+        pass
+    rclpy.shutdown()
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
