@@ -86,12 +86,14 @@ class DetectionManager(Node):
         future = self.detect_client.call_async(req)
         future.add_done_callback(self.handle_detect_response)
 
+    c=0
     def handle_detect_response(self, future):
         try:
             res = future.result()
             #fself.get_logger().info(f" Oggetti rilevati: {len(res.object_types)}")
             for i, (obj_type, pos) in enumerate(zip(res.object_types, res.object_positions)):
                 self.get_logger().info(f"  #{i+1}: {obj_type} @ ({pos.x:.2f}, {pos.y:.2f}, {pos.z:.2f})")
+                c=0
         except Exception as e:
             self.get_logger().error(f"Error response detect_objects: {e}")
 

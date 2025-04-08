@@ -74,8 +74,8 @@ class Detection(Node):
         # The kinematic parameters for the differential configuration
         dt = 50 / 1000
         ticks_per_rev = 48 * 64
-        wheel_radius = 0.04915 # 0.04921
-        base = 0.31 # 0.30
+        wheel_radius = 0.046 #0.04915 # 0.04921
+        base = 0.3 #0.31 # 0.30
 
         # Ticks since last message
         delta_ticks_left = msg.delta_encoder_left
@@ -87,7 +87,7 @@ class Detection(Node):
         w = wheel_radius/base * (K*delta_ticks_right - K*delta_ticks_left)
 
         # Threshold to avoid numerical errors
-        rot_threshold = 0.005
+        rot_threshold = 10 #0.005
         vel_threshold = 1
 
         if abs(w) > rot_threshold or abs(v) > vel_threshold: 
@@ -168,10 +168,11 @@ class Detection(Node):
 
         distances = np.linalg.norm(points[:, :3], axis=1)
         offset = 0.089
-        mask = (distances <= 1.5) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
+        mask = (distances <= 1) & (distances >= 0.25) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
         filtered_indices = np.where(mask)[0]
         filtered_points = points[mask]
         filtered_colors = colors[mask]
+        filtered_distances=distances[mask]
 
         if filtered_points.shape[0] == 0:
             # self.get_logger().info("No points after filtering")
@@ -198,18 +199,25 @@ class Detection(Node):
             cluster_points = filtered_points[cluster_mask]
             cluster_colors = filtered_colors[cluster_mask]
             cluster_indices = filtered_indices[cluster_mask]
+            cluster_distances=filtered_distances[cluster_mask]
+            cluster_distance=np.mean(cluster_distances)
             # self.get_logger().info(f"Cluster #{label} → {cluster_points.shape[0]} punti")
 
+            if np.sum(cluster_points[:,1] > (offset - 0.135)) < 20: #skip cluster if too high (20 points are above the max)
+                continue
 
             if cluster_points.shape[0] < 10:
                 continue
-
+            
             bbox_min = np.min(cluster_points, axis=0)
             bbox_max = np.max(cluster_points, axis=0)
             bbox_size = bbox_max - bbox_min
             bbox_center = (bbox_min + bbox_max) / 2
-            volume = np.prod(bbox_size)
 
+            magn=(1 + (3.4-1)/(1-0.25)*(cluster_distance-0.25))
+            volume = np.prod(bbox_size)*magn**2
+            self.get_logger().info(f"il volume è: {volume}")
+            
             x_lim = 0.35
             x_min, x_max = -x_lim, x_lim
             if (bbox_min[0] < x_min or bbox_max[0] > x_max):
@@ -231,7 +239,14 @@ class Detection(Node):
             hsv_list = [colorsys.rgb_to_hsv(r, g, b) for r, g, b in rgb_array]
             hsv_array = np.array(hsv_list)
 
-            if volume < 0.00012 or np.mean(hsv_array[:, 1]) > 0.4:  # Small objects (cube, sphere)
+            # Hue in HSV: red ~ 0 o ~1, green ~0.33, blue ~0.66 (light blue ~0.5)
+            red = ((np.mean(hsv_array[:,0])) < 0.02 or (np.mean(hsv_array[:,0]) > 0.98)) and (np.mean(hsv_array[:,1]) > 0.6)
+            green = (np.mean(hsv_array[:,0]) > 0.2) and (np.mean(hsv_array[:,0]) < 0.4) and (np.mean(hsv_array[:,1]) > 0.5)
+            blue = (np.mean(hsv_array[:,0]) > 0.55) and (np.mean(hsv_array[:,0]) < 0.66) and (np.mean(hsv_array[:,0]) > 0.5)
+            #self.get_logger().info(f"red {red}, green {green}, blue {blue}")
+
+
+            if volume < 0.00012 and (red or green or blue):  # Small objects (cube, sphere)
                 curvatures = []
                 for p in cluster_points:
                     cov_matrix = np.cov(cluster_points.T)
@@ -270,7 +285,7 @@ class Detection(Node):
 
                 if should_add:
                     self.ObjectList.append([obj_type, new_obj_position])
-            self.get_logger().info(f'Detected {len(self.ObjectList)} objects from the detection node start')
+            #self.get_logger().info(f'Detected {len(self.ObjectList)} objects from the detection node start')
 
             detected_indices.append(cluster_indices)
 
