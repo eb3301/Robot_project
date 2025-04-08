@@ -319,7 +319,7 @@ class ExploreSamples(pt.behaviour.Behaviour):
             
             self.target_pub = self.node.create_publisher(Marker, '/goal_marker', qos)
             self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, 'map_pose', self.pose_callback, 10)
-
+            
             # Initialise detection
             self.start_client = self.node.create_client(SetBool, '/start_detection')
             self.stop_client = self.node.create_client(SetBool, '/stop_detection')
