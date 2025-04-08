@@ -35,7 +35,7 @@ class WheelController(Node):
     def publish_duty_cycles(self):
         # Given parameters
         wheel_radius = 0.046 # 0.04915
-        base = 0.3 # 0.30
+        base = 0.30 # 0.30
 
         # Steer geometry, from velocity to wheel velocity
         u_w = self.vel_x / (wheel_radius)
@@ -51,7 +51,7 @@ class WheelController(Node):
         w_r = u_w + u_phi/2
 
         # Corrections for uneven motors
-        correct_factor = 0 #0.006
+        correct_factor = 0.006 #0.006
         if u_w >= 0:
             if -0.25 < u_phi < 0:
                 w_r = w_r - (correct_factor)/(0.25)*u_phi - correct_factor

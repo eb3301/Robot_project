@@ -257,6 +257,38 @@ class MinimalService(Node):
         plt.title("2D Robot Arm Visualization (User Input Angles)")
         plt.show()
 
+    def get_color_mask(self,image):
+        # Convert to HSV
+        hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+
+        # Define color ranges in HSV
+
+        # Red can wrap around HSV hue range, so we usually define it in two parts
+        lower_red1 = np.array([0, 100, 70])
+        upper_red1 = np.array([10, 255, 255])
+        lower_red2 = np.array([170, 100, 70])
+        upper_red2 = np.array([200, 255, 255])
+
+        # Green range
+        lower_green = np.array([35, 50, 70])
+        upper_green = np.array([85, 255, 255])
+
+        # Blue range
+        lower_blue = np.array([100, 100, 0])
+        upper_blue = np.array([140, 255, 255])
+
+        # Create masks
+        mask_red1 = cv.inRange(hsv, lower_red1, upper_red1)
+        mask_red2 = cv.inRange(hsv, lower_red2, upper_red2)
+        mask_red = cv.bitwise_or(mask_red1, mask_red2)
+
+        mask_green = cv.inRange(hsv, lower_green, upper_green)
+        mask_blue = cv.inRange(hsv, lower_blue, upper_blue)
+
+        # Combine all masks
+        mask = cv.bitwise_or(mask_red, cv.bitwise_or(mask_green, mask_blue))
+        return mask
+
     def get_obj_pos(self,obj_class):
         pos = []
         image = self.latest_image
@@ -276,55 +308,39 @@ class MinimalService(Node):
         camera_matrix = np.array(calib['camera_matrix']['data']).reshape((3, 3))
         dist_coeffs = np.array(calib['distortion_coefficients']['data'])
         undistorted = cv.undistort(frame, camera_matrix, dist_coeffs)
-        blur_undistorted = cv.blur(undistorted,(2,2))
+        blur_undistorted = cv.blur(undistorted,(3 ,3))
 
         #cv.imwrite('animaltop.jpg', frame)
         N = 50 # pixels to remove from bottom
         #cropped_frame = frame[:frame.shape[0] - N, :]
         cropped_frame = blur_undistorted[20:420, 60:580]   
+        grey_crop = cv.cvtColor(cropped_frame, cv.COLOR_BGR2GRAY)
         #image_path = os.getcwd() + "/src/arm_service/arm_service/sphere.jpg"
         # print("Current Working Directory:", os.getcwd())
-        #plt.imshow(cropped_frame)
-        #plt.show()
         
-        edges = cv.Canny(cropped_frame,200,500)
-        contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         
-        # c = max(contours, key=cv.contourArea)
-        # Mc = cv.moments(c)
-        # if Mc['m00'] != 0:
-        #     cx = int(Mc['m10'] / Mc['m00'])
-        #     cy = int(Mc['m01'] / Mc['m00'])
-        #centers =[[cx,cy]]
+        mask = self.get_color_mask(cropped_frame)
+        #contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)    
+        plt.imshow(mask)
+        plt.show()
+
+        edges = cv.Canny(grey_crop,100,500)
+        contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         
-        filtered_contours = [cnt for cnt in contours if cv.arcLength(cnt, True) > 10]
+        filtered_contours = [cnt for cnt in contours if cv.arcLength(cnt, False) > 50]
         for cnt in filtered_contours:
             M = cv.moments(cnt)
             if M['m00'] != 0:
                 cx = int(M['m10'] / M['m00'])
                 cy = int(M['m01'] / M['m00'])
                 centers.append([cx,cy])
-        # for cnt in contours:
-        #     if cv.contourArea(cnt) > 50:  # Filter out tiny noise
-        #         cx, cy, x, y, w, h= self.get_center_from_bounding_rect(cnt)
-        #         centers.append((cx, cy))
-        
-        #         cv.rectangle(cropped_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #         cv.circle(cropped_frame, (cx, cy), 5, (0, 0, 255), -1)
-        
-        # for cnt in contours:
-        #     for pt in cnt:
-        #         x, y = pt[0]
-        #         cv.circle(cropped_frame, (x, y), 1, (0, 255, 0), -1)
 
-        cv.drawContours(cropped_frame,contours, -1, (0,255,0),3)
+        cv.drawContours(cropped_frame,filtered_contours, -1, (0,255,0),3)
         for pnt in centers: 
             cv.circle(cropped_frame, (pnt), 5, (0, 0, 255), -1)
         print(centers)
         
-        all_points = np.vstack(contours)
-        # x, y, w, h = cv.boundingRect(all_points)
-        # cv.rectangle(cropped_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        all_points = np.vstack(filtered_contours)
         rect = cv.minAreaRect(all_points)
         box = cv.boxPoints(rect)
         box = np.int0(box)
@@ -335,10 +351,7 @@ class MinimalService(Node):
         if w < h:
             angle += 90
         
-        print(angle)
         print(rect)
-        #angle = math.radians(rect[2])
-        #anglePCA = self.frame_PCA(all_points, cropped_frame)
         cx = round(rect[0][0])
         cy = round(rect[0][1])
         cv.drawContours(cropped_frame, [box], 0, (0, 255, 0), 2)
@@ -361,11 +374,13 @@ class MinimalService(Node):
         
         if math.sqrt(tmpx**2+tmpy**2)<= 0.15:
             
-            # plt.subplot(1,2,1)
-            #plt.imshow(cropped_frame)
-            # plt.subplot(1,2,2)
-            # plt.imshow(edges,cmap='gray')
-            #plt.show()
+            plt.subplot(2,2,1)
+            plt.imshow(mask)
+            plt.subplot(2,2,2)
+            plt.imshow(edges,cmap='gray')
+            plt.subplot(2,2,3)
+            plt.imshow(cropped_frame)
+            plt.show()
             return [tmpx,tmpy],angle
         
 
@@ -665,9 +680,6 @@ class MinimalService(Node):
         else:
             response.success = False
             response.message = "Send valid input please. (2, 4 or 6)"
-        
-        
-
         
         
         #self.get_logger().info('Incoming request\na: %d b: %d' % (request.command))

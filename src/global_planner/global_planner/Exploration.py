@@ -36,11 +36,12 @@ class BehaviourTree(Node):
         create_ws = Create_ws(self)
         waypoints = Sample_Waypoints(self)
         explore_samples = ExploreSamples(self)
-        explore_unknown = ExploreUknownSpace((self)) 
+
+        #explore_unknown = ExploreUknownSpace((self)) --- Break in case of emergency
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          children = [create_ws, waypoints, explore_samples, explore_unknown]
+                                          children = [create_ws, waypoints, explore_samples]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -158,8 +159,9 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
             vertices.append(vertices[0])
         polygon = Polygon(vertices)
 
-        Padding_value = 0.17
-        polygon = polygon.buffer(-Padding_value)
+        # Add padding to the walls
+        PADDING_VALUE = 0.17
+        polygon = polygon.buffer(-PADDING_VALUE)
 
         UNIFORMITY_RADIUS = 1.30  # distanza minima tra candidati (Poisson disk)
         NUM_UNCOVERED_SAMPLES = 100
@@ -168,7 +170,7 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
         self.waypoints = self.greedy_visibility_coverage(polygon, candidates, resolution=NUM_UNCOVERED_SAMPLES)
         #self.node.get_logger().info(f"{self.waypoints}")
         
-        #self.plot_workspace()
+        self.plot_workspace()
         
         # Save waypoints
         self.blackboard.set('waypoints', self.waypoints)
@@ -280,16 +282,16 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
             way_x, way_y = [], []
 
         
-        # Plot
-        plt.figure(figsize=(6,6))
-        plt.plot(x_vals, y_vals, marker='o', linestyle='-', color='b', label='Workspace Boundary')
-        plt.scatter(way_x, way_y, color='r', marker='x', label='Sampled Waypoints')
-        plt.xlabel("X-axis")
-        plt.ylabel("Y-axis")
-        plt.title("Workspace and Sampled Waypoints")
-        plt.grid(True, linestyle="--", linewidth=0.5)
-        plt.legend()
-        plt.show()
+        # # Plot
+        # plt.figure(figsize=(6,6))
+        # plt.plot(x_vals, y_vals, marker='o', linestyle='-', color='b', label='Workspace Boundary')
+        # plt.scatter(way_x, way_y, color='r', marker='x', label='Sampled Waypoints')
+        # plt.xlabel("X-axis")
+        # plt.ylabel("Y-axis")
+        # plt.title("Workspace and Sampled Waypoints")
+        # plt.grid(True, linestyle="--", linewidth=0.5)
+        # plt.legend()
+        # plt.show()
 
 
 
@@ -317,7 +319,7 @@ class ExploreSamples(pt.behaviour.Behaviour):
             
             self.target_pub = self.node.create_publisher(Marker, '/goal_marker', qos)
             self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, 'map_pose', self.pose_callback, 10)
-
+            
             # Initialise detection
             self.start_client = self.node.create_client(SetBool, '/start_detection')
             self.stop_client = self.node.create_client(SetBool, '/stop_detection')
@@ -348,7 +350,6 @@ class ExploreSamples(pt.behaviour.Behaviour):
         print('Exploring...')        
         return pt.common.Status.RUNNING
     
-    
     def pose_callback(self, msg: PoseWithCovarianceStamped):
         if self.target:
             x, y = msg.pose.pose.position.x, msg.pose.pose.position.y
@@ -356,7 +357,7 @@ class ExploreSamples(pt.behaviour.Behaviour):
             dx, dy = np.abs(self.target[0] - x), np.abs(self.target[1] - y)
             dist = np.linalg.norm(np.array([dx, dy]))
 
-            if dist < 0.3:
+            if dist < 0.1:
                 print('Arrived at target!')
                 self.target = None        
 
@@ -397,6 +398,31 @@ class ExploreSamples(pt.behaviour.Behaviour):
         req = SetBool.Request()
         req.data = value
         client.call_async(req)
+
+    def timer_callback(self):
+        # Ogni secondo leggi la lista oggetti rilevati
+        if not self.detect_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn("Service detect objects not available")
+            return
+
+        req = DetectObjects.Request()
+        future = self.detect_client.call_async(req)
+        future.add_done_callback(self.handle_detect_response)
+
+    def handle_detect_response(self, future):
+        try:
+            res = future.result()
+            map_list = []
+            for i, (obj_type, pos) in enumerate(zip(res.object_types, res.object_positions)):
+                x, y, z = float(pos.x), float(pos.y), float(pos.z)
+                map_list.append(f"{obj_type} \t {x:.2f} \t {y:.2f} \t {z:.2f}")
+        
+            with open("Generated_map.tsv", "w") as file:
+                for line in map_list:
+                    file.write(line + "\n")     
+
+        except Exception as e:
+            self.get_logger().error(f"Error response detect_objects: {e}")
 
 
 class ExploreUknownSpace(pt.behaviour.Behaviour):

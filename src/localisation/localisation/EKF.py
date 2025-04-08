@@ -66,6 +66,7 @@ class EKF_Algorithm(Node):
         else: 
             dt = (t - self.time).nanoseconds * 1e-9
         
+        # Rosbag -- drove 243cm
         ticks_per_rev = 48 * 64
         wheel_radius = 0.048 #9.6cm  
         base = 0.30 # 29.7cm 
