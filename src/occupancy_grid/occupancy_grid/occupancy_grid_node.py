@@ -21,11 +21,11 @@ class OccupancyGridPublisher(Node):
     # Constants for grid and object properties
     OBSTACLE_VALUE = 100
     INFLATION_VALUE = 80
-    INFLATION_RADIUS = 5
+    INFLATION_RADIUS = 6
     SEEN_VALUE = 0
     BORDER_THICKNESS = 0.2
     OBJECT_VALUE = 100
-    OBJECT_INFLATION_RADIUS = 6
+    OBJECT_INFLATION_RADIUS = 7
     OBJECT_INFLATION_VALUE = 80
 
     def __init__(self):
