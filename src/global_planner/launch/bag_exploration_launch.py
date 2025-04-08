@@ -9,7 +9,7 @@ def generate_launch_description():
 
     # Start Rviz
     ExecuteProcess(
-        cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/group1/dd2419_ws/src/global_planner/launch/rviz/exploration.rviz'],
+        cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', '/home/robot/dd2419_ws/src/global_planner/launch/rviz/exploration_bag.rviz'],
         output='screen',
         name='rviz'
     ),

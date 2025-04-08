@@ -350,7 +350,6 @@ class ExploreSamples(pt.behaviour.Behaviour):
         print('Exploring...')        
         return pt.common.Status.RUNNING
     
-    
     def pose_callback(self, msg: PoseWithCovarianceStamped):
         if self.target:
             x, y = msg.pose.pose.position.x, msg.pose.pose.position.y
@@ -399,6 +398,31 @@ class ExploreSamples(pt.behaviour.Behaviour):
         req = SetBool.Request()
         req.data = value
         client.call_async(req)
+
+    def timer_callback(self):
+        # Ogni secondo leggi la lista oggetti rilevati
+        if not self.detect_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn("Service detect objects not available")
+            return
+
+        req = DetectObjects.Request()
+        future = self.detect_client.call_async(req)
+        future.add_done_callback(self.handle_detect_response)
+
+    def handle_detect_response(self, future):
+        try:
+            res = future.result()
+            map_list = []
+            for i, (obj_type, pos) in enumerate(zip(res.object_types, res.object_positions)):
+                x, y, z = float(pos.x), float(pos.y), float(pos.z)
+                map_list.append(f"{obj_type} \t {x:.2f} \t {y:.2f} \t {z:.2f}")
+        
+            with open("Generated_map.tsv", "w") as file:
+                for line in map_list:
+                    file.write(line + "\n")     
+
+        except Exception as e:
+            self.get_logger().error(f"Error response detect_objects: {e}")
 
 
 class ExploreUknownSpace(pt.behaviour.Behaviour):
