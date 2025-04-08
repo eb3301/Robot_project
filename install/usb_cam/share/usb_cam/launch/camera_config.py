@@ -1,1 +1,1 @@
-/home/group1/dd2419_ws/src/robp_robot/usb_cam/launch/camera_config.py
+/home/robot/dd2419_ws/src/robp_robot/usb_cam/launch/camera_config.py

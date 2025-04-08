@@ -9,11 +9,12 @@ import py_trees_ros as ptr
 from builtin_interfaces.msg import Duration
 
 from ament_index_python import get_package_share_directory
+from tf_transformations import euler_from_quaternion, quaternion_from_euler
 
 from std_msgs.msg import Header
 from nav_msgs.msg import OccupancyGrid
 from visualization_msgs.msg import Marker
-from geometry_msgs.msg import Point, PoseWithCovarianceStamped
+from geometry_msgs.msg import Point, PoseWithCovarianceStamped, Twist
 
 from tf_transformations import quaternion_from_euler
 import numpy as np
@@ -266,6 +267,9 @@ class Goto_Target(pt.behaviour.Behaviour):
         self.sampled_point = None
         self.target_point = None
         self.candidates = None
+        self.arrived = False
+        self.rotated = False
+
         # Initialise grid
         self.grid = None
         self.resolution = None
@@ -277,6 +281,15 @@ class Goto_Target(pt.behaviour.Behaviour):
         # First time ticking update
         if self.status == pt.common.Status.INVALID:
             self.grid_sub = self.node.create_subscription(OccupancyGrid, 'map', self.grid_callback, 10)
+            self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, 'map_pose', self.pose_callback, 10)
+            qos = QoSProfile(
+                reliability=QoSReliabilityPolicy.RELIABLE,  # Ensures message delivery
+                durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  # Keeps the last message for new subscribers
+                depth=10  # Stores up to 10 messages in queue
+                )
+            self.waypoint_pub = self.node.create_publisher(Marker, '/goal_marker', qos)
+            self.cmd_vel_pub = self.node.create_publisher(Twist, "/cmd_vel", 1)
+            
             self.objects = self.blackboard.get('objects')
             
             # Save targets in list
@@ -295,34 +308,47 @@ class Goto_Target(pt.behaviour.Behaviour):
             self.node.get_logger().info("No objects in list!")
             return pt.common.Status.FAILURE
         
-        # TODO: Pick target out of list
-        target = self.targets[0]
+        if self.rotated:
+            return pt.common.Status.SUCCESS
 
-        # list of tuples (grid_x, grid_y) on a circle around target
-        candidates = self.candidate_points(target) 
-        
-        # Target in grid indices
-        t_x = int((target[1] - self.origin_x) / self.resolution)
-        t_y = int((target[2] - self.origin_y) / self.resolution)
-        self.target_point = (t_x, t_y)
+        if self.arrived:
+            print("Rotating...")
+            return pt.common.Status.RUNNING
 
-        # Find the best candidate
-        best_candidate = None
-        max_free_cells = -1
-        for point in candidates:
-            # Count free cells around this candidate
-            free_cells = self.count_free_cells_around(point, radius = 5)
+        if not self.sampled_point:
+            # TODO: Pick target out of list
+            target = self.targets[0]
 
-            # Update best candidate
-            if free_cells > max_free_cells:
-                max_free_cells = free_cells
-                best_candidate = point
-                
-        self.sampled_point = best_candidate    
-        
-        self.visualise_grid_and_targets()
-        return pt.common.Status.SUCCESS
+            # list of tuples (grid_x, grid_y) on a circle around target
+            candidates = self.candidate_points(target) 
+            
+            # Target in grid indices
+            t_x = int((target[1] - self.origin_x) / self.resolution)
+            t_y = int((target[2] - self.origin_y) / self.resolution)
+            self.target_point = (t_x, t_y)
+
+            # Find the best candidate
+            best_candidate = None
+            max_free_cells = -1
+            for point in candidates:
+                # Count free cells around this candidate
+                free_cells = self.count_free_cells_around(point, radius = 5)
+
+                # Update best candidate
+                if free_cells > max_free_cells:
+                    max_free_cells = free_cells
+                    best_candidate = point
+            x = (best_candidate[0] * self.resolution) + self.origin_x    
+            y = (best_candidate[1] * self.resolution) + self.origin_y
+            z = np.arctan2(t_y - y, t_x - x)  
     
+            self.sampled_point = (x, y, z)
+            self.pub_goal_marker()
+
+            self.visualise_grid_and_targets()
+            
+        return pt.common.Status.RUNNING
+
     def grid_callback(self, msg: OccupancyGrid):
         width = msg.info.width
         height = msg.info.height
@@ -333,7 +359,6 @@ class Goto_Target(pt.behaviour.Behaviour):
 
         # 2D np.array(). Unknown space = -1, free space  = 0, occupied = 100
         self.grid = data.reshape((height, width))  
-
 
     def candidate_points(self, target, distance = 0.25, angle_step = 15):
         '''Sample points on a circle with 5 cells radius around the target'''
@@ -348,7 +373,6 @@ class Goto_Target(pt.behaviour.Behaviour):
             self.candidates.append((grid_x, grid_y))
         return self.candidates
     
-
     def count_free_cells_around(self, point, radius):
         free_count = 0
         x, y = point  # candidate = (grid_x, grid_y)
@@ -364,7 +388,73 @@ class Goto_Target(pt.behaviour.Behaviour):
                         free_count += 1
         return free_count
 
+    def pose_callback(self, msg: PoseWithCovarianceStamped):
+        if self.sampled_point:
+            x, y = msg.pose.pose.position.x, msg.pose.pose.position.y
+            
+            heading = self.compute_heading(msg.pose.pose.orientation)
+            goal_heading = self.sampled_point[2]
 
+            if not self.arrived:
+                dx, dy = np.abs(self.target[0] - x), np.abs(self.target[1] - y)
+                dist = np.linalg.norm(np.array([dx, dy]))
+                if dist < 0.15:
+                    print('Arrived at target!')
+                    self.sampled_point = None      
+                    self.arrived = True
+            else:
+                if not self.rotated:
+                    # Rotate 
+                    d_z = goal_heading - heading
+                    if np.abs(d_z) > np.deg2rad(5):
+                        twist_msg = Twist()
+                        twist_msg.angular.z = np.pi / 4
+                        self.cmd_vel_pub.publish(twist_msg)
+                    else: 
+                        twist_msg = Twist()
+                        self.cmd_vel_pub.publish(twist_msg)
+                        self.rotated = True
+                        print('Robot is in position to look for the object!')
+
+    def compute_heading(self, orientation):
+        if isinstance(orientation, np.ndarray):
+            x, y, z, w = orientation[0], orientation[1], orientation[2], orientation[3]
+        else:
+            x, y, z, w = orientation.x, orientation.y, orientation.z, orientation.w
+        
+        _, _, yaw = euler_from_quaternion((x, y, z, w))
+        return yaw
+
+    def pub_goal_marker(self, stop = False):
+        if stop is True:
+            z = -1.0
+        else:
+            z = 0.0
+        marker = Marker()
+        marker.header = Header()
+        marker.header.stamp = self.node.get_clock().now().to_msg()
+        marker.header.frame_id = "map"
+        marker.ns = "Target_Marker"
+        marker.id = 0
+        marker.type = Marker.SPHERE  # Use sphere to represent the goal
+        marker.action = Marker.ADD
+        marker.pose.position.x = self.sampled_point[0]
+        marker.pose.position.y = self.sampled_point[1]
+        marker.pose.position.z = z
+        marker.pose.orientation.x = 0.0
+        marker.pose.orientation.y = 0.0
+        marker.pose.orientation.z = 0.0
+        marker.pose.orientation.w = 1.0
+        marker.scale.x = 0.2  # Radius of the sphere
+        marker.scale.y = 0.2
+        marker.scale.z = 0.2
+        marker.color.a = 1.0  # Alpha
+        marker.color.r = 1.0  # Red
+        marker.color.g = 0.0
+        marker.color.b = 0.0
+        #print('Published goal marker')
+        self.waypoint_pub.publish(marker)
+    
     def visualise_grid_and_targets(self):
         """
         Visualises occupancy grid and overlays targets and origin on top.
@@ -402,8 +492,8 @@ class Goto_Target(pt.behaviour.Behaviour):
 
         # Plot the sampled point
         if self.sampled_point:
-            print("SAMPLED A POINT!=!=!")
-            sp_x, sp_y = self.sampled_point[0], self.sampled_point[1]  # (row,col)
+            sp_x = int((self.sampled_point[0] - self.origin_x) / self.resolution) 
+            sp_y = int((self.sampled_point[1] - self.origin_y) / self.resolution)
             ax.plot(sp_x, sp_y, 'go', markersize=8, label='Sampled Point')  # green dot
             ax.text(sp_x + 1, sp_y + 1, 'Sampled', color='green', fontsize=8)
 
@@ -424,8 +514,6 @@ class Goto_Target(pt.behaviour.Behaviour):
         plt.grid(False)
         plt.tight_layout()
         plt.show()
-
-
 
 
 
