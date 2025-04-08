@@ -195,10 +195,32 @@ class Detection(Node):
             # self.get_logger().info("No points after filtering")
             return
         
+        # Stimiamo il piano del pavimento dai punti più bassi (es. y vicino a 0)
+        floor_mask = filtered_points[:, 1] < (offset - 0.25)  # Prendiamo i più bassi
+        floor_points = filtered_points[floor_mask]
+
+        if floor_points.shape[0] > 50:
+            # Fit piano al pavimento con RANSAC
+            from sklearn.linear_model import RANSACRegressor
+
+            # Piano z = ax + by + c (y è asse verticale in ROS)
+            X = floor_points[:, [0, 2]]
+            y = floor_points[:, 1]
+            ransac = RANSACRegressor(residual_threshold=0.01, max_trials=100)
+            ransac.fit(X, y)
+            a, b = ransac.estimator_.coef_
+            c = ransac.estimator_.intercept_
+
+            # Normale al piano del pavimento
+            floor_normal = np.array([-a, 1.0, -b])
+            floor_normal /= np.linalg.norm(floor_normal)
+        else:
+            floor_normal = np.array([0, 1, 0])  # fallback a verticale pura
+
         # Downsample using voxel grid filter
         #filtered_points = self.voxel_grid_filter(filtered_points)  
         # Clustering
-        db = DBSCAN(eps=0.03, min_samples=80)
+        db = DBSCAN(eps=0.015, min_samples=80)
         labels = db.fit_predict(filtered_points)
 
         _, counts = np.unique(labels, return_counts=True)
@@ -223,12 +245,25 @@ class Detection(Node):
             cluster_distance=np.mean(cluster_distances)
             #self.get_logger().info(f"Cluster #{label} → {cluster_points.shape[0]} punti")
 
-            if np.sum(cluster_points[:,1] > (offset - 0.135)) < 20: #skip cluster if too high (20 points are above the max)
+            if np.sum(cluster_points[:,1] > (offset - 0.125)) < 10: #skip cluster if too high (20 points are above the max)
                 continue
 
             if cluster_points.shape[0] < 10:
                 continue
             
+            if cluster_points.shape[0] > 3:
+                centroid = np.mean(cluster_points, axis=0)
+                centered = cluster_points - centroid
+                _, _, vh = np.linalg.svd(centered)
+                cluster_normal = vh[2, :]
+                cluster_normal /= np.linalg.norm(cluster_normal)
+
+                cos_angle = np.dot(cluster_normal, floor_normal)
+                angle = np.arccos(np.clip(abs(cos_angle), -1.0, 1.0)) * 180 / np.pi
+
+                if angle < 50:
+                    continue
+
             bbox_min = np.min(cluster_points, axis=0)
             bbox_max = np.max(cluster_points, axis=0)
             bbox_size = bbox_max - bbox_min
@@ -242,7 +277,7 @@ class Detection(Node):
             if (bbox_min[0] < x_min or bbox_max[0] > x_max):
                 continue
             
-            self.get_logger().info(f"il volume è: {volume}")
+            #self.get_logger().info(f"il volume è: {volume}")
 
             obj_type = "trash"  # Default category
 
@@ -286,7 +321,7 @@ class Detection(Node):
 
             elif volume < 0.2:
                 obj_type = "Fluffy_animal"
-            elif volume < 200:
+            elif volume < 100:
                 obj_type = "Box"
 
             points_homogeneous = np.hstack([cluster_points, np.ones((cluster_points.shape[0], 1))])

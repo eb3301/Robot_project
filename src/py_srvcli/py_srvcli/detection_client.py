@@ -62,16 +62,16 @@ class DetectionManager(Node):
         rot_threshold = 0.005
         vel_threshold = 1
 
-        if abs(w) > rot_threshold or abs(v) > vel_threshold: 
-            if self.detection_active:
-                self.get_logger().info("Rotating robot: stop detection")
-                self.call_set_bool(self.stop_client, True)
-                self.detection_active = False
-                self.get_logger().info(f"omega: {w}")
-        elif not self.detection_active:
-                self.get_logger().info("Robot still or in linear motion: start detection.")
-                self.call_set_bool(self.start_client, True)
-                self.detection_active = True
+        # if abs(w) > rot_threshold or abs(v) > vel_threshold: 
+        #     if self.detection_active:
+        #         self.get_logger().info("Rotating robot: stop detection")
+        #         self.call_set_bool(self.stop_client, True)
+        #         self.detection_active = False
+        #         self.get_logger().info(f"omega: {w}")
+        # elif not self.detection_active:
+        #         self.get_logger().info("Robot still or in linear motion: start detection.")
+        #         self.call_set_bool(self.start_client, True)
+        #         self.detection_active = True
 
 
 
