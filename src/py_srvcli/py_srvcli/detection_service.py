@@ -125,7 +125,24 @@ class Detection(Node):
             response.object_positions.append(position)
 
         return response
+    
+    def voxel_grid_filter(self, points, leaf_size=0.05):
+        """Downsamples the point cloud using a voxel grid filter."""
+        # Create voxel grid by downsampling points to grid size
+        # Points are binned by floor division on leaf size.
+        grid_indices = np.floor(points[:, :3] / leaf_size).astype(int)
+        unique_grid_indices = np.unique(grid_indices, axis=0)
+        
+        # For each grid cell, compute the centroid
+        downsampled_points = []
+        for idx in unique_grid_indices:
+            mask = np.all(grid_indices == idx, axis=1)
+            points_in_cell = points[mask]
+            centroid = np.mean(points_in_cell, axis=0)
+            downsampled_points.append(centroid)
 
+        return np.array(downsampled_points)
+    
     def cloud_callback(self, msg: PointCloud2):
         """
         Processes the latest point cloud and stores detected objects.
@@ -177,7 +194,10 @@ class Detection(Node):
         if filtered_points.shape[0] == 0:
             # self.get_logger().info("No points after filtering")
             return
-
+        
+        # Downsample using voxel grid filter
+        #filtered_points = self.voxel_grid_filter(filtered_points)  
+        # Clustering
         db = DBSCAN(eps=0.03, min_samples=80)
         labels = db.fit_predict(filtered_points)
 
@@ -201,7 +221,7 @@ class Detection(Node):
             cluster_indices = filtered_indices[cluster_mask]
             cluster_distances=filtered_distances[cluster_mask]
             cluster_distance=np.mean(cluster_distances)
-            # self.get_logger().info(f"Cluster #{label} → {cluster_points.shape[0]} punti")
+            #self.get_logger().info(f"Cluster #{label} → {cluster_points.shape[0]} punti")
 
             if np.sum(cluster_points[:,1] > (offset - 0.135)) < 20: #skip cluster if too high (20 points are above the max)
                 continue
@@ -215,14 +235,15 @@ class Detection(Node):
             bbox_center = (bbox_min + bbox_max) / 2
 
             magn=(1 + (3.4-1)/(1-0.25)*(cluster_distance-0.25))
-            volume = np.prod(bbox_size)*magn**2
-            self.get_logger().info(f"il volume è: {volume}")
+            volume = 1000*np.prod(bbox_size)*magn**2
             
             x_lim = 0.35
             x_min, x_max = -x_lim, x_lim
             if (bbox_min[0] < x_min or bbox_max[0] > x_max):
                 continue
             
+            self.get_logger().info(f"il volume è: {volume}")
+
             obj_type = "trash"  # Default category
 
             rgb_list = []
@@ -246,7 +267,7 @@ class Detection(Node):
             #self.get_logger().info(f"red {red}, green {green}, blue {blue}")
 
 
-            if volume < 0.00012 and (red or green or blue):  # Small objects (cube, sphere)
+            if volume < 0.02 and (red or green or blue):  # Small objects (cube, sphere)
                 curvatures = []
                 for p in cluster_points:
                     cov_matrix = np.cov(cluster_points.T)
@@ -263,9 +284,9 @@ class Detection(Node):
                 else:
                     obj_type = "Sphere"
 
-            elif volume < 0.002:
+            elif volume < 0.2:
                 obj_type = "Fluffy_animal"
-            elif volume < 0.01:
+            elif volume < 200:
                 obj_type = "Box"
 
             points_homogeneous = np.hstack([cluster_points, np.ones((cluster_points.shape[0], 1))])

@@ -291,7 +291,7 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
 def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin, timeout):
   # Parameters
   steps = 1
-  start_time = time.time()
+  # start_time = time.time()
 
   # Ensure grid compatibility, start at a center cell
   x0, y0 = start_center(x0, y0, resolution)
