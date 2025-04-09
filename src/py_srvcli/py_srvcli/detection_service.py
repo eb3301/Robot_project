@@ -315,14 +315,14 @@ class Detection(Node):
                 avg_curvature = np.mean(curvatures) if curvatures else 0
 
                 if avg_curvature > 0.08:
-                    obj_type = "Cube"
+                    obj_type = "1" # Cube
                 else:
-                    obj_type = "Sphere"
+                    obj_type = "2" # Sphere
 
             elif volume < 0.2:
-                obj_type = "Fluffy_animal"
+                obj_type = "3" # Fluffy Animal
             elif volume < 100:
-                obj_type = "Box"
+                obj_type = "B" # Box
 
             points_homogeneous = np.hstack([cluster_points, np.ones((cluster_points.shape[0], 1))])
             cluster_points = (transform_mat @ points_homogeneous.T).T[:, :3]  # Torna a 3D

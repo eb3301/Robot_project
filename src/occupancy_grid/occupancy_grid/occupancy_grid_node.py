@@ -5,6 +5,7 @@ import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid
 from sensor_msgs.msg import PointCloud2
+from std_msgs.msg import Header
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 from tf2_ros import Buffer, TransformListener
@@ -14,8 +15,10 @@ import sensor_msgs_py.point_cloud2 as pc2
 import matplotlib.path as mpl_path
 from scipy.ndimage import gaussian_filter
 from detect_interfaces.srv import DetectObjects
-from tf_transformations import euler_from_quaternion
+from tf_transformations import euler_from_quaternion, quaternion_from_euler
 from ament_index_python import get_package_share_directory
+from builtin_interfaces.msg import Duration
+from rclpy.qos import QoSProfile, QoSDurabilityPolicy, QoSReliabilityPolicy
 
 class OccupancyGridPublisher(Node):
     # Constants for grid and object properties
@@ -34,7 +37,16 @@ class OccupancyGridPublisher(Node):
         # Publishers
         self.marker_publisher = self.create_publisher(Marker, 'workspace_marker', 10)
         self.publisher_ = self.create_publisher(OccupancyGrid, 'map', 10)
+
+        qos = QoSProfile(
+                reliability=QoSReliabilityPolicy.RELIABLE,  # Ensures message delivery
+                durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  # Keeps the last message for new subscribers
+                depth=10  # Stores up to 10 messages in queue
+                )
         
+        self.objects_pub = self.create_publisher(Marker, '/object_markers', qos)
+
+
         self.workspace_explored = False  # Initially assume the workspace is not fully explored
 
 
@@ -45,8 +57,6 @@ class OccupancyGridPublisher(Node):
         #     self.get_logger().info('DetectObjects service not available, waiting again...')
         # Add a timer to periodically get the detected objects
         self.timer = self.create_timer(1.0, self.fetch_detected_objects)
-        
-
         
         # LiDAR Subscribers
         self.subscription = self.create_subscription(PointCloud2, '/lidar', self.lidar_callback, 10)
@@ -61,7 +71,7 @@ class OccupancyGridPublisher(Node):
 
         # Initialize map
         package_share_dir = get_package_share_directory('occupancy_grid')
-        ws_path = os.path.join(package_share_dir, 'data', 'workspace_2.tsv')
+        ws_path = os.path.join(package_share_dir, 'data', 'workspace_3.tsv')
         if os.path.exists(ws_path):
             self.workspace_coordinates = self.read_workspace_coordinates(ws_path)
         else:
@@ -113,6 +123,16 @@ class OccupancyGridPublisher(Node):
             if response.object_types:
                 self.detected_objects = list(zip(response.object_types, response.object_positions))
                 # self.get_logger().info(f"Detected {len(self.detected_objects)} objects.")
+
+                # Publish objects
+                self.publish_objects(self.detected_objects)
+
+                # Save to map file
+                with open("Generated_map.tsv", "w") as file:
+                    for obj_type, pos in self.detected_objects:
+                        x, y, z = float(pos.x), float(pos.y), float(pos.z)
+                        file.write(f"{obj_type} \t {x:.2f} \t {y:.2f} \t {z:.2f}" + "\n")
+                
 
                 # Convert flat map to 2D grid for easier manipulation
                 grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
@@ -437,7 +457,7 @@ class OccupancyGridPublisher(Node):
         marker.color.b = 1.0
 
         package_share_dir = get_package_share_directory('occupancy_grid')
-        ws_path = os.path.join(package_share_dir, 'data', 'workspace_2.tsv')
+        ws_path = os.path.join(package_share_dir, 'data', 'workspace_3.tsv')
         if os.path.exists(ws_path):
             self.workspace_coordinates = self.read_workspace_coordinates(ws_path)
         else:
@@ -464,6 +484,57 @@ class OccupancyGridPublisher(Node):
 
         self.marker_publisher.publish(marker)
         # self.get_logger().info("Published workspace marker from file")
+
+
+    def publish_objects(self, objects):
+        for idx, (obj_type, pos) in enumerate(objects): 
+            marker = Marker()
+            marker.header = Header()
+            marker.header.stamp = self.get_clock().now().to_msg()
+            marker.header.frame_id = 'map'
+
+            marker.id = idx + 1
+            marker.ns = f'Object Markers'
+            marker.lifetime = Duration(sec=10000)  # Keep marker visible for 10 seconds
+            marker.action = Marker.ADD
+
+            # Position
+            marker.pose.position.x = pos.x
+            marker.pose.position.y = pos.y
+            marker.pose.position.z = 0.0
+
+            # Orientation
+            q = quaternion_from_euler(0, 0, pos.z)
+
+            marker.pose.orientation.x = q[0]
+            marker.pose.orientation.y = q[1]
+            marker.pose.orientation.z = q[2]
+            marker.pose.orientation.w = q[3]
+
+            # Marker Colour
+            marker.color.a = 1.0  # Alpha
+            marker.color.r = 1.0  # Red
+            marker.color.g = 0.0
+            marker.color.b = 0.0
+
+            # Scale marker size
+            marker.scale.x = 0.1
+            marker.scale.y = 0.1
+            marker.scale.z = 0.1
+
+            if obj_type == '1': # Cube
+                marker.type = marker.CUBE
+            elif obj_type == '2': # Sphere
+                marker.type = marker.SPHERE
+            elif obj_type == '3': # Plushie
+                marker.type = marker.CYLINDER
+            elif obj_type == 'B': # Box
+                marker.type = marker.CUBE
+                marker.scale.x = 0.3
+                marker.scale.y = 0.15
+                marker.scale.z = 0.1
+            self.objects_pub.publish(marker)
+            print(f'Publishing marker ID: {marker.id} at x={marker.pose.position.x}, y={marker.pose.position.y}')
 
 def main(args=None):
     rclpy.init(args=args)
