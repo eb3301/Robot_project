@@ -188,7 +188,7 @@ class Detection(Node):
 
         distances = np.linalg.norm(points[:, :3], axis=1)
         offset = 0.089
-        mask = (distances <= 1) & (distances >= 0.25) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
+        mask = (distances <= 1) & (distances >= 0.2) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
         filtered_indices = np.where(mask)[0]
         filtered_points = points[mask]
         filtered_colors = colors[mask]
@@ -251,13 +251,16 @@ class Detection(Node):
 
             #self.get_logger().info(f"Cluster #{label} → {cluster_points.shape[0]} punti")
 
-            if np.sum(cluster_points[:,1] > (offset - 0.125)) < 10: #skip cluster if too high (20 points are above the max)
+            if np.sum(cluster_points[:,1] < (offset - 0.125)) > 10: #skip cluster if too high (20 points are above the max)
                 continue
+            
+            c= np.sum(cluster_points[:,1] < (offset - 0.125))
+            self.get_logger().warn(f"y--------------------------- {c}")
 
             if cluster_points.shape[0] < 10 and cluster_points.shape[0] > max_cluster_size:
                 continue
             
-            # self.get_logger().info(f"cluster shape: {cluster_points.shape}")
+            # self.get_logger().info(f"cluster shape: {cluster_points.sh
 
             # if cluster_points.shape[0] > 3:
             #     centroid = np.mean(cluster_points, axis=0)
