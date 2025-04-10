@@ -83,12 +83,14 @@ class Planner(Node):
           self.get_logger().info(f"Path is empty")
 
         for i in range(len(self.path)):
-          x_index = int((self.path[i][0] - origin_x) // resolution)  
-          y_index = int((self.path[i][1] - origin_y) // resolution)
+          x_index = int((self.path[i][0] - origin_x) / resolution)  
+          y_index = int((self.path[i][1] - origin_y) / resolution)
           if map_data[y_index][x_index] >= 80:
             self.planned = False
             self.get_logger().info(f"Path obstructed at ({self.path[i][0]}, {self.path[i][1]})")
             break
+          # else:
+            # self.get_logger().info(f"Path good")
       # Replan
       if not self.planned:
         self.get_logger().info("Planning new path")
@@ -97,8 +99,35 @@ class Planner(Node):
 
 
   def plan_path(self, map_data, resolution, time):
+    # Check if the pose is occupierd or not
+    x_index = int((self.x0 - self.origin[0]) / resolution)  
+    y_index = int((self.y0 - self.origin[1]) / resolution)
+    if map_data[y_index][x_index] >= 80:
+      radius = 1  # Start expanding from radius 1
+      x0, y0 = None, None
+      while x0 is None and y0 is None:
+        # Start checking cells at the current radius level
+        for dy in range(-radius, radius + 1):
+          for dx in range(-radius, radius + 1):
+            if abs(dy) + abs(dx) == radius:
+              # Get the new (y, x) coordinates
+              ny, nx = y_index + dy, x_index + dx
+
+              # Check the value at the new cell
+              if map_data[ny][nx] < 80:
+                # Convert grid index to world coordinates
+                y0 = self.origin[1] + ny * resolution
+                x0 = self.origin[0] + nx * resolution
+                return x0, y0  # Return the world coordinates
+        
+        # If no valid neighbor found at current radius, expand the radius
+        radius += 1
+    else:
+      x0 = self.x0
+      y0 = self.y0
+
     # Path planning algortim
-    path = solution(self.x0, self.y0, self.theta0, self.xt, self.yt, map_data, resolution, self.origin, self.timeout)
+    path = solution(x0, y0, self.theta0, self.xt, self.yt, map_data, resolution, self.origin, self.timeout)
     self.path = path
     
     # Path message

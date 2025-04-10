@@ -365,6 +365,7 @@ class ExploreSamples(pt.behaviour.Behaviour):
                 self.target = None   
 
     def grid_callback(self, msg: OccupancyGrid):
+        self.node.get_logger().info(f"Target: {self.target}")
         if self.target:
             x, y = self.target[0], self.target[1]
         if True: # CHECK IF TARGET IS IN OCCUPIED SPACE
@@ -413,6 +414,14 @@ class ExploreSamples(pt.behaviour.Behaviour):
         marker.color.b = 0.0
         #print('Published goal marker')
         self.target_pub.publish(marker)
+
+    def call_set_bool(self, client, value: bool):
+        if not client.wait_for_service(timeout_sec=1.0):
+            self.node.get_logger().warn("Service not available")
+            return
+        req = SetBool.Request()
+        req.data = value
+        client.call_async(req)
 
 
 

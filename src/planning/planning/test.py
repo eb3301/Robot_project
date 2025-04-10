@@ -272,3 +272,35 @@ plt.show()
         #     ):
         #         i += 1
         #     diagonal_segments.append((path[start:i + 2], i))
+
+
+
+
+def find_first_low_value_neighbor(self, map_data, resolution, radius, origin):
+    # Convert world coordinates (self.x0, self.y0) to grid indices
+    x_index = int((self.x0 - origin[0]) / resolution)
+    y_index = int((self.y0 - origin[1]) / resolution)
+
+    # Check the value at the center cell
+    if map_data[y_index][x_index] >= 80:
+        radius = 1  # Start expanding from radius 1
+        x0, y0 = None, None
+        while x0 is None and y0 is None:
+            # Start checking cells at the current radius level
+            for dy in range(-radius, radius + 1):
+                for dx in range(-radius, radius + 1):
+                    if abs(dy) + abs(dx) == radius:
+                        # Get the new (y, x) coordinates
+                        ny, nx = y_index + dy, x_index + dx
+
+                        # Check the value at the new cell
+                        if map_data[ny][nx] < 80:
+                            # Convert grid index to world coordinates
+                            y0 = origin[1] + ny * resolution
+                            x0 = origin[0] + nx * resolution
+                            return x0, y0  # Return the world coordinates
+            
+            # If no valid neighbor found at current radius, expand the radius
+            radius += 1
+            
+    return None  # Return None if no valid neighbor is found

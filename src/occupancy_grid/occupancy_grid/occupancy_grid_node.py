@@ -24,7 +24,7 @@ class OccupancyGridPublisher(Node):
     # Constants for grid and object properties
     OBSTACLE_VALUE = 100
     INFLATION_VALUE = 80
-    INFLATION_RADIUS = 6
+    INFLATION_RADIUS = 8
     SEEN_VALUE = 0
     BORDER_THICKNESS = 0.2
     OBJECT_VALUE = 100
@@ -181,8 +181,8 @@ class OccupancyGridPublisher(Node):
 
                 # self.get_detected_objects_info()
 
-            else:
-                self.get_logger().warn("No objects detected.")
+            # else:
+            #     self.get_logger().warn("No objects detected.")
 
         except Exception as e:
             self.get_logger().error(f"Service call failed: {e}")
