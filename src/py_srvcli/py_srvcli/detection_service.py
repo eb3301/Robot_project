@@ -18,7 +18,7 @@ import colorsys
 import struct
 import ctypes
 from rclpy.qos import QoSProfile, QoSDurabilityPolicy, QoSReliabilityPolicy
-
+from collections import Counter
 
 
 class Detection(Node):
@@ -112,7 +112,10 @@ class Detection(Node):
         response.object_positions = []
 
         for obj in self.ObjectList:
-            obj_type, obj_position = obj
+            obj_position = obj["position"]
+            label_counts = Counter(obj["labels"])
+            obj_type = label_counts.most_common(1)[0][0]  # etichetta più frequente
+
             response.object_types.append(obj_type)
 
             # position = Point()
@@ -219,12 +222,14 @@ class Detection(Node):
 
         # Downsample using voxel grid filter
         #filtered_points = self.voxel_grid_filter(filtered_points)  
+        
         # Clustering
         db = DBSCAN(eps=0.015, min_samples=80)
         labels = db.fit_predict(filtered_points)
 
         _, counts = np.unique(labels, return_counts=True)
         max_cluster_size = 8000
+
         filt_labels = np.array([
             -1 if counts[label] > max_cluster_size else label   
             for label in labels
@@ -243,26 +248,55 @@ class Detection(Node):
             cluster_indices = filtered_indices[cluster_mask]
             cluster_distances=filtered_distances[cluster_mask]
             cluster_distance=np.mean(cluster_distances)
+
             #self.get_logger().info(f"Cluster #{label} → {cluster_points.shape[0]} punti")
 
             if np.sum(cluster_points[:,1] > (offset - 0.125)) < 10: #skip cluster if too high (20 points are above the max)
                 continue
 
-            if cluster_points.shape[0] < 10:
+            if cluster_points.shape[0] < 10 and cluster_points.shape[0] > max_cluster_size:
                 continue
             
+            # self.get_logger().info(f"cluster shape: {cluster_points.shape}")
+
+            # if cluster_points.shape[0] > 3:
+            #     centroid = np.mean(cluster_points, axis=0)
+            #     centered = cluster_points - centroid
+            #     centered = self.voxel_grid_filter(centered)
+            #     _, _, vh = np.linalg.svd(centered)
+            #     cluster_normal = vh[2, :]
+            #     cluster_normal /= np.linalg.norm(cluster_normal)
+
+            #     cos_angle = np.dot(cluster_normal, floor_normal)
+            #     angle = np.arccos(np.clip(abs(cos_angle), -1.0, 1.0)) * 180 / np.pi
+
+            #     if angle < 50:
+            #         continue
+
             if cluster_points.shape[0] > 3:
                 centroid = np.mean(cluster_points, axis=0)
                 centered = cluster_points - centroid
-                _, _, vh = np.linalg.svd(centered)
-                cluster_normal = vh[2, :]
-                cluster_normal /= np.linalg.norm(cluster_normal)
+                centered = self.voxel_grid_filter(centered)
 
-                cos_angle = np.dot(cluster_normal, floor_normal)
-                angle = np.arccos(np.clip(abs(cos_angle), -1.0, 1.0)) * 180 / np.pi
+                # Safety check: SVD needs at least 3 points in 3D
+                if centered.shape[0] >= 3 and centered.shape[1] == 3:
+                    try:
+                        _, _, vh = np.linalg.svd(centered)
+                        cluster_normal = vh[2, :]
+                        cluster_normal /= np.linalg.norm(cluster_normal)
 
-                if angle < 50:
+                        cos_angle = np.dot(cluster_normal, floor_normal)
+                        angle = np.arccos(np.clip(abs(cos_angle), -1.0, 1.0)) * 180 / np.pi
+
+                        if angle < 50:
+                            continue
+                    except np.linalg.LinAlgError as e:
+                        self.get_logger().warn(f"SVD fallita per cluster con shape {centered.shape}: {e}")
+                        continue
+                else:
+                    self.get_logger().warn(f"Cluster saltato: shape dopo voxel filtering = {centered.shape}")
                     continue
+
 
             bbox_min = np.min(cluster_points, axis=0)
             bbox_max = np.max(cluster_points, axis=0)
@@ -294,15 +328,19 @@ class Detection(Node):
             rgb_array = np.array(rgb_list, dtype=np.float32) / 255.0
             hsv_list = [colorsys.rgb_to_hsv(r, g, b) for r, g, b in rgb_array]
             hsv_array = np.array(hsv_list)
+            #self.get_logger().info(f"hue: {np.mean(hsv_array[:,0])}")
 
             # Hue in HSV: red ~ 0 o ~1, green ~0.33, blue ~0.66 (light blue ~0.5)
-            red = ((np.mean(hsv_array[:,0])) < 0.02 or (np.mean(hsv_array[:,0]) > 0.98)) and (np.mean(hsv_array[:,1]) > 0.6)
-            green = (np.mean(hsv_array[:,0]) > 0.2) and (np.mean(hsv_array[:,0]) < 0.4) and (np.mean(hsv_array[:,1]) > 0.5)
-            blue = (np.mean(hsv_array[:,0]) > 0.55) and (np.mean(hsv_array[:,0]) < 0.66) and (np.mean(hsv_array[:,0]) > 0.5)
-            #self.get_logger().info(f"red {red}, green {green}, blue {blue}")
+            red = ((np.mean(hsv_array[:,0])) < 0.05 or (np.mean(hsv_array[:,0]) > 0.95)) and (np.mean(hsv_array[:,1]) > 0.4)
+            green = (np.mean(hsv_array[:,0]) > 0.2) and (np.mean(hsv_array[:,0]) < 0.5) and (np.mean(hsv_array[:,1]) > 0.3)
+            blue = (np.mean(hsv_array[:,0]) > 0.55) and (np.mean(hsv_array[:,0]) < 0.66) and (np.mean(hsv_array[:,0]) > 0.3)
+             # self.get_logger().info(f"red {red}, green {green}, blue {blue}")
 
-
-            if volume < 0.02 and (red or green or blue):  # Small objects (cube, sphere)
+            fluffly_box_color = ((np.mean(hsv_array[:,0])) < 0.2 or (np.mean(hsv_array[:,0]) > 0.05)) #or (np.mean(hsv_array[:,1]) < 0.3)
+            # self.get_logger().info(f"colore brutto: {fluffly_box_color}")
+            
+           
+            if volume < 0.5 :# and (red or green or blue):  # Small objects (cube, sphere)
                 curvatures = []
                 for p in cluster_points:
                     cov_matrix = np.cov(cluster_points.T)
@@ -319,28 +357,31 @@ class Detection(Node):
                 else:
                     obj_type = "Sphere"
 
-            elif volume < 0.2:
+            elif volume < 4 and volume > 0.6:
                 obj_type = "Fluffy_animal"
-            elif volume < 100:
+            elif volume < 100 and volume > 10:
                 obj_type = "Box"
 
             points_homogeneous = np.hstack([cluster_points, np.ones((cluster_points.shape[0], 1))])
             cluster_points = (transform_mat @ points_homogeneous.T).T[:, :3]  # Torna a 3D
+
             # Store detected object
-            if not self.ObjectList:
-                self.ObjectList.append([obj_type, np.mean(cluster_points, axis=0)])
-            else:
-                new_obj_position = np.mean(cluster_points, axis=0)
-                should_add = True
+            new_obj_position = np.mean(cluster_points, axis=0)
+            found_match = False
 
-                for obj in self.ObjectList:
-                    obj_position = obj[1]  # Prendi solo la posizione dell'oggetto
-                    if np.linalg.norm(new_obj_position - obj_position) < 0.2:
-                        should_add = False
-                        break
+            for obj in self.ObjectList:
+                obj_position = obj["position"]
+                if np.linalg.norm(new_obj_position - obj_position) < 0.2:
+                    obj["labels"].append(obj_type)
+                    found_match = True
+                    break
 
-                if should_add:
-                    self.ObjectList.append([obj_type, new_obj_position])
+            if not found_match:
+                self.ObjectList.append({
+                    "position": new_obj_position,
+                    "labels": [obj_type]
+                })
+
             # self.get_logger().info(f'Detected {len(self.ObjectList)} objects from the detection node start')
 
             detected_indices.append(cluster_indices)
