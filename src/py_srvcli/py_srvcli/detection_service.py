@@ -353,9 +353,9 @@ class Detection(Node):
                 avg_curvature = np.mean(curvatures) if curvatures else 0
 
                 if avg_curvature > 0.08:
-                    obj_type = "Cube"
+                    obj_type = "1" # Cube
                 else:
-                    obj_type = "Sphere"
+                    obj_type = "2" # Sphere
 
             elif volume < 4 and volume > 0.6:
                 obj_type = "Fluffy_animal"

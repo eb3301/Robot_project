@@ -7,6 +7,11 @@ how do we handle duplicates
 how do we publish the objects
 how do we handle colission avoidance
 
+Needs to be fixed:
+-- I don't think we are inflating objects found by lidar that is not part of the border
+-- Replanning when we are in occupied space
+-- Publish objects on map
+
 Collection:
 How to decide what object to pick first
 how do we know when to stop (when rgbd does not see?)

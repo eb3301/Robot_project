@@ -42,7 +42,7 @@ class BehaviourTree(Node):
         # Get target coordinates
         ''' Possible arguments:
             'object' -- Any object
-            '1' -- Box
+            '1' -- Cube
             '2' -- Sphere
             '3' -- Plushie
             'B' -- Box        
@@ -212,7 +212,7 @@ class Load_Map(pt.behaviour.Behaviour):
 
             marker.id = idx + 1
             marker.ns = f'Object Markers'
-            marker.lifetime = Duration(sec=100)  # Keep marker visible for 10 seconds
+            marker.lifetime = Duration(sec=10000)  # Keep marker visible for 10 seconds
             marker.action = Marker.ADD
 
             # Position
@@ -256,14 +256,15 @@ class Load_Map(pt.behaviour.Behaviour):
 
 class Goto_Target(pt.behaviour.Behaviour):
     '''Retrieves coordinates '''
-    def __init__(self, node, target: str):
+    def __init__(self, node, object: str):
         super().__init__("Go to Target")
         self.node = node
-        self.target = target
+        self.object = object
         self.blackboard = pt.blackboard.Blackboard()
 
         self.objects = None
         self.targets = None
+        self.target = None
         self.sampled_point = None
         self.target_point = None
         self.candidates = None
@@ -288,12 +289,12 @@ class Goto_Target(pt.behaviour.Behaviour):
                 depth=10  # Stores up to 10 messages in queue
                 )
             self.waypoint_pub = self.node.create_publisher(Marker, '/goal_marker', qos)
-            self.cmd_vel_pub = self.node.create_publisher(Twist, "/cmd_vel", 1)
+            self.cmd_vel_pub = self.node.create_publisher(Twist, "/cmd_vel", 10)
             
             self.objects = self.blackboard.get('objects')
             
             # Save targets in list
-            if self.target == 'object': # Any object (not box)
+            if self.object == 'object': # Any object (not box)
                 self.targets = [obj for obj in self.objects if obj[0] != 'B']
             else:    
                 self.targets = [obj for obj in self.objects if self.target in obj[0]]
@@ -307,24 +308,23 @@ class Goto_Target(pt.behaviour.Behaviour):
         if self.objects is None:
             self.node.get_logger().info("No objects in list!")
             return pt.common.Status.FAILURE
-        
-        if self.rotated:
-            return pt.common.Status.SUCCESS
-
         if self.arrived:
-            print("Rotating...")
-            return pt.common.Status.RUNNING
+            if self.rotated:
+                return pt.common.Status.SUCCESS
+            else:
+                self.node.get_logger().info("Rotating...")
+                return pt.common.Status.RUNNING
 
         if not self.sampled_point:
             # TODO: Pick target out of list
-            target = self.targets[0]
+            self.target = self.targets[0]
 
             # list of tuples (grid_x, grid_y) on a circle around target
-            candidates = self.candidate_points(target) 
+            candidates = self.candidate_points(self.target) 
             
             # Target in grid indices
-            t_x = int((target[1] - self.origin_x) / self.resolution)
-            t_y = int((target[2] - self.origin_y) / self.resolution)
+            t_x = int((self.target[1] - self.origin_x) / self.resolution)
+            t_y = int((self.target[2] - self.origin_y) / self.resolution)
             self.target_point = (t_x, t_y)
 
             # Find the best candidate
@@ -345,7 +345,7 @@ class Goto_Target(pt.behaviour.Behaviour):
             self.sampled_point = (x, y, z)
             self.pub_goal_marker()
 
-            self.visualise_grid_and_targets()
+            #self.visualise_grid_and_targets()
             
         return pt.common.Status.RUNNING
 
@@ -389,6 +389,9 @@ class Goto_Target(pt.behaviour.Behaviour):
         return free_count
 
     def pose_callback(self, msg: PoseWithCovarianceStamped):
+        if self.target is None:
+            self.node.get_logger().info("No target...")
+            return
         if self.sampled_point:
             x, y = msg.pose.pose.position.x, msg.pose.pose.position.y
             
@@ -396,11 +399,10 @@ class Goto_Target(pt.behaviour.Behaviour):
             goal_heading = self.sampled_point[2]
 
             if not self.arrived:
-                dx, dy = np.abs(self.target[0] - x), np.abs(self.target[1] - y)
+                dx, dy = np.abs(self.sampled_point[0] - x), np.abs(self.sampled_point[1] - y)
                 dist = np.linalg.norm(np.array([dx, dy]))
-                if dist < 0.15:
-                    print('Arrived at target!')
-                    self.sampled_point = None      
+                if dist < 0.25:
+                    self.node.get_logger().info('Arrived at target!')    
                     self.arrived = True
             else:
                 if not self.rotated:
@@ -409,12 +411,13 @@ class Goto_Target(pt.behaviour.Behaviour):
                     if np.abs(d_z) > np.deg2rad(5):
                         twist_msg = Twist()
                         twist_msg.angular.z = np.pi / 4
+                        self.node.get_logger().info(f"Sending twist msg {np.pi/2} rad/s")
                         self.cmd_vel_pub.publish(twist_msg)
                     else: 
                         twist_msg = Twist()
                         self.cmd_vel_pub.publish(twist_msg)
                         self.rotated = True
-                        print('Robot is in position to look for the object!')
+                        self.node.get_logger().info('Robot is in position to look for the object!')
 
     def compute_heading(self, orientation):
         if isinstance(orientation, np.ndarray):
