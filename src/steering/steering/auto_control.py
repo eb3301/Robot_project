@@ -107,7 +107,7 @@ class AutoControll(Node):
 
             # Calculate the lookahead distance
             self.resolution = np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
-            self.lookahead_distance = 8*self.resolution
+            self.lookahead_distance = 6*self.resolution
 
             smoothed_path = create_god_path(self.pose_list, self.resolution)
 

@@ -55,8 +55,8 @@ class Planner(Node):
 
     # Target coordinates
     self.goal_received = False
-    self.xt = 0.5
-    self.yt = 0.5
+    self.xt = 4.5
+    self.yt = 0.0
 
     # Path
     self.planned = False
@@ -79,18 +79,20 @@ class Planner(Node):
         try:
           if not self.path:
             self.get_logger().info(f"Path is empty, should replan")
+          else:
+            for i in range(len(self.path)):
+              x_index = int((self.path[i][0] - origin_x) / resolution)  
+              y_index = int((self.path[i][1] - origin_y) / resolution)
+              if map_data[y_index][x_index] >= 80:
+                self.planned = False
+                # self.get_logger().info(f"Path obstructed at ({self.path[i][0]}, {self.path[i][1]})")
+                break
+              # else:
+                # self.get_logger().info(f"Path good")
         except:
           self.get_logger().info(f"Path is empty")
 
-        for i in range(len(self.path)):
-          x_index = int((self.path[i][0] - origin_x) / resolution)  
-          y_index = int((self.path[i][1] - origin_y) / resolution)
-          if map_data[y_index][x_index] >= 80:
-            self.planned = False
-            self.get_logger().info(f"Path obstructed at ({self.path[i][0]}, {self.path[i][1]})")
-            break
-          # else:
-            # self.get_logger().info(f"Path good")
+        
       # Replan
       if not self.planned:
         self.get_logger().info("Planning new path")

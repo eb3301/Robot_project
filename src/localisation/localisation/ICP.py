@@ -216,7 +216,6 @@ class ICPNode(Node):
 
 
     def ICP(self, source_pcd):
-        return
         '''ICP Algorithm Implementation'''
         if source_pcd is None or not self.target_pcd_list:
             return

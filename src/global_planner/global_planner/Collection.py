@@ -345,7 +345,7 @@ class Goto_Target(pt.behaviour.Behaviour):
             self.sampled_point = (x, y, z)
             self.pub_goal_marker()
 
-            #self.visualise_grid_and_targets()
+            self.visualise_grid_and_targets()
             
         return pt.common.Status.RUNNING
 
@@ -408,11 +408,20 @@ class Goto_Target(pt.behaviour.Behaviour):
                 if not self.rotated:
                     # Rotate 
                     d_z = goal_heading - heading
+                    counter = 0
                     if np.abs(d_z) > np.deg2rad(5):
-                        twist_msg = Twist()
-                        twist_msg.angular.z = np.pi / 4
-                        self.node.get_logger().info(f"Sending twist msg {np.pi/2} rad/s")
-                        self.cmd_vel_pub.publish(twist_msg)
+                        # Maximum velocities
+                        wheel_radius = 0.046 # 0.04915
+                        base = 0.3 # 0.30
+                        max_factor = 1 / 6
+                        max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
+                        if counter % 10 == 0:
+                            counter += 1
+                            twist_msg = Twist()
+                            twist_msg.angular.z = np.pi / 4 * max_rot
+                            self.node.get_logger().info(f"Sending twist msg {np.pi/2} rad/s")
+                            twist_msg._linear.z = max_factor
+                            self.cmd_vel_pub.publish(twist_msg)
                     else: 
                         twist_msg = Twist()
                         self.cmd_vel_pub.publish(twist_msg)
