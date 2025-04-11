@@ -368,7 +368,7 @@ class ExploreSamples(pt.behaviour.Behaviour):
         self.node.get_logger().info(f"Target: {self.target}")
         if self.target:
             x, y = self.target[0], self.target[1]
-        if True: # CHECK IF TARGET IS IN OCCUPIED SPACE
+
             width = msg.info.width
             height = msg.info.height
             data = np.array(msg.data, dtype=np.int8)  

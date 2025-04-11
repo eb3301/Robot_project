@@ -534,7 +534,7 @@ class OccupancyGridPublisher(Node):
                 marker.scale.y = 0.15
                 marker.scale.z = 0.1
             self.objects_pub.publish(marker)
-            print(f'Publishing marker ID: {marker.id} at x={marker.pose.position.x}, y={marker.pose.position.y}')
+            #claerprint(f'Publishing marker ID: {marker.id} at x={marker.pose.position.x}, y={marker.pose.position.y}')
 
 def main(args=None):
     rclpy.init(args=args)

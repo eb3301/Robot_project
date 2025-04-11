@@ -255,7 +255,7 @@ class Detection(Node):
                 continue
             
             c= np.sum(cluster_points[:,1] < (offset - 0.125))
-            self.get_logger().warn(f"y--------------------------- {c}")
+            #self.get_logger().warn(f"y--------------------------- {c}")
 
             if cluster_points.shape[0] < 10 and cluster_points.shape[0] > max_cluster_size:
                 continue
@@ -361,9 +361,9 @@ class Detection(Node):
                     obj_type = "2" # Sphere
 
             elif volume < 4 and volume > 0.6:
-                obj_type = "Fluffy_animal"
+                obj_type = "3" # Fluffy animal
             elif volume < 100 and volume > 10:
-                obj_type = "Box"
+                obj_type = "B" # Box
 
             points_homogeneous = np.hstack([cluster_points, np.ones((cluster_points.shape[0], 1))])
             cluster_points = (transform_mat @ points_homogeneous.T).T[:, :3]  # Torna a 3D
