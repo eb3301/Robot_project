@@ -218,8 +218,8 @@ def reached_target(x, y, xt, yt, resolution):
 
 def find_cell_index(x, y, resolution, origin):
   # Find grid index from map coordinate
-  x_index = int((x - origin[0]) / resolution)  
-  y_index = int((y - origin[1]) / resolution)  
+  x_index = int((x - origin[0]) / resolution)
+  y_index = int((y - origin[1]) / resolution)
   return (x_index, y_index)
 
 def start_center(x, y, resolution):
@@ -313,7 +313,6 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
 def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
   # Parameters
   steps = 1
-  # start_time = time.time()
 
   # Ensure grid compatibility, start at a center cell
   x0, y0 = start_center(x0, y0, resolution)
@@ -333,12 +332,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
   open_set[start_node_key] = start_node
 
   # For avalible points
-  while open_set:
-    # Check elapsed time every iteration
-    # elapsed_time = time.time() - start_time
-    # if elapsed_time > timeout: 
-    #   return None
-        
+  while open_set:   
     # Find and take out the lowest cost point
     current_node_key = min(open_set, key=lambda node: open_set[node].f)
     current_node = open_set[current_node_key]
@@ -354,12 +348,9 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
       while current_node:
           path.append((round(current_node.x*10000)/10000, round(current_node.y*10000)/10000))#, current_node.theta)) # /(resolution*10))*(resolution*10)
           current_node = current_node.parent
-      # path.pop(-1) # The robots position, should be included?
-      # x, y, theta = path[-1]
-      # path[-1] = (x - 0.5 * resolution, y - 0.5 * resolution)
       return path[::-1] #, closed_set, open_set
 
-    # For the start node explore all directions then only in front of
+    # For the start node explore all directions then only in front of pose
     directions = 4 if len(closed_set) == 0 else 3
 
     # Get new nodes

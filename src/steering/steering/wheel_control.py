@@ -28,7 +28,7 @@ class WheelController(Node):
 
     def twist_callback(self, msg: Twist):
         # Update linear and rotational velocities based on cmd_vel message
-        self.vel_x = msg.linear.x
+        self.vel_x = msg.linear.x*0.75
         self.max_factor = msg.linear.z
         self.rot_z = msg.angular.z
 
@@ -69,7 +69,7 @@ class WheelController(Node):
 
         # Create message
         duty_cycles_msg = DutyCycles()
-        self.get_logger().info(f"Dudty cycle: ({w_l}, {w_r})")
+        # self.get_logger().info(f"Dudty cycle: ({w_l}, {w_r})")
               
         duty_cycles_msg.duty_cycle_left = w_l
         duty_cycles_msg.duty_cycle_right = w_r

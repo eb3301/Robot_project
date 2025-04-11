@@ -29,20 +29,24 @@ class Approaching(Node):
         self._sub = self.create_subscription(PointCloud2, '/camera/camera/depth/color/points', self.cloud_callback, 10)
         # Subscriber to Odom topic
         self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/ekf_pose', self.pose_callback, 10)
-
+        
         # Publisher to velocity command topic
         self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
+        
 
-        self.distance_to_target = None
 
         # Call control algorithm
-        self.create_timer(0.1, self.control)  # ogni 100ms
+        self.create_timer(0.2, self.control)  # ogni 100ms
 
 
         # Initialize the transform buffer
         self.tf_buffer = Buffer()
         # Initialize the transform listener
         self.tf_listener = TransformListener(self.tf_buffer, self)
+
+        self.x = 0
+        self.y = 0
+        self.distance_to_target = None
     
     def pose_callback(self, msg : PoseWithCovarianceStamped):
         # Init transform
@@ -51,7 +55,7 @@ class Approaching(Node):
         time = rclpy.time.Time().from_msg(msg.header.stamp)
 
         # Wait for the transform asynchronously
-        tf_future = self.buffer.wait_for_transform_async(
+        tf_future = self.tf_buffer.wait_for_transform_async(
         target_frame=to_frame_rel,
         source_frame=from_frame_rel,
         time=time
@@ -60,7 +64,7 @@ class Approaching(Node):
 
         # Lookup tansform
         try:
-            t = self.buffer.lookup_transform(to_frame_rel,
+            t = self.tf_buffer.lookup_transform(to_frame_rel,
                                             from_frame_rel,
                                             time)
             # Do the transform
@@ -232,6 +236,8 @@ class Approaching(Node):
             bbox_max = np.max(cluster_points, axis=0)
             bbox_size = bbox_max - bbox_min
             bbox_center = (bbox_min + bbox_max) / 2
+
+            #self.get_logger().info('Deteced')
             
             x_lim = 0.5 # to skip everithing not centered
             x_min, x_max = -x_lim, x_lim
@@ -247,9 +253,9 @@ class Approaching(Node):
             bbox_pose.pose.orientation.w = 1.0
 
             try:
-                map_pose = tf2_geometry_msgs.do_transform_pose(bbox_pose, t)
-                x_obj = map_pose.pose.position.x
-                y_obj = map_pose.pose.position.y
+                map_pose = tf2_geometry_msgs.do_transform_pose(bbox_pose.pose, t)
+                x_obj = map_pose.position.x
+                y_obj = map_pose.position.y
 
                 x = x_obj - self.x
                 y = y_obj - self.y
@@ -288,7 +294,7 @@ class Approaching(Node):
         angular_error = math.atan2(math.sin(self.theta - self.desired_angle),
                            math.cos(self.theta - self.desired_angle))
         
-        angular_threshold=math.radians(5)
+        angular_threshold=math.radians(15)
 
  
         wheel_radius = 0.046 # 0.04915
@@ -298,32 +304,37 @@ class Approaching(Node):
         max_vel = wheel_radius * max_factor # m/s
         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
 
-        kw=1
-        kv=0.1
+        kw=50
+        kv=0.9
 
         v=0
         w=0
 
+        # self.get_logger().info(f'Angular: {angular_error}')
         if self.distance_to_target is not None and self.distance_to_target < 0.05:
             v = 0.0
             w = 0.0
-        elif angular_error > angular_threshold:
-            w=kw*angular_error
-            v=0
-        else:
-            w=kw*angular_error
-            v=kv*max_vel
+        # elif abs(angular_error) > angular_threshold:
+        #     w=kw*angular_error
+        #     v=0
+        # else:
+        #     w=0 #-kw*angular_error*max_rot
+        #     v=kv*max_vel
+
+        w=kw*angular_error
+        v=kv*max_vel
 
         w=max(min(w,max_rot),-max_rot)
+        v=max(min(v,max_vel),-max_vel)
 
         # Create a ROS Twist message
         twist_msg = Twist()
-        twist_msg.linear.x = v
-        twist_msg.linear.y = 0
-        twist_msg.linear.z = max_factor
-        twist_msg.angular.x = 0
-        twist_msg.angular.y = 0
-        twist_msg.angular.z = w
+        twist_msg.linear.x = float(v)
+        twist_msg.linear.y = 0.0
+        twist_msg.linear.z = float(max_factor)
+        twist_msg.angular.x = 0.0
+        twist_msg.angular.y = 0.0
+        twist_msg.angular.z = float(w)
         self.cmd_vel_pub.publish(twist_msg)
         
 

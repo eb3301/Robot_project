@@ -24,7 +24,8 @@ setup(
     entry_points={
         'console_scripts': [
             'Collection = global_planner.Collection:main',
-            'Exploration = global_planner.Exploration:main'
+            'Exploration = global_planner.Exploration:main',
+            'approach = global_planner.approach:main',
         ],
     }
 )
