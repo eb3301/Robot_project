@@ -69,7 +69,7 @@ class WheelController(Node):
 
         # Create message
         duty_cycles_msg = DutyCycles()
-        # self.get_logger().info(f"Dudty cycle: ({w_l}, {w_r})")
+        self.get_logger().info(f"Dudty cycle: ({w_l}, {w_r})")
               
         duty_cycles_msg.duty_cycle_left = w_l
         duty_cycles_msg.duty_cycle_right = w_r

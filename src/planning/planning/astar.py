@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import rclpy
-import rclpy.logging
 import numpy as np
 import tf2_ros
 from tf2_ros import TransformException
@@ -12,7 +11,6 @@ import tf2_geometry_msgs
 from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped, Twist
-# from tf_transformations import quaternion_from_euler
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm
@@ -61,7 +59,6 @@ class Planner(Node):
     # Path
     self.planned = False
     self.path = []
-    self.timeout = 5
 
   def map_callback(self, msg : OccupancyGrid):
     if self.goal_received:
@@ -129,7 +126,7 @@ class Planner(Node):
       y0 = self.y0
 
     # Path planning algortim
-    path = solution(x0, y0, self.theta0, self.xt, self.yt, map_data, resolution, self.origin, self.timeout)
+    path = solution(x0, y0, self.theta0, self.xt, self.yt, map_data, resolution, self.origin)
     self.path = path
     
     # Path message
@@ -142,15 +139,9 @@ class Planner(Node):
         pose_msg = PoseStamped()
         pose_msg.header.stamp = message.header.stamp
         pose_msg.header.frame_id = message.header.frame_id
-        # Set the position and orientation 
+        # Set the position 
         pose_msg.pose.position.x = pose[0]
         pose_msg.pose.position.y = pose[1]
-        # Convert the orientation from phi (heading) to a quaternion
-        # quaternion = quaternion_from_euler(0, 0, 0) #pose[2])  # Use phi as the yaw angle
-        # pose_msg.pose.orientation.x = quaternion[0]
-        # pose_msg.pose.orientation.y = quaternion[1]
-        # pose_msg.pose.orientation.z = quaternion[2]
-        # pose_msg.pose.orientation.w = quaternion[3]
         
         message.poses.append(pose_msg)
       self.get_logger().info("Publishing path")
@@ -163,7 +154,7 @@ class Planner(Node):
     # Init transform
     to_frame_rel = 'map'
     from_frame_rel = 'odom'
-    time = rclpy.time.Time().from_msg(msg.header.stamp) # Maybe change?
+    time = rclpy.time.Time().from_msg(msg.header.stamp)
 
     # Wait for the transform asynchronously
     tf_future = self.buffer.wait_for_transform_async(
@@ -188,7 +179,7 @@ class Planner(Node):
       self.get_logger().info('No transform found')
 
 
-  def goal_callback(self, msg : Marker): # Maybe add a stop here? While planning
+  def goal_callback(self, msg : Marker):
     # Get position of goal
     self.xt = msg.pose.position.x
     self.yt = msg.pose.position.y
@@ -216,7 +207,7 @@ class Plan_node(object):
     self.g = 0  # Travel cost
     self.h = 0  # Distance cost
     self.f = 0  # Total cost
-    self.c = 0  # Cost of kernel
+    self.c = 0  # Cost of cell
     self.feasible = True
 
 def reached_target(x, y, xt, yt, resolution):
@@ -295,7 +286,7 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
         x_index, y_index = find_cell_index(xn, yn, resolution, origin) 
         cost = obsticales[y_index, x_index]
         if cost == -1:
-          cost = -resolution # 0
+          cost = 0 # - resolution
         new_node.c = cost
         
         # Check if the point is in the open set 
@@ -319,7 +310,7 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
           open_set[new_node_key] = new_node
 
 
-def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin, timeout):
+def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
   # Parameters
   steps = 1
   # start_time = time.time()
@@ -374,7 +365,7 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin, timeout):
     # Get new nodes
     get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions, origin)
   
-
+# Test function
 def main2():
   grid = np.zeros((100, 100), dtype=int)
   
@@ -410,7 +401,7 @@ def main2():
   #         grid[x, y] = 100
 
   start_time = time.time()
-  path = solution(x0, y0, 0, xt, yt, grid, 1/100, (0,0), timeout=10) # , closed_set, open_set
+  path = solution(x0, y0, 0, xt, yt, grid, 1/100, (0,0)) # , closed_set, open_set
   end_time = time.time()
   elapsed_time = end_time - start_time
 

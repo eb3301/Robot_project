@@ -49,12 +49,12 @@ def generate_launch_description():
             name='static_transform_broadcaster'
         ),
         
-        # Lidar Launch
-        ExecuteProcess(
-            cmd=['ros2', 'launch', 'robp_launch', 'lidar_launch.yaml'],
-            output='screen',
-            name='lidar_launch'
-        ),
+        # # Lidar Launch
+        # ExecuteProcess(
+        #     cmd=['ros2', 'launch', 'robp_launch', 'lidar_launch.yaml'],
+        #     output='screen',
+        #     name='lidar_launch'
+        # ),
 
         # # Arm camera Launch
         # ExecuteProcess(
