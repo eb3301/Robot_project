@@ -365,7 +365,6 @@ class ExploreSamples(pt.behaviour.Behaviour):
                 self.target = None   
 
     def grid_callback(self, msg: OccupancyGrid):
-        self.node.get_logger().info(f"Target: {self.target}")
         if self.target:
             x, y = self.target[0], self.target[1]
 
