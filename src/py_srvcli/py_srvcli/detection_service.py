@@ -253,6 +253,12 @@ class Detection(Node):
 
             if np.sum(cluster_points[:,1] < (offset - 0.125)) > 10: #skip cluster if too high (20 points are above the max)
                 continue
+
+            if np.max(cluster_points[:, 1]) <= offset - 0.117:
+
+                # Noise: it could be a table, a chair, ..., but not our Objects as they are at most 10cm high!
+
+                continue
             
             c= np.sum(cluster_points[:,1] < (offset - 0.125))
             self.get_logger().warn(f"y--------------------------- {c}")
