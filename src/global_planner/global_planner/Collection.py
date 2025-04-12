@@ -345,7 +345,7 @@ class Goto_Target(pt.behaviour.Behaviour):
             self.sampled_point = (x, y, z)
             self.pub_goal_marker()
 
-            self.visualise_grid_and_targets()
+            #self.visualise_grid_and_targets()
             
         return pt.common.Status.RUNNING
 
@@ -399,7 +399,7 @@ class Goto_Target(pt.behaviour.Behaviour):
             goal_heading = self.sampled_point[2]
 
             if not self.arrived:
-                dx, dy = np.abs(self.sampled_point[0] - x), np.abs(self.sampled_point[1] - y)
+                dx, dy = np.abs(self.target[1] - x), np.abs(self.target[2] - y)
                 dist = np.linalg.norm(np.array([dx, dy]))
                 if dist < 0.25:
                     self.node.get_logger().info('Arrived at target!')    
