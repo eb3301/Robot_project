@@ -187,7 +187,7 @@ class Detection(Node):
         colors = pc2.read_points_numpy(msg, skip_nans=True)[:, 3]
 
         distances = np.linalg.norm(points[:, :3], axis=1)
-        offset = 0.089
+        offset = 0.08987
         mask = (distances <= 1) & (distances >= 0.2) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
         filtered_indices = np.where(mask)[0]
         filtered_points = points[mask]
@@ -199,9 +199,10 @@ class Detection(Node):
             return
         
         # Stimiamo il piano del pavimento dai punti più bassi (es. y vicino a 0)
-        floor_mask = filtered_points[:, 1] < (offset - 0.25)  # Prendiamo i più bassi
-        floor_points = filtered_points[floor_mask]
-
+        floor_mask = (points[:, 1] > (offset-0.01)) & (points[:, 1] < (offset+0.01))# Prendiamo i più bassi
+        floor_points = points[floor_mask]
+        floor_indices=np.where(floor_mask)[0]
+    
         if floor_points.shape[0] > 50:
             # Fit piano al pavimento con RANSAC
             from sklearn.linear_model import RANSACRegressor
@@ -224,7 +225,7 @@ class Detection(Node):
         #filtered_points = self.voxel_grid_filter(filtered_points)  
         
         # Clustering
-        db = DBSCAN(eps=0.015, min_samples=80)
+        db = DBSCAN(eps=0.015, min_samples=100)
         labels = db.fit_predict(filtered_points)
 
         _, counts = np.unique(labels, return_counts=True)
@@ -254,33 +255,13 @@ class Detection(Node):
             if np.sum(cluster_points[:,1] < (offset - 0.125)) > 10: #skip cluster if too high (20 points are above the max)
                 continue
 
-            if np.max(cluster_points[:, 1]) <= offset - 0.117:
-
+            if np.min(cluster_points[:, 1]) <= offset - 0.12:
                 # Noise: it could be a table, a chair, ..., but not our Objects as they are at most 10cm high!
-
                 continue
-            
-            c= np.sum(cluster_points[:,1] < (offset - 0.125))
-            #self.get_logger().warn(f"y--------------------------- {c}")
 
             if cluster_points.shape[0] < 10 and cluster_points.shape[0] > max_cluster_size:
                 continue
             
-            # self.get_logger().info(f"cluster shape: {cluster_points.sh
-
-            # if cluster_points.shape[0] > 3:
-            #     centroid = np.mean(cluster_points, axis=0)
-            #     centered = cluster_points - centroid
-            #     centered = self.voxel_grid_filter(centered)
-            #     _, _, vh = np.linalg.svd(centered)
-            #     cluster_normal = vh[2, :]
-            #     cluster_normal /= np.linalg.norm(cluster_normal)
-
-            #     cos_angle = np.dot(cluster_normal, floor_normal)
-            #     angle = np.arccos(np.clip(abs(cos_angle), -1.0, 1.0)) * 180 / np.pi
-
-            #     if angle < 50:
-            #         continue
 
             if cluster_points.shape[0] > 3:
                 centroid = np.mean(cluster_points, axis=0)
