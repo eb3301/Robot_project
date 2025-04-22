@@ -3,9 +3,7 @@
 import numpy as np
 
 import rclpy
-import rclpy.logging
 from rclpy.node import Node
-import time
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
 from tf_transformations import euler_from_quaternion
@@ -26,7 +24,7 @@ class AutoControll(Node):
             depth = 1
         )
 
-        # Init publisher
+        # Publish velocity commands
         self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
 
         # Subscribe to current pose
@@ -35,10 +33,10 @@ class AutoControll(Node):
         # Subscribe to goal pose
         self.path_sub = self.create_subscription(Path, "/planned_path", self.path_callback, qos)
 
-        # Create timer
+        # Create timer for execution
         self.timer = self.create_timer(0.2, self.execution)  # 5 Hz Frequency
 
-        # TF2
+        # TF2 - to handle transforms from map to odom
         self.buffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.buffer, self, spin_thread = True)
 
@@ -49,7 +47,17 @@ class AutoControll(Node):
         self.start = False
         self.count = 0
 
-    # Get position of robot
+        # Robot paramters
+        wheel_radius = 0.046 # 0.04915
+        base = 0.3 # 0.30
+
+        # Maximum velocity parameters
+        self.max_factor = 1 / 6
+        self.max_vel = wheel_radius * self.max_factor # m/s
+        self.max_rot = ((wheel_radius / base) / (np.pi/2)) * self.max_factor # rad/s
+
+
+    # To get the position of the robot at all times
     def pose_callback(self, msg : PoseWithCovarianceStamped):
         # Init transform
         to_frame_rel = 'map'
@@ -72,7 +80,7 @@ class AutoControll(Node):
             # Do the transform
             map_pose = tf2_geometry_msgs.do_transform_pose(msg.pose.pose, t)
 
-            # Get position of robot
+            # Save position of robot
             x = map_pose.position.x
             y = map_pose.position.y
 
@@ -88,17 +96,18 @@ class AutoControll(Node):
         return yaw
             
         
-    # Updates path, extract position (x, y) and add to list
+    # Updates path if new is recived, extract position (x, y) from data and add to list
     def path_callback(self, msg: Path):
         self.get_logger().info('Path received')
         self.pose_list = []
         
+        # Add positions to a list
         for pose_msg in msg.poses:
             position = (pose_msg.pose.position.x, pose_msg.pose.position.y)
             self.pose_list.append(position)
         
         if self.pose_list:
-            # Set the
+            # Set the path to be executed
             self.get_logger().info('Executing Path')
             self.start = True
 
@@ -109,6 +118,7 @@ class AutoControll(Node):
             self.resolution = np.sqrt((self.pose_list[0][0] - self.pose_list[1][0])**2 + (self.pose_list[0][1] - self.pose_list[1][1])**2)
             self.lookahead_distance = 6*self.resolution
 
+            # Smooth the path to avoid strange steering - jumping
             smoothed_path = create_god_path(self.pose_list, self.resolution)
 
             # Convert path to a NumPy array
@@ -120,7 +130,7 @@ class AutoControll(Node):
             twist_msg = Twist()
             self.cmd_vel_pub.publish(twist_msg)
 
-        
+    # Generate actual driving commands
     def execution(self):
         if self.start:
             # Calculate distance to goal
@@ -149,47 +159,41 @@ class AutoControll(Node):
         # Calculate the Euclidean distance from the current position to each waypoint
         distances = np.sqrt(dx**2 + dy**2)
 
-        # Find the current point index
+        # Find the current pose's index in the path list
         current_point_idx = np.argmin(distances)
         target_point_idx = current_point_idx
         curr_x = path[current_point_idx][0]
         curr_y = path[current_point_idx][1]
 
-        # Find target index
+        # Find target index in the list that is closest to the lookahead distance
         while target_point_idx + 1 < len(path) and np.sqrt((path[target_point_idx + 1][0] - curr_x)**2 + (path[target_point_idx + 1][1] - curr_y)**2) < 2*lookahead_distance:
             target_point_idx += 1
 
         if target_point_idx == 0:
             target_point_idx = 1  # Skip the first point
 
-        # Get the target point
+        # Get the target point that we want to drive to
         target_point = path[target_point_idx]
 
         # Calculate the steering angle to the target point
         steering_angle = self.calculate_steering_angle(current_position, current_heading, target_point)
-
-        # Robot paramters
-        wheel_radius = 0.046 # 0.04915
-        base = 0.3 # 0.30
         
-        # Maximum velocities
-        max_factor = 1 / 6
-        max_vel = wheel_radius * max_factor # m/s
-        max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
+        # Calculate linear velocity
+        linear_velocity = (1 - abs(steering_angle) / (np.pi / 2)) * self.max_vel
 
-        # Use max linear velocity
-        linear_velocity = (1 - abs(steering_angle) / (np.pi / 2)) * max_vel
-
-        # Calculate the angular velocity using the steering angle and a gain factor
-        angular_velocity = max_rot * steering_angle
+        # Calculate the angular velocity
+        angular_velocity = steering_angle * self.max_rot
 
         # Create a ROS Twist message
         twist_msg = Twist()
+
+        # Added a stop if ther robot turn to much, to still detect things in turns
         if self.count <= 5:
             twist_msg.linear.x = linear_velocity
-            twist_msg.linear.z = max_factor
+            twist_msg.linear.z = self.max_factor
             twist_msg.angular.z = angular_velocity
         else:
+            # If the robot has turn a while, send a pause of 0 velocity
             self.count = 0
         
         return twist_msg
@@ -222,9 +226,11 @@ class AutoControll(Node):
 
         return steering_angle
 
+# Smoothing with bezier curves
 def cubic_bezier(t, P0, P1, P2, P3):
     return (1 - t)**3 * P0 + 3 * (1 - t)**2 * t * P1 + 3 * (1 - t) * t**2 * P2 + t**3 * P3
 
+# Perform smoothing for a segment
 def smooth(points):
     points = np.array(points)
     number = len(points)
@@ -243,6 +249,7 @@ def smooth(points):
 
     return smoothed_path
 
+# Group similar adjecent poses that has a pattern into a segment
 def extract_segments(path, resolution):
     horizontal_segments = []
     vertical_segments = []
@@ -285,7 +292,7 @@ def extract_segments(path, resolution):
     return horizontal_segments, vertical_segments, diagonal_segments
 
 
-# Function to combine adjacent segments
+# Function to combine the joint of adjacent segments
 def combine_segments(sorted_segments):
     # Combine so every segment is longer than 8
     i = 0
@@ -334,13 +341,10 @@ def combine_segments(sorted_segments):
         new_segments.append(sorted_segments[-1][2:])
     return new_segments
 
-
+# Create the smooth path
 def create_god_path(path, resolution):
     # Extract segments
     horizontal, vertical, diagonal = extract_segments(path, resolution)
-    # print(f'Horizontal {horizontal}')
-    # print(f'Vertical {vertical}')
-    # print(f'Diagonal {diagonal}')
 
     # Combine segments
     combined_segments = diagonal + horizontal + vertical
@@ -351,19 +355,9 @@ def create_god_path(path, resolution):
     # Remove the sorting index (only keep the segments)
     sorted_segments = [segment[0] for segment in combined_segments_sorted]
 
-    # # Output the new combined segments
-    # print("New Combined Segments:")
-    # for segment in sorted_segments:
-    #     print(segment)
-
     if len(sorted_segments) > 2:
         # Combine adjacent segments by taking out the last two and first two points
         combined_segments = combine_segments(sorted_segments)
-
-        # # Output the new combined segments
-        # print("New Combined Segments after merge:")
-        # for segment in combined_segments:
-        #     print(segment)
     else:
         combined_segments = sorted_segments
 
