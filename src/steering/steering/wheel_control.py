@@ -51,7 +51,7 @@ class WheelController(Node):
         w_r = u_w + u_phi/2
 
         # Corrections for uneven motors
-        correct_factor = 0.006
+        correct_factor = 0.000
         if u_w >= 0:
             if -0.25 < u_phi < 0:
                 w_r = w_r - (correct_factor)/(0.25)*u_phi - correct_factor
@@ -73,6 +73,8 @@ class WheelController(Node):
               
         duty_cycles_msg.duty_cycle_left = w_l
         duty_cycles_msg.duty_cycle_right = w_r
+        
+        self.get_logger().info(f"Dutycycles \n Left: {w_l}, right: {w_r}")
 
         # Publish the duty cycle message to control motors
         self.duty_pub.publish(duty_cycles_msg)

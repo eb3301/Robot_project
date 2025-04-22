@@ -9,7 +9,7 @@ import py_trees_ros as ptr
 from builtin_interfaces.msg import Duration
 
 from ament_index_python import get_package_share_directory
-from tf_transformations import euler_from_quaternion, quaternion_from_euler
+from tf_transformations import euler_from_quaternion, quaternion_from_euler, quaternion_matrix
 
 from std_msgs.msg import Header
 from nav_msgs.msg import OccupancyGrid
@@ -57,7 +57,7 @@ class BehaviourTree(Node):
             'B' -- Box        
             '''
         goto_target = Goto_Target(self, 'object')
-        
+        approach_object = Approach_Object(self)
 
         # drive_to_obj_1 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this to obj
         # drive_to_obj_2 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this one to box?
@@ -73,10 +73,10 @@ class BehaviourTree(Node):
         #                                   memory = bool,
         #                                   children = [goto_target, drive_to_obj_1, pickup, drive_to_obj_2, place]
                                         #   )
-        
+        # create_ws, load_map, goto_target, create_ws, load_map, goto_target, 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          children = [create_ws, load_map, goto_target]
+                                          children = [create_ws, load_map, goto_target, approach_object]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -249,10 +249,22 @@ class Load_Map(pt.behaviour.Behaviour):
 
             if object[0] == '1': # Cube
                 marker.type = marker.CUBE
+                marker.scale.x = 0.1
+                marker.scale.y = 0.11
+                marker.scale.z = 0.1
+
             elif object[0] == '2': # Sphere
                 marker.type = marker.SPHERE
+                marker.scale.x = 0.1
+                marker.scale.y = 0.1
+                marker.scale.z = 0.1
+
             elif object[0] == '3': # Plushie
                 marker.type = marker.CYLINDER
+                marker.scale.x = 0.1
+                marker.scale.y = 0.1
+                marker.scale.z = 0.2
+
             elif object[0] == 'B': # Box
                 marker.type = marker.CUBE
                 marker.scale.x = 0.3
@@ -325,7 +337,7 @@ class Goto_Target(pt.behaviour.Behaviour):
 
         if not self.sampled_point:
             # TODO: Pick target out of list
-            self.target = self.targets[0]
+            self.target = self.targets[5]
 
             # list of tuples (grid_x, grid_y) on a circle around target
             candidates = self.candidate_points(self.target) 
@@ -368,8 +380,8 @@ class Goto_Target(pt.behaviour.Behaviour):
         # 2D np.array(). Unknown space = -1, free space  = 0, occupied = 100
         self.grid = data.reshape((height, width))  
 
-    def candidate_points(self, target, distance = 0.25, angle_step = 15):
-        '''Sample points on a circle with 5 cells radius around the target'''
+    def candidate_points(self, target, distance = 0.40, angle_step = 15):
+        '''Sample points on a circle with X cells radius around the target'''
         x0, y0 = target[1], target[2]
         self.candidates = []
         for angle_deg in range(0, 360, angle_step):
@@ -407,29 +419,26 @@ class Goto_Target(pt.behaviour.Behaviour):
             goal_heading = self.sampled_point[2]
 
             if not self.arrived:
-                dx, dy = np.abs(self.target[1] - x), np.abs(self.target[2] - y)
+                dx, dy = np.abs(self.sampled_point[0] - x), np.abs(self.sampled_point[1] - y)
                 dist = np.linalg.norm(np.array([dx, dy]))
-                if dist < 0.25:
+                if dist < 0.15:
                     self.node.get_logger().info('Arrived at target!')    
                     self.arrived = True
-            else:
+            else:   
                 if not self.rotated:
                     # Rotate 
                     d_z = goal_heading - heading
-                    counter = 0
                     if np.abs(d_z) > np.deg2rad(5):
                         # Maximum velocities
                         wheel_radius = 0.046 # 0.04915
                         base = 0.3 # 0.30
                         max_factor = 1 / 6
                         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
-                        if counter % 10 == 0:
-                            counter += 1
-                            twist_msg = Twist()
-                            twist_msg.angular.z = np.pi / 4 * max_rot
-                            self.node.get_logger().info(f"Sending twist msg {np.pi/2} rad/s")
-                            twist_msg._linear.z = max_factor
-                            self.cmd_vel_pub.publish(twist_msg)
+                        twist_msg = Twist()
+                        twist_msg.angular.z = np.pi / 4 * max_rot
+                        self.node.get_logger().info(f"Sending twist msg {np.pi/2} rad/s")
+                        twist_msg._linear.z = max_factor
+                        self.cmd_vel_pub.publish(twist_msg)
                     else: 
                         twist_msg = Twist()
                         self.cmd_vel_pub.publish(twist_msg)
@@ -560,27 +569,27 @@ class Approach_Object(pt.behaviour.Behaviour):
                 ) 
 
             # Subscriber to the point cloud topic
-            self._sub = self.create_subscription(PointCloud2, '/camera/camera/depth/color/points', self.cloud_callback, 10)
+            self._sub = self.node.create_subscription(PointCloud2, '/camera/camera/depth/color/points', self.cloud_callback, 10)
             # Subscriber to Odom topic
-            self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/ekf_pose', self.pose_callback, 10)
+            self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/ekf_pose', self.pose_callback, 10)
             
             # Publisher to velocity command topic
-            self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
+            self.cmd_vel_pub = self.node.create_publisher(Twist, "/cmd_vel", 10)
             
             # Call control algorithm
-            self.create_timer(0.2, self.control)  # ogni 100ms
+            self.node.create_timer(0.2, self.control)  # ogni 100ms
 
             # Initialize the transform buffer
             self.tf_buffer = Buffer()
 
             # Initialize the transform listener
-            self.tf_listener = TransformListener(self.tf_buffer, self)
+            self.tf_listener = TransformListener(self.tf_buffer, self.node)
         return pt.common.Status.RUNNING
     
     def pose_callback(self, msg : PoseWithCovarianceStamped):
         # Init transform
         to_frame_rel = 'map'
-        from_frame_rel = 'base_link'
+        from_frame_rel = 'odom'
         time = rclpy.time.Time().from_msg(msg.header.stamp)
 
         # Wait for the transform asynchronously
@@ -589,7 +598,7 @@ class Approach_Object(pt.behaviour.Behaviour):
         source_frame=from_frame_rel,
         time=time
         )
-        rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
+        rclpy.spin_until_future_complete(self.node, tf_future, timeout_sec=1)
 
         # Lookup tansform
         try:
@@ -612,7 +621,7 @@ class Approach_Object(pt.behaviour.Behaviour):
             angles = euler_from_quaternion(q)
             self.theta=angles[2]
         except TransformException:
-            self.get_logger().info('No transform found')
+            self.node.get_logger().info('No transform found')
                 
     def voxel_grid_filter(self, points, leaf_size=0.05):
         """Downsamples the point cloud using a voxel grid filter."""
@@ -649,7 +658,7 @@ class Approach_Object(pt.behaviour.Behaviour):
             time=time
         )
 
-        rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
+        rclpy.spin_until_future_complete(self.node, tf_future, timeout_sec=1)
 
         try:
             t = self.tf_buffer.lookup_transform(
@@ -657,7 +666,7 @@ class Approach_Object(pt.behaviour.Behaviour):
                 from_frame_rel,
                 time)
         except TransformException as ex:
-            self.get_logger().info(
+            self.node.get_logger().info(
                 f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
             return
         
@@ -675,7 +684,7 @@ class Approach_Object(pt.behaviour.Behaviour):
         filtered_distances=distances[mask]
 
         if filtered_points.shape[0] == 0:
-            # self.get_logger().info("No points after filtering")
+            # self.node.get_logger().info("No points after filtering")
             return
         
         # Stimiamo il piano del pavimento dai punti più bassi (es. y vicino a 0)
@@ -754,10 +763,10 @@ class Approach_Object(pt.behaviour.Behaviour):
                         if angle < 50:
                             continue
                     except np.linalg.LinAlgError as e:
-                        self.get_logger().warn(f"SVD fallita per cluster con shape {centered.shape}: {e}")
+                        self.node.get_logger().warn(f"SVD fallita per cluster con shape {centered.shape}: {e}")
                         continue
                 else:
-                    self.get_logger().warn(f"Cluster saltato: shape dopo voxel filtering = {centered.shape}")
+                    self.node.get_logger().warn(f"Cluster saltato: shape dopo voxel filtering = {centered.shape}")
                     continue
 
 
@@ -766,7 +775,7 @@ class Approach_Object(pt.behaviour.Behaviour):
             bbox_size = bbox_max - bbox_min
             bbox_center = (bbox_min + bbox_max) / 2
 
-            #self.get_logger().info('Deteced')
+            #self.node.get_logger().info('Deteced')
             
             x_lim = 0.5 # to skip everithing not centered
             x_min, x_max = -x_lim, x_lim
@@ -783,23 +792,19 @@ class Approach_Object(pt.behaviour.Behaviour):
 
             try:
                 map_pose = tf2_geometry_msgs.do_transform_pose(bbox_pose.pose, t)
-                x_obj = map_pose.position.x
-                y_obj = map_pose.position.y
-
-                x = x_obj - self.x
-                y = y_obj - self.y
-
-                self.desired_angle = math.atan2(y, x)
-                self.distance_to_target = math.sqrt(x**2 + y**2)
+                self.x_obj = map_pose.position.x
+                self.y_obj = map_pose.position.y
 
                 updated_target = True
+                self.node.get_logger().info("object found")
 
             except TransformException as ex:
-                self.get_logger().warn(f"Trasformazione bbox fallita: {ex}")
+                self.node.get_logger().warn(f"Trasformazione bbox fallita: {ex}")
                 return            
         
         if not updated_target and self.distance_to_target is not None:
-            self.get_logger().info("Nessun oggetto valido rilevato. Continuo verso l'ultimo target.")
+            pass
+            #self.node.get_logger().info("no valid object found. continuing to the last target.")
     
     def transform_to_matrix(self,t):
         trans = t.transform.translation
@@ -814,14 +819,24 @@ class Approach_Object(pt.behaviour.Behaviour):
     
     def control(self):
 
-        if not hasattr(self, 'theta') or not hasattr(self, 'desired_angle'):
+        if not hasattr(self, 'theta') or not hasattr(self, 'x_obj') or not hasattr(self, 'y_obj'):
             return
 
-        angular_error = math.atan2(math.sin(self.theta - self.desired_angle),
-                           math.cos(self.theta - self.desired_angle))
+        x = self.x_obj - self.x
+        y = self.y_obj - self.y
+
+        self.desired_angle = math.atan2(y, x)
+        self.distance_to_target = math.sqrt(x**2 + y**2)
+        
+        # angular_error = math.atan2(math.sin(self.theta - self.desired_angle),
+                        #    math.cos(self.theta - self.desired_angle))
+
+        angular_error=self.theta - self.desired_angle
         
         angular_threshold=math.radians(15)
+        
 
+        #self.node.get_logger().info(f'ang err: {np.rad2deg(angular_error)}, theta: {np.rad2deg(self.theta)}, des ang: {np.rad2deg(self.desired_angle)}')
  
         wheel_radius = 0.046 # 0.04915
         base = 0.3 # 0.30
@@ -830,16 +845,30 @@ class Approach_Object(pt.behaviour.Behaviour):
         max_vel = wheel_radius * max_factor # m/s
         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
 
-        kw=50
-        kv=0.9
+        kw=-0.02 
+        kv=0.5
 
         v=0
         w=0
+        self.node.get_logger().info(f'Distance to target: {self.distance_to_target}')
 
-        # self.get_logger().info(f'Angular: {angular_error}')
-        if self.distance_to_target is not None and self.distance_to_target < 0.05:
+        if self.distance_to_target is not None and self.distance_to_target < 0.25:
             v = 0.0
             w = 0.0
+            self.node.get_logger().info('Arrived at target.')
+
+            # Create a ROS Twist message
+            twist_msg = Twist()
+            twist_msg.linear.x = float(v)
+            twist_msg.linear.y = 0.0
+            twist_msg.linear.z = float(max_factor)
+            twist_msg.angular.x = 0.0
+            twist_msg.angular.y = 0.0
+            twist_msg.angular.z = float(w)
+            self.cmd_vel_pub.publish(twist_msg)
+
+            a = str('1') - 1
+            return pt.common.Status.SUCCESS
         # elif abs(angular_error) > angular_threshold:
         #     w=kw*angular_error
         #     v=0
