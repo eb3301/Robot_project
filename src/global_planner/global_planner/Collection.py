@@ -61,7 +61,7 @@ class BehaviourTree(Node):
 
         # drive_to_obj_1 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this to obj
         # drive_to_obj_2 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this one to box?
-        # pickup = Pickup(self) # Pickup object
+        pickup = Pickup(self) # Pickup object
         # place = Place() # Place object
         # detection=Detection()
 
@@ -76,7 +76,7 @@ class BehaviourTree(Node):
         # create_ws, load_map, goto_target, create_ws, load_map, goto_target, 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          children = [create_ws, load_map, goto_target, approach_object]
+                                          children = [create_ws, load_map, goto_target, approach_object, pickup]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -301,8 +301,8 @@ class Goto_Target(pt.behaviour.Behaviour):
     def update(self):
         # First time ticking update
         if self.status == pt.common.Status.INVALID:
-            self.grid_sub = self.node.create_subscription(OccupancyGrid, 'map', self.grid_callback, 10)
-            self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, 'map_pose', self.pose_callback, 10)
+            self.grid_sub = self.node.create_subscription(OccupancyGrid, '/map', self.grid_callback, 10)
+            self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/map_pose', self.pose_callback, 10)
             qos = QoSProfile(
                 reliability=QoSReliabilityPolicy.RELIABLE,  # Ensures message delivery
                 durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  # Keeps the last message for new subscribers
