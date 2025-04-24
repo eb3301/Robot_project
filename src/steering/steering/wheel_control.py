@@ -26,6 +26,10 @@ class WheelController(Node):
         self.rot_z = 0.0  # Default rotation velocity
         self.max_factor = 0.0 # Dedault max factor
 
+        # Given parameters
+        self.wheel_radius = 0.046 # 0.04915
+        self.base = 0.30 # 0.30
+
     def twist_callback(self, msg: Twist):
         # Update linear and rotational velocities based on cmd_vel message
         self.vel_x = msg.linear.x*0.75
@@ -33,25 +37,21 @@ class WheelController(Node):
         self.rot_z = msg.angular.z
 
     def publish_duty_cycles(self):
-        # Given parameters
-        wheel_radius = 0.046 # 0.04915
-        base = 0.30 # 0.30
-
-        # Steer geometry, from velocity to wheel velocity
-        u_w = self.vel_x / (wheel_radius)
-        u_phi = self.rot_z * base / wheel_radius 
+        # Steer geometry, from linear velocity to wheel velocity
+        u_w = self.vel_x / (self.wheel_radius)
+        u_phi = self.rot_z * self.base / self.wheel_radius 
         if np.abs(u_phi) >= self.max_factor:
             if u_phi >= 0:
                 u_phi = 2*self.max_factor - u_phi
             if u_phi < 0:
                 u_phi = -(2*self.max_factor + u_phi)
 
-        # Wheel angular velocity
+        # Wheel velocities
         w_l = u_w - u_phi/2
         w_r = u_w + u_phi/2
 
         # Corrections for uneven motors
-        correct_factor = 0.006
+        correct_factor = 0 # 0.006
         if u_w >= 0:
             if -0.25 < u_phi < 0:
                 w_r = w_r - (correct_factor)/(0.25)*u_phi - correct_factor
@@ -68,11 +68,11 @@ class WheelController(Node):
                 w_r = w_r + correct_factor
 
         # Create message
-        duty_cycles_msg = DutyCycles()
-        # self.get_logger().info(f"Dudty cycle: ({w_l}, {w_r})")
-              
+        duty_cycles_msg = DutyCycles()        
         duty_cycles_msg.duty_cycle_left = w_l
         duty_cycles_msg.duty_cycle_right = w_r
+        
+        # self.get_logger().info(f"Dutycycles \n Left: {w_l}, right: {w_r}")
 
         # Publish the duty cycle message to control motors
         self.duty_pub.publish(duty_cycles_msg)

@@ -27,7 +27,7 @@ class Planner(Node):
             depth = 1
         )
 
-    # Subscribe to costmap
+    # Subscribe to occupancy grid and costmap
     self.costmap_sub = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 1)
 
     # Subscribe to current pose
@@ -39,30 +39,31 @@ class Planner(Node):
     # Publish the planned path
     self.path_pub = self.create_publisher(Path, "/planned_path", qos)
 
-    # Init publisher
+    # Publish the zero velocity when planning
     self.cmd_vel_pub = self.create_publisher(Twist, "/cmd_vel", 10)
 
-    # TF2
+    # TF2 - to handle transforms from map to odom
     self.buffer = tf2_ros.Buffer()
     self.listener = tf2_ros.TransformListener(self.buffer, self, spin_thread = True)
 
-    # Robot pose coordnates
+    # Initiation of robot pose coordnates
     self.x0 = 0.0
     self.y0 = 0.0
     self.theta0 = 0
 
-    # Target coordinates
+    # Initiation of target coordinates
     self.goal_received = False
     self.xt = 4.5
     self.yt = 0.0
 
-    # Path
+    # Initiation of path
     self.planned = False
     self.path = []
 
+  # Get the most recent map all the time. Also logic for plan and replan
   def map_callback(self, msg : OccupancyGrid):
     if self.goal_received:
-      # Get data from message
+      # Get important data from message
       map_data = msg.data
       map_data = np.reshape(map_data, (msg.info.height, msg.info.width))
       resolution = msg.info.resolution
@@ -71,7 +72,7 @@ class Planner(Node):
       self.origin = (origin_x, origin_y)
       time = msg.header.stamp
 
-      # Logic for replan
+      # Logic for deciding plan and when to replan
       if self.planned: 
         try:
           if not self.path:
@@ -84,21 +85,18 @@ class Planner(Node):
                 self.planned = False
                 # self.get_logger().info(f"Path obstructed at ({self.path[i][0]}, {self.path[i][1]})")
                 break
-              # else:
-                # self.get_logger().info(f"Path good")
         except:
           self.get_logger().info(f"Path is empty")
 
-        
       # Replan
       if not self.planned:
         self.get_logger().info("Planning new path")
         self.plan_path(map_data, resolution, time)
         self.planned = True
 
-
+  # The actual path planning and publishing of the path
   def plan_path(self, map_data, resolution, time):
-    # Check if the pose is occupierd or not
+    # Check if the current pose is occupierd or not to be able to plan
     x_index = int((self.x0 - self.origin[0]) / resolution)  
     y_index = int((self.y0 - self.origin[1]) / resolution)
     if map_data[y_index][x_index] >= 80:
@@ -127,7 +125,7 @@ class Planner(Node):
 
     # Path planning algortim
     path = solution(x0, y0, self.theta0, self.xt, self.yt, map_data, resolution, self.origin)
-    self.path = path
+    self.path = path # Store path to be able to determine when to replan
     
     # Path message
     message = Path()
@@ -149,7 +147,7 @@ class Planner(Node):
     else: # If no path exist, publish empty path
       self.get_logger().info('Publishing empty path')
 
-
+  # To get the position of the robot at all times
   def pose_callback(self, msg : PoseWithCovarianceStamped):
     # Init transform
     to_frame_rel = 'map'
@@ -172,13 +170,13 @@ class Planner(Node):
       # Do the transform
       map_pose = tf2_geometry_msgs.do_transform_pose(msg.pose.pose, t)
 
-      # Get position of robot
+      # Save position of robot
       self.x0 = map_pose.position.x
       self.y0 = map_pose.position.y
     except TransformException:
       self.get_logger().info('No transform found')
 
-
+  # To get the position of the target when it is published
   def goal_callback(self, msg : Marker):
     # Get position of goal
     self.xt = msg.pose.position.x
@@ -196,7 +194,7 @@ class Planner(Node):
 
 
 
-
+# Path planning
 class Plan_node(object):
   def __init__(self, x, y, theta, parent = None):
     self.x = x
@@ -243,19 +241,16 @@ def step(x, y, theta, phi, resolution):
 def step_collided_with_obsticale(obsticales, x, y, resolution, origin):
   # Check if cell is occupied
   x_index, y_index = find_cell_index(x, y, resolution, origin)
-  if obsticales[y_index, x_index] >= 80: # Change
+  if obsticales[y_index, x_index] >= 80:
     return True
   return False
     
 
-def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions, origin):
-  # Get steering angles, only grid coordinates
-  if directions == 4:
-    steer_angels = [-np.pi/2, 0, np.pi/2, np.pi]
-  else:
-    steer_angels = [-np.pi/2, 0, np.pi/2]
+def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, origin):
+  # For the start node explore all directions then only in front of pose
+  steer_angels = [-np.pi/2, 0, np.pi/2, np.pi] if len(closed_set) == 0 else [-np.pi/2, 0, np.pi/2]
 
-  # Calculate different steering angles
+  # Calculate adjecent positions for different steering angles
   for phi in steer_angels: 
     xn = current_node.x
     yn = current_node.y
@@ -292,7 +287,7 @@ def get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales,
         # Check if the point is in the open set 
         if new_node_key in open_set:
           node = open_set[new_node_key]
-          # Check if the cost is smaller for the new node then replace it
+          # Check if the cost is smaller for the new node than the one in open set, then replace it
           if node.g + node.c > new_node.g + new_node.c:
             new_node.h = np.sqrt(((new_node.x - xt)**2 + (new_node.y - yt)**2)) 
             new_node.f = new_node.g + new_node.h * 2 + new_node.c
@@ -350,11 +345,8 @@ def solution(x0, y0, theta0, xt, yt, obsticales, resolution, origin):
           current_node = current_node.parent
       return path[::-1] #, closed_set, open_set
 
-    # For the start node explore all directions then only in front of pose
-    directions = 4 if len(closed_set) == 0 else 3
-
     # Get new nodes
-    get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, directions, origin)
+    get_new_nodes(current_node, open_set, closed_set, steps, xt, yt, obsticales, resolution, origin)
   
 # Test function
 def main2():
