@@ -342,7 +342,7 @@ class Detection(Node):
                     curvatures.append(curvature)
 
                 avg_curvature = np.mean(curvatures) if curvatures else 0
-                self.get_logger().info(f"curvature {avg_curvature}")
+                #self.get_logger().info(f"curvature {avg_curvature}")
                 if avg_curvature < 0.05:
                     obj_type = "1" # Cube
                 else:
