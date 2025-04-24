@@ -187,7 +187,7 @@ class Detection(Node):
         colors = pc2.read_points_numpy(msg, skip_nans=True)[:, 3]
 
         distances = np.linalg.norm(points[:, :3], axis=1)
-        offset = 0.08987
+        offset = 0.089
         mask = (distances <= 1) & (distances >= 0.2) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
         filtered_indices = np.where(mask)[0]
         filtered_points = points[mask]
@@ -225,7 +225,7 @@ class Detection(Node):
         #filtered_points = self.voxel_grid_filter(filtered_points)  
         
         # Clustering
-        db = DBSCAN(eps=0.015, min_samples=100)
+        db = DBSCAN(eps=0.015, min_samples=150)
         labels = db.fit_predict(filtered_points)
 
         _, counts = np.unique(labels, return_counts=True)
@@ -293,15 +293,16 @@ class Detection(Node):
             bbox_size = bbox_max - bbox_min
             bbox_center = (bbox_min + bbox_max) / 2
 
-            magn=(1 + (3.4-1)/(1-0.25)*(cluster_distance-0.25))
+            magn=1#(1 + (cluster_distance-0.2))*5/8
             volume = 1000*np.prod(bbox_size)*magn**2
-            
+            npoints=cluster_points.shape[0]
+
             x_lim = 0.35
             x_min, x_max = -x_lim, x_lim
             if (bbox_min[0] < x_min or bbox_max[0] > x_max):
                 continue
             
-            #self.get_logger().info(f"il volume è: {volume}")
+            #self.get_logger().info(f"Volume: {volume}, npoints: {npoints}")
 
             obj_type = "trash"  # Default category
 
@@ -330,7 +331,7 @@ class Detection(Node):
             # self.get_logger().info(f"colore brutto: {fluffly_box_color}")
             
            
-            if volume < 0.5 :# and (red or green or blue):  # Small objects (cube, sphere)
+            if volume < 0.05 :#and (npoints < 700 and npoints >200):# and (red or green or blue):  # Small objects (cube, sphere)
                 curvatures = []
                 for p in cluster_points:
                     cov_matrix = np.cov(cluster_points.T)
@@ -341,15 +342,15 @@ class Detection(Node):
                     curvatures.append(curvature)
 
                 avg_curvature = np.mean(curvatures) if curvatures else 0
-
-                if avg_curvature > 0.08:
+                self.get_logger().info(f"curvature {avg_curvature}")
+                if avg_curvature < 0.05:
                     obj_type = "1" # Cube
                 else:
                     obj_type = "2" # Sphere
 
-            elif volume < 4 and volume > 0.6:
+            elif (volume < 0.5 and volume > 0.1): #and (npoints > 900 and npoints < 1500):
                 obj_type = "3" # Fluffy animal
-            elif volume < 100 and volume > 10:
+            elif (volume < 4 and volume > 0.7): #and (npoints > 2500 and npoints < 8000):
                 obj_type = "B" # Box
 
             points_homogeneous = np.hstack([cluster_points, np.ones((cluster_points.shape[0], 1))])
