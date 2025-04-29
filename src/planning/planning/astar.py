@@ -100,7 +100,7 @@ class Planner(Node):
     x_index = int((self.x0 - self.origin[0]) / resolution)  
     y_index = int((self.y0 - self.origin[1]) / resolution)
     if map_data[y_index][x_index] >= 80:
-      self.get_logger().info(f"grid > 80")
+      # self.get_logger().info(f"grid > 80")
       radius = 1  # Start expanding from radius 1
       x0, y0 = None, None
       while x0 is None and y0 is None:
@@ -110,7 +110,7 @@ class Planner(Node):
             if abs(dy) + abs(dx) == radius:
               # Get the new (y, x) coordinates
               ny, nx = y_index + dy, x_index + dx
-              self.get_logger().info(f"Grid cell: {map_data[ny][nx]}")
+              # self.get_logger().info(f"Grid cell: {map_data[ny][nx]}")
               # Check the value at the new cell
               if map_data[ny][nx] < 80:
                 # Convert grid index to world coordinates
@@ -124,7 +124,7 @@ class Planner(Node):
     else:
       x0 = self.x0
       y0 = self.y0
-    self.get_logger().info(f"OUT OF LOOP")
+    # self.get_logger().info(f"OUT OF LOOP")
     # Path planning algortim
     path = solution(x0, y0, self.theta0, self.xt, self.yt, map_data, resolution, self.origin)
     self.path = path # Store path to be able to determine when to replan

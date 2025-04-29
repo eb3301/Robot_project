@@ -48,6 +48,8 @@ class BehaviourTree(Node):
         create_ws = Create_ws(self) # Read workspace and map file
         load_map = Load_Map(self)
 
+
+
         # Get target coordinates
         ''' Possible arguments:
             'object' -- Any object
@@ -60,27 +62,29 @@ class BehaviourTree(Node):
         approach_object = Approach_Object(self)
         goto_box = Goto_Target(self, 'B')
 
-        # drive_to_obj_1 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this to obj
-        # drive_to_obj_2 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this one to box?
         pickup = Pickup(self) # Pickup object
-        # place = Place() # Place object
-        # detection=Detection()
-
-        # drive_parallell = pt.composites.Parallel(name='Drive parallell',
-        #                                          policy=pt.common.ParallelPolicy.SuccessOnSelected(drive_to_obj_1),
-        #                                          children=[collect_seq]
-        #                                          )
-        # collect_seq = pt.composites.Sequence(name = 'Collection Sequence', 
-        #                                   memory = bool,
-        #                                   children = [goto_target, drive_to_obj_1, pickup, drive_to_obj_2, place]
-                                        #   )
+        check_map = Check_Map(self)
+        
         # create_ws, load_map, goto_target, create_ws, load_map, goto_target, 
+
+
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
-                                          memory = bool,
-                                          children = [create_ws, load_map, goto_target, approach_object, goto_box]
+                                          memory = False,
+                                          children = [goto_target, approach_object, pickup, goto_box]
                                           )
 
-        self.BT = pt.trees.BehaviourTree(root = test_seq)
+        test_sel = pt.composites.Selector(name = 'Test Selector',
+                                          memory = False,
+                                          children = [check_map, test_seq]
+                                          )
+
+        base_seq = pt.composites.Sequence(name = 'Main Sequence',
+                                          memory = False,
+                                          children = [create_ws, load_map, test_sel]
+                                          )
+
+
+        self.BT = pt.trees.BehaviourTree(root = base_seq)
 
         self.timer = self.create_timer(0.5, self.tick_tree)
 
@@ -314,31 +318,39 @@ class Goto_Target(pt.behaviour.Behaviour):
         self.resolution = None
         self.origin_x = None
         self.origin_y = None
+
+        self.grid_sub = self.node.create_subscription(OccupancyGrid, '/map', self.grid_callback, 10)
+        self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/map_pose', self.pose_callback, 10)
+        qos = QoSProfile(
+            reliability=QoSReliabilityPolicy.RELIABLE,  # Ensures message delivery
+            durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  # Keeps the last message for new subscribers
+            depth=10  # Stores up to 10 messages in queue
+            )
+        self.waypoint_pub = self.node.create_publisher(Marker, '/goal_marker', qos)
+        self.cmd_vel_pub = self.node.create_publisher(Twist, "/cmd_vel", 10)
+
+        self.done = False
         print('Initialising Coordinate Retriever...')
 
     def update(self):
-        # First time ticking update
-        if self.status == pt.common.Status.INVALID:
-            self.grid_sub = self.node.create_subscription(OccupancyGrid, '/map', self.grid_callback, 10)
-            self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/map_pose', self.pose_callback, 10)
-            qos = QoSProfile(
-                reliability=QoSReliabilityPolicy.RELIABLE,  # Ensures message delivery
-                durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  # Keeps the last message for new subscribers
-                depth=10  # Stores up to 10 messages in queue
-                )
-            self.waypoint_pub = self.node.create_publisher(Marker, '/goal_marker', qos)
-            self.cmd_vel_pub = self.node.create_publisher(Twist, "/cmd_vel", 10)
-            
+
+        reset = self.blackboard.get('reset goto target')
+        if self.status == pt.common.Status.INVALID or reset:
+            self.blackboard.set('reset goto target', False)
+            self.reset()
+
             self.objects = self.blackboard.get('objects')
-            
+        
             # Save targets in list
             if self.object == 'object': # Any object (not box)
                 self.targets = [obj for obj in self.objects if obj[0] != 'B']
             else:    
                 self.targets = [obj for obj in self.objects if obj[0] == self.object]
-            #self.visualise_grid_and_targets()
-                return pt.common.Status.RUNNING
+            self.sample_point()
+            return pt.common.Status.RUNNING
 
+        if self.done:
+            return pt.common.Status.SUCCESS
         if self.grid is None:
             self.node.get_logger().info("No grid recieved")
             return pt.common.Status.RUNNING
@@ -347,16 +359,29 @@ class Goto_Target(pt.behaviour.Behaviour):
             return pt.common.Status.FAILURE
         if self.arrived:
             if self.rotated:
+                self.blackboard.set('reset approach', True)
+                self.done = True
                 return pt.common.Status.SUCCESS
             else:
                 self.node.get_logger().info("Rotating...")
                 return pt.common.Status.RUNNING
-            
+        
+        return pt.common.Status.RUNNING
+
+    def sample_point(self):
         if not self.sampled_point:
             # TODO: Pick target out of list
             self.target = self.targets[5]
             if self.object == 'B':
                 self.target = self.targets[0]
+
+            if self.object != 'B':
+                # Remove target from list of objects
+                new_objects = []
+                for tpl in self.objects:
+                    if tpl != self.target:
+                        new_objects.append(tpl)
+                self.blackboard.set('objects', new_objects)
 
             # list of tuples (grid_x, grid_y) on a circle around target
             candidates = self.candidate_points(self.target) 
@@ -380,15 +405,16 @@ class Goto_Target(pt.behaviour.Behaviour):
             x = (best_candidate[0] * self.resolution) + self.origin_x    
             y = (best_candidate[1] * self.resolution) + self.origin_y
             z = np.arctan2(self.target[2] - y, self.target[1] - x)  
-    
+
             self.sampled_point = (x, y, z)
             self.pub_goal_marker()
 
             # self.visualise_grid_and_targets()
-            
-        return pt.common.Status.RUNNING
 
     def grid_callback(self, msg: OccupancyGrid):
+        if self.done:
+            return
+
         width = msg.info.width
         height = msg.info.height
         data = np.array(msg.data, dtype=np.int8)  
@@ -428,6 +454,8 @@ class Goto_Target(pt.behaviour.Behaviour):
         return free_count
 
     def pose_callback(self, msg: PoseWithCovarianceStamped):
+        if self.done:
+            return
         if self.target is None:
             self.node.get_logger().info("No target...")
             return
@@ -564,6 +592,24 @@ class Goto_Target(pt.behaviour.Behaviour):
         plt.tight_layout()
         plt.show()
 
+    def reset(self):
+        self.objects = None
+        self.targets = None
+        self.target = None
+        self.sampled_point = None
+        self.target_point = None
+        self.candidates = None
+        self.arrived = False
+        self.rotated = False
+
+        # Initialise grid
+        self.grid = None
+        self.resolution = None
+        self.origin_x = None
+        self.origin_y = None
+
+        self.done = False
+
 
 class Approach_Object(pt.behaviour.Behaviour):
     def __init__(self, node):
@@ -578,40 +624,36 @@ class Approach_Object(pt.behaviour.Behaviour):
         self.object_found = False
         self.done = False
 
+        # Subscriber to the point cloud topic
+        self._sub = self.node.create_subscription(PointCloud2, '/camera/camera/depth/color/points', self.cloud_callback, 10)
+        # Subscriber to Odom topic
+        self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/ekf_pose', self.pose_callback, 10)
+        
+        # Publisher to velocity command topic   
+        self.cmd_vel_pub = self.node.create_publisher(Twist, "/cmd_vel", 10)
+        
+        # Call control algorithm
+        self.timer = self.node.create_timer(0.2, self.control)  # ogni 100ms
+
+        # Initialize the transform buffer
+        self.tf_buffer = Buffer()
+
+        # Initialize the transform listener
+        self.tf_listener = TransformListener(self.tf_buffer, self.node)
+
         self.node.get_logger().info("Approaching object...")
      
     def update(self):
+        reset = self.blackboard.get('reset approach')
+        if self.status == pt.common.Status.INVALID or reset:
+            self.reset()
+            return pt.common.Status.RUNNING
+
         # Check if done
         if self.done:
             self.node.get_logger().info("Ready for pickup service!")
-            self.timer.cancel()
             return pt.common.Status.SUCCESS
 
-        # First time ticking update
-        if self.status == pt.common.Status.INVALID:
-            # Publishers
-            qos = QoSProfile(
-                reliability=QoSReliabilityPolicy.RELIABLE, 
-                durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  
-                depth=10
-                ) 
-
-            # Subscriber to the point cloud topic
-            self._sub = self.node.create_subscription(PointCloud2, '/camera/camera/depth/color/points', self.cloud_callback, 10)
-            # Subscriber to Odom topic
-            self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/ekf_pose', self.pose_callback, 10)
-            
-            # Publisher to velocity command topic   
-            self.cmd_vel_pub = self.node.create_publisher(Twist, "/cmd_vel", 10)
-            
-            # Call control algorithm
-            self.timer = self.node.create_timer(0.2, self.control)  # ogni 100ms
-
-            # Initialize the transform buffer
-            self.tf_buffer = Buffer()
-
-            # Initialize the transform listener
-            self.tf_listener = TransformListener(self.tf_buffer, self.node)
         return pt.common.Status.RUNNING
     
     def pose_callback(self, msg : PoseWithCovarianceStamped):
@@ -652,6 +694,9 @@ class Approach_Object(pt.behaviour.Behaviour):
         #     self.node.get_logger().info('No transform found')
 
         #Get position of robot
+
+        if self.done:
+            return
         self.x = msg.pose.pose.position.x
         self.y = msg.pose.pose.position.y
         
@@ -662,7 +707,7 @@ class Approach_Object(pt.behaviour.Behaviour):
             msg.pose.pose.orientation.w
         ]
         angles = euler_from_quaternion(q)
-        self.theta=angles[2]
+        self.theta = angles[2]
                 
     def voxel_grid_filter(self, points, leaf_size=0.05):
         """Downsamples the point cloud using a voxel grid filter."""
@@ -686,7 +731,8 @@ class Approach_Object(pt.behaviour.Behaviour):
         Processes the latest point cloud and stores detected objects.
         Detects objects using DBSCAN clustering, volume and shape detection, and publishes bounding boxes.
         """
-        if self.object_found:
+
+        if self.object_found or self.done:
             return
         # Transformation
         to_frame_rel = 'odom'
@@ -861,6 +907,8 @@ class Approach_Object(pt.behaviour.Behaviour):
         return transform_mat
     
     def control(self):
+        if self.done:
+            return
 
         if not hasattr(self, 'theta') or not hasattr(self, 'x_obj') or not hasattr(self, 'y_obj'):
             return
@@ -988,6 +1036,20 @@ class Approach_Object(pt.behaviour.Behaviour):
         # twist_msg.angular.z = float(w)
         # self.cmd_vel_pub.publish(twist_msg)
 
+    def reset(self):
+        self.x = 0.0
+        self.y = 0.0
+        self.theta = 0.0
+
+        self.x_obj = None
+        self.y_obj = None
+
+        self.distance_to_target = None
+        self.latest_cloud = None
+
+        self.object_found = False
+        self.done = False
+
 
 class Pickup(pt.behaviour.Behaviour):
     def __init__(self,node):
@@ -1103,6 +1165,27 @@ class Detection(pt.behaviour.Behaviour):
     def update(self):
         pass
 
+
+class Check_Map(pt.behaviour.Behaviour):
+    def __init__(self, node):
+        super().__init__("Detection")
+        self.node = node
+        self.blackboard = pt.blackboard.Blackboard()
+
+        self.get_logger().info("Checking if there are objects in the map")
+
+    def update(self):
+        objects = self.blackboard.get('objects')
+
+        obj_counter = 0
+        for obj in objects:
+            if obj[0] != 'B':
+                obj_counter += 1
+
+        if obj_counter > 0:
+            return pt.common.Status.FAILURE
+        else:
+            return pt.common.Status.SUCCESS
 
 def main():
     rclpy.init()
