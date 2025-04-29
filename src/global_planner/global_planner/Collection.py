@@ -319,6 +319,8 @@ class Goto_Target(pt.behaviour.Behaviour):
         self.origin_x = None
         self.origin_y = None
 
+        self.pos = (0.0, 0.0)
+
         self.blackboard.set('reset goto target', False)
 
         self.grid_sub = self.node.create_subscription(OccupancyGrid, '/map', self.grid_callback, 10)
@@ -339,7 +341,6 @@ class Goto_Target(pt.behaviour.Behaviour):
         reset = self.blackboard.get('reset goto target')
         if self.status == pt.common.Status.INVALID or reset:
             self.reset()
-
             self.objects = self.blackboard.get('objects')
         
             # Save targets in list
@@ -382,7 +383,7 @@ class Goto_Target(pt.behaviour.Behaviour):
                     closest_target = target
                     min_dist = ds
             self.target = closest_target
-            
+
             if self.object != 'B':
                 # Remove target from list of objects
                 new_objects = []
@@ -463,14 +464,15 @@ class Goto_Target(pt.behaviour.Behaviour):
         return free_count
 
     def pose_callback(self, msg: PoseWithCovarianceStamped):
+        x, y = msg.pose.pose.position.x, msg.pose.pose.position.y
+        self.pos = (x, y)
+
         if self.done:
             return
         if self.target is None:
             return
         if self.sampled_point:
-            x, y = msg.pose.pose.position.x, msg.pose.pose.position.y
-            self.pos = (x, y)
-
+        
             heading = self.compute_heading(msg.pose.pose.orientation)
             goal_heading = self.sampled_point[2]
 
@@ -618,7 +620,6 @@ class Goto_Target(pt.behaviour.Behaviour):
         self.origin_y = None
 
         self.done = False
-        self.pos = None
         self.blackboard.set('reset goto target', False)
 
 
@@ -666,7 +667,6 @@ class Approach_Object(pt.behaviour.Behaviour):
 
         # Check if done
         if self.done:
-            self.node.get_logger().info("Ready for pickup service!")
             return pt.common.Status.SUCCESS
 
         return pt.common.Status.RUNNING
@@ -943,7 +943,9 @@ class Approach_Object(pt.behaviour.Behaviour):
         if self.distance_to_target is not None and self.distance_to_target < 0.20: # ----------------------------------------- 
             twist_msg = Twist()
             self.cmd_vel_pub.publish(twist_msg)
-            self.done = True    
+            self.done = True   
+            self.node.get_logger().info("Approach Object Node: Completed. Ready for pick up!")
+ 
         else:
             # Calculate the steering angle to the target point
             steering_angle = self.calculate_steering_angle((self.x, self.y), self.theta, (self.x_obj, self.y_obj))
