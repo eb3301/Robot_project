@@ -56,8 +56,9 @@ class BehaviourTree(Node):
             '3' -- Plushie
             'B' -- Box        
             '''
-        goto_target = Goto_Target(self, 'object')
+        goto_target = Goto_Target(self, 'B')
         approach_object = Approach_Object(self)
+        goto_box = Goto_Target(self, 'B')
 
         # drive_to_obj_1 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this to obj
         # drive_to_obj_2 = Drive_to_Obj(self) # Plan and execute path to coordinates ### this one to box?
@@ -76,7 +77,7 @@ class BehaviourTree(Node):
         # create_ws, load_map, goto_target, create_ws, load_map, goto_target, 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = bool,
-                                          children = [create_ws, load_map, goto_target, approach_object, pickup]
+                                          children = [create_ws, load_map, goto_target, approach_object, goto_box]
                                           )
 
         self.BT = pt.trees.BehaviourTree(root = test_seq)
@@ -171,7 +172,6 @@ class Create_ws(pt.behaviour.Behaviour):
         print("Published workspace marker from file")
 
 
-
 class Load_Map(pt.behaviour.Behaviour):
     '''Load in the map file'''
     def __init__(self, node):
@@ -182,7 +182,7 @@ class Load_Map(pt.behaviour.Behaviour):
         qos = QoSProfile(
                         reliability=QoSReliabilityPolicy.RELIABLE,  # Ensures message delivery
                         durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  # Keeps the last message for new subscribers
-                        depth=10  # Stores up to 10 messages in queue
+                        depth=20  # Stores up to 10 messages in queue
                         )
 
         self.marker_pub = self.node.create_publisher(Marker, '/object_markers', qos)
@@ -236,36 +236,54 @@ class Load_Map(pt.behaviour.Behaviour):
             marker.pose.orientation.z = q[2]
             marker.pose.orientation.w = q[3]
 
-            # Marker Colour
-            marker.color.a = 1.0  # Alpha
-            marker.color.r = 1.0  # Red
-            marker.color.g = 0.0
-            marker.color.b = 0.0
-
             # Scale marker size
             marker.scale.x = 0.1
             marker.scale.y = 0.1
             marker.scale.z = 0.1
 
             if object[0] == '1': # Cube
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 1.0  # Red
+                marker.color.g = 0.0
+                marker.color.b = 0.0
+
                 marker.type = marker.CUBE
                 marker.scale.x = 0.1
                 marker.scale.y = 0.11
                 marker.scale.z = 0.1
 
             elif object[0] == '2': # Sphere
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 0.2  # Puprle
+                marker.color.g = 0.2
+                marker.color.b = 0.8
+
                 marker.type = marker.SPHERE
                 marker.scale.x = 0.1
                 marker.scale.y = 0.1
                 marker.scale.z = 0.1
 
             elif object[0] == '3': # Plushie
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 0.0  # Green
+                marker.color.g = 1.0
+                marker.color.b = 0.0
+
                 marker.type = marker.CYLINDER
                 marker.scale.x = 0.1
                 marker.scale.y = 0.1
                 marker.scale.z = 0.2
 
             elif object[0] == 'B': # Box
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 1.0  # Black
+                marker.color.g = 1.0
+                marker.color.b = 1.0
+
                 marker.type = marker.CUBE
                 marker.scale.x = 0.3
                 marker.scale.y = 0.15
@@ -317,10 +335,9 @@ class Goto_Target(pt.behaviour.Behaviour):
             if self.object == 'object': # Any object (not box)
                 self.targets = [obj for obj in self.objects if obj[0] != 'B']
             else:    
-                self.targets = [obj for obj in self.objects if self.target in obj[0]]
+                self.targets = [obj for obj in self.objects if obj[0] == self.object]
             #self.visualise_grid_and_targets()
-            print(f"Retriving Target")
-            return pt.common.Status.RUNNING
+                return pt.common.Status.RUNNING
 
         if self.grid is None:
             self.node.get_logger().info("No grid recieved")
@@ -334,10 +351,12 @@ class Goto_Target(pt.behaviour.Behaviour):
             else:
                 self.node.get_logger().info("Rotating...")
                 return pt.common.Status.RUNNING
-
+            
         if not self.sampled_point:
             # TODO: Pick target out of list
             self.target = self.targets[5]
+            if self.object == 'B':
+                self.target = self.targets[0]
 
             # list of tuples (grid_x, grid_y) on a circle around target
             candidates = self.candidate_points(self.target) 
@@ -360,12 +379,12 @@ class Goto_Target(pt.behaviour.Behaviour):
                     best_candidate = point
             x = (best_candidate[0] * self.resolution) + self.origin_x    
             y = (best_candidate[1] * self.resolution) + self.origin_y
-            z = np.arctan2(t_y - y, t_x - x)  
+            z = np.arctan2(self.target[2] - y, self.target[1] - x)  
     
             self.sampled_point = (x, y, z)
             self.pub_goal_marker()
 
-            #self.visualise_grid_and_targets()
+            # self.visualise_grid_and_targets()
             
         return pt.common.Status.RUNNING
 
@@ -380,7 +399,7 @@ class Goto_Target(pt.behaviour.Behaviour):
         # 2D np.array(). Unknown space = -1, free space  = 0, occupied = 100
         self.grid = data.reshape((height, width))  
 
-    def candidate_points(self, target, distance = 0.40, angle_step = 15):
+    def candidate_points(self, target, distance = 0.50, angle_step = 15):
         '''Sample points on a circle with X cells radius around the target'''
         x0, y0 = target[1], target[2]
         self.candidates = []
@@ -421,13 +440,14 @@ class Goto_Target(pt.behaviour.Behaviour):
             if not self.arrived:
                 dx, dy = np.abs(self.sampled_point[0] - x), np.abs(self.sampled_point[1] - y)
                 dist = np.linalg.norm(np.array([dx, dy]))
-                if dist < 0.15:
+                if dist < 0.1:
                     self.node.get_logger().info('Arrived at target!')    
                     self.arrived = True
             else:   
                 if not self.rotated:
                     # Rotate 
                     d_z = goal_heading - heading
+                    # self.node.get_logger().info(f'Dz = {d_z}')    
                     if np.abs(d_z) > np.deg2rad(5):
                         # Maximum velocities
                         wheel_radius = 0.046 # 0.04915
@@ -435,8 +455,8 @@ class Goto_Target(pt.behaviour.Behaviour):
                         max_factor = 1 / 6
                         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
                         twist_msg = Twist()
-                        twist_msg.angular.z = np.pi / 4 * max_rot
-                        self.node.get_logger().info(f"Sending twist msg {np.pi/2} rad/s")
+                        twist_msg.angular.z = d_z / np.abs(d_z) * np.pi / 2 * max_rot
+                        # self.node.get_logger().info(f"Sending twist msg {d_z} rad/s")
                         twist_msg._linear.z = max_factor
                         self.cmd_vel_pub.publish(twist_msg)
                     else: 
@@ -481,7 +501,7 @@ class Goto_Target(pt.behaviour.Behaviour):
         marker.color.r = 1.0  # Red
         marker.color.g = 0.0
         marker.color.b = 0.0
-        #print('Published goal marker')
+        self.node.get_logger().info(f"Publishing goal marker!!!")
         self.waypoint_pub.publish(marker)
     
     def visualise_grid_and_targets(self):
@@ -545,7 +565,6 @@ class Goto_Target(pt.behaviour.Behaviour):
         plt.show()
 
 
-
 class Approach_Object(pt.behaviour.Behaviour):
     def __init__(self, node):
         super().__init__('Approaching Object')
@@ -556,9 +575,18 @@ class Approach_Object(pt.behaviour.Behaviour):
         self.y = 0
         self.distance_to_target = None
 
+        self.object_found = False
+        self.done = False
+
         self.node.get_logger().info("Approaching object...")
      
     def update(self):
+        # Check if done
+        if self.done:
+            self.node.get_logger().info("Ready for pickup service!")
+            self.timer.cancel()
+            return pt.common.Status.SUCCESS
+
         # First time ticking update
         if self.status == pt.common.Status.INVALID:
             # Publishers
@@ -573,11 +601,11 @@ class Approach_Object(pt.behaviour.Behaviour):
             # Subscriber to Odom topic
             self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/ekf_pose', self.pose_callback, 10)
             
-            # Publisher to velocity command topic
+            # Publisher to velocity command topic   
             self.cmd_vel_pub = self.node.create_publisher(Twist, "/cmd_vel", 10)
             
             # Call control algorithm
-            self.node.create_timer(0.2, self.control)  # ogni 100ms
+            self.timer = self.node.create_timer(0.2, self.control)  # ogni 100ms
 
             # Initialize the transform buffer
             self.tf_buffer = Buffer()
@@ -588,40 +616,53 @@ class Approach_Object(pt.behaviour.Behaviour):
     
     def pose_callback(self, msg : PoseWithCovarianceStamped):
         # Init transform
-        to_frame_rel = 'map'
-        from_frame_rel = 'odom'
-        time = rclpy.time.Time().from_msg(msg.header.stamp)
+        # to_frame_rel = 'base_link'
+        # from_frame_rel = 'odom'
+        # time = rclpy.time.Time().from_msg(msg.header.stamp)
 
-        # Wait for the transform asynchronously
-        tf_future = self.tf_buffer.wait_for_transform_async(
-        target_frame=to_frame_rel,
-        source_frame=from_frame_rel,
-        time=time
-        )
-        rclpy.spin_until_future_complete(self.node, tf_future, timeout_sec=1)
+        # # Wait for the transform asynchronously
+        # tf_future = self.tf_buffer.wait_for_transform_async(
+        # target_frame=to_frame_rel,
+        # source_frame=from_frame_rel,
+        # time=time
+        # )
+        # rclpy.spin_until_future_complete(self.node, tf_future, timeout_sec=1)
 
-        # Lookup tansform
-        try:
-            t = self.tf_buffer.lookup_transform(to_frame_rel,
-                                            from_frame_rel,
-                                            time)
-            # Do the transform
-            map_pose = tf2_geometry_msgs.do_transform_pose(msg.pose.pose, t)
+        # # Lookup tansform
+        # try:
+        #     t = self.tf_buffer.lookup_transform(to_frame_rel,
+        #                                     from_frame_rel,
+        #                                     time)
+        #     # Do the transform
+        #     map_pose = tf2_geometry_msgs.do_transform_pose(msg.pose.pose, t)
 
-            # Get position of robot
-            self.x = map_pose.position.x
-            self.y = map_pose.position.y
+        #     # Get position of robot
+        #     self.x = map_pose.position.x
+        #     self.y = map_pose.position.y
             
-            q = [
-                map_pose.orientation.x,
-                map_pose.orientation.y,
-                map_pose.orientation.z,
-                map_pose.orientation.w
-            ]
-            angles = euler_from_quaternion(q)
-            self.theta=angles[2]
-        except TransformException:
-            self.node.get_logger().info('No transform found')
+        #     q = [
+        #         map_pose.orientation.x,
+        #         map_pose.orientation.y,
+        #         map_pose.orientation.z,
+        #         map_pose.orientation.w
+        #     ]
+        #     angles = euler_from_quaternion(q)
+        #     self.theta=angles[2]
+        # except TransformException:
+        #     self.node.get_logger().info('No transform found')
+
+        #Get position of robot
+        self.x = msg.pose.pose.position.x
+        self.y = msg.pose.pose.position.y
+        
+        q = [
+            msg.pose.pose.orientation.x,
+            msg.pose.pose.orientation.y,
+            msg.pose.pose.orientation.z,
+            msg.pose.pose.orientation.w
+        ]
+        angles = euler_from_quaternion(q)
+        self.theta=angles[2]
                 
     def voxel_grid_filter(self, points, leaf_size=0.05):
         """Downsamples the point cloud using a voxel grid filter."""
@@ -645,9 +686,10 @@ class Approach_Object(pt.behaviour.Behaviour):
         Processes the latest point cloud and stores detected objects.
         Detects objects using DBSCAN clustering, volume and shape detection, and publishes bounding boxes.
         """
-        
+        if self.object_found:
+            return
         # Transformation
-        to_frame_rel = 'map'
+        to_frame_rel = 'odom'
         from_frame_rel = msg.header.frame_id
 
         time = rclpy.time.Time().from_msg(msg.header.stamp)
@@ -797,6 +839,7 @@ class Approach_Object(pt.behaviour.Behaviour):
 
                 updated_target = True
                 self.node.get_logger().info("object found")
+                self.object_found = True
 
             except TransformException as ex:
                 self.node.get_logger().warn(f"Trasformazione bbox fallita: {ex}")
@@ -825,74 +868,125 @@ class Approach_Object(pt.behaviour.Behaviour):
         x = self.x_obj - self.x
         y = self.y_obj - self.y
 
-        self.desired_angle = math.atan2(y, x)
         self.distance_to_target = math.sqrt(x**2 + y**2)
-        
-        # angular_error = math.atan2(math.sin(self.theta - self.desired_angle),
-                        #    math.cos(self.theta - self.desired_angle))
 
-        angular_error=self.theta - self.desired_angle
-        
-        angular_threshold=math.radians(15)
-        
-
-        #self.node.get_logger().info(f'ang err: {np.rad2deg(angular_error)}, theta: {np.rad2deg(self.theta)}, des ang: {np.rad2deg(self.desired_angle)}')
- 
         wheel_radius = 0.046 # 0.04915
         base = 0.3 # 0.30
         max_factor = 1 / 6
 
         max_vel = wheel_radius * max_factor # m/s
         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
-
-        kw=-0.02 
-        kv=0.5
-
-        v=0
-        w=0
         self.node.get_logger().info(f'Distance to target: {self.distance_to_target}')
+        if self.distance_to_target is not None and self.distance_to_target < 0.20: # ----------------------------------------- 
+            twist_msg = Twist()
+            self.cmd_vel_pub.publish(twist_msg)
+            self.done = True    
+        else:
+            # Calculate the steering angle to the target point
+            steering_angle = self.calculate_steering_angle((self.x, self.y), self.theta, (self.x_obj, self.y_obj))
+            
+            # Calculate linear velocity
+            linear_velocity = (1 - abs(steering_angle) / (np.pi / 2)) * max_vel
 
-        if self.distance_to_target is not None and self.distance_to_target < 0.25:
-            v = 0.0
-            w = 0.0
-            self.node.get_logger().info('Arrived at target.')
+            # Calculate the angular velocity
+            angular_velocity = steering_angle * max_rot
 
             # Create a ROS Twist message
             twist_msg = Twist()
-            twist_msg.linear.x = float(v)
-            twist_msg.linear.y = 0.0
-            twist_msg.linear.z = float(max_factor)
-            twist_msg.angular.x = 0.0
-            twist_msg.angular.y = 0.0
-            twist_msg.angular.z = float(w)
+
+            twist_msg.linear.x = linear_velocity
+            twist_msg.linear.z = max_factor
+            twist_msg.angular.z = angular_velocity
+
             self.cmd_vel_pub.publish(twist_msg)
 
-            a = str('1') - 1
-            return pt.common.Status.SUCCESS
-        # elif abs(angular_error) > angular_threshold:
-        #     w=kw*angular_error
-        #     v=0
-        # else:
-        #     w=0 #-kw*angular_error*max_rot
-        #     v=kv*max_vel
+    def calculate_steering_angle(self, current_position, current_heading, target_point):
+        # Vector from current position to target point
+        vector_to_target = target_point - np.array(current_position)
 
-        w=kw*angular_error
-        v=kv*max_vel
+        # Calculate the angle to the target point
+        angle_to_target = np.arctan2(vector_to_target[1], vector_to_target[0])
 
-        w=max(min(w,max_rot),-max_rot)
-        v=max(min(v,max_vel),-max_vel)
+        # Steering angle is the difference between the vehicle's heading and the angle to the target
+        steering_angle = angle_to_target - current_heading
 
-        # Create a ROS Twist message
-        twist_msg = Twist()
-        twist_msg.linear.x = float(v)
-        twist_msg.linear.y = 0.0
-        twist_msg.linear.z = float(max_factor)
-        twist_msg.angular.x = 0.0
-        twist_msg.angular.y = 0.0
-        twist_msg.angular.z = float(w)
-        self.cmd_vel_pub.publish(twist_msg)
-        
+        # Normalize the steering angle to be in the range of -pi to pi
+        steering_angle = (steering_angle + np.pi) % (2 * np.pi) - np.pi
 
+        # Constrain the steering angle to be within the range of -pi/2 to pi/2 to not drive backwards
+        if steering_angle > np.pi / 2:
+            steering_angle = np.pi / 2
+        elif steering_angle < -np.pi / 2:
+            steering_angle = -np.pi / 2
+        # Constrain the steering angle to not turn as much
+        elif np.pi / 4 < steering_angle <= np.pi / 2:
+            steering_angle = np.pi / 2
+        elif -np.pi / 2 <= steering_angle < -np.pi / 4:
+            steering_angle = -np.pi / 2
+
+        return steering_angle
+
+        # x = self.x_obj - self.x
+        # y = self.y_obj - self.y
+
+        # self.desired_angle = math.atan2(y, x)
+        # self.distance_to_target = math.sqrt(x**2 + y**2)
+
+        # angular_error = self.theta - self.desired_angle       
+ 
+        # wheel_radius = 0.046 # 0.04915
+        # base = 0.3 # 0.30
+        # max_factor = 1 / 6
+
+        # max_vel = wheel_radius * max_factor # m/s
+        # max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
+
+        # kw = -0.02 
+        # kv = 0.5
+
+        # v = 0
+        # w = 0
+        # self.node.get_logger().info(f'Distance to target: {self.distance_to_target}')
+
+        # if self.distance_to_target is not None and self.distance_to_target < 0.25:
+        #     v = 0.0
+        #     w = 0.0
+        #     self.node.get_logger().info('Arrived at target.')
+
+        #     # Create a ROS Twist message
+        #     twist_msg = Twist()
+        #     twist_msg.linear.x = float(v)
+        #     twist_msg.linear.y = 0.0
+        #     twist_msg.linear.z = float(max_factor)
+        #     twist_msg.angular.x = 0.0
+        #     twist_msg.angular.y = 0.0
+        #     twist_msg.angular.z = float(w)
+        #     self.cmd_vel_pub.publish(twist_msg)
+
+        #     a = str('1') - 1
+        #     return pt.common.Status.SUCCESS
+        # # elif abs(angular_error) > angular_threshold:
+        # #     w=kw*angular_error
+        # #     v=0
+        # # else:
+        # #     w=0 #-kw*angular_error*max_rot
+        # #     v=kv*max_vel
+
+        # w=kw*angular_error
+        # v=kv*max_vel
+
+        # w=max(min(w,max_rot),-max_rot)
+        # v=max(min(v,max_vel),-max_vel)
+
+        # # Create a ROS Twist message
+        # twist_msg = Twist()
+        # twist_msg.linear.x = float(v)
+        # twist_msg.linear.y = 0.0
+        # twist_msg.linear.z = float(max_factor)
+        # twist_msg.angular.x = 0.0
+        # twist_msg.angular.y = 0.0
+        # twist_msg.angular.z = float(w)
+        # self.cmd_vel_pub.publish(twist_msg)
 
 
 class Pickup(pt.behaviour.Behaviour):
@@ -915,6 +1009,7 @@ class Pickup(pt.behaviour.Behaviour):
         self.progress = 0
 
     def update(self):
+
         if self.progress == 0:
             obj_class = self.blackboard.get('Target_type')
             
@@ -993,14 +1088,14 @@ class Pickup(pt.behaviour.Behaviour):
     def pickup(self,obj='1'): # cube
         response = self.send_request(2,obj)
         self.node.get_logger().info('Response from arm is: ' + str(response.success))
-        
-    
+           
 
 class Place(pt.behaviour.Behaviour):
     def __init__(self):
         super().__init__("Pickup")
     def update(self):
         pass
+
 
 class Detection(pt.behaviour.Behaviour):
     def __init__(self):

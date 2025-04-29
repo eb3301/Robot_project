@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /MarkerArray1/Topic1
+        - /Marker2/Topic1
       Splitter Ratio: 0.5
     Tree Height: 550
   - Class: rviz_common/Selection
@@ -136,7 +137,7 @@ Visualization Manager:
       Enabled: true
       Name: Marker
       Namespaces:
-        {}
+        Target_Marker: true
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -163,7 +164,7 @@ Visualization Manager:
       Namespaces:
         {}
       Topic:
-        Depth: 5
+        Depth: 20
         Durability Policy: Volatile
         Filter size: 10
         History Policy: Keep Last
