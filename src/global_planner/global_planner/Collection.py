@@ -58,7 +58,7 @@ class BehaviourTree(Node):
             '3' -- Plushie
             'B' -- Box        
             '''
-        goto_target = Goto_Target(self, 'B')
+        goto_target = Goto_Target(self, 'object')
         approach_object = Approach_Object(self)
         goto_box = Goto_Target(self, 'B')
 
@@ -319,6 +319,8 @@ class Goto_Target(pt.behaviour.Behaviour):
         self.origin_x = None
         self.origin_y = None
 
+        self.blackboard.set('reset goto target', False)
+
         self.grid_sub = self.node.create_subscription(OccupancyGrid, '/map', self.grid_callback, 10)
         self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/map_pose', self.pose_callback, 10)
         qos = QoSProfile(
@@ -336,7 +338,6 @@ class Goto_Target(pt.behaviour.Behaviour):
 
         reset = self.blackboard.get('reset goto target')
         if self.status == pt.common.Status.INVALID or reset:
-            self.blackboard.set('reset goto target', False)
             self.reset()
 
             self.objects = self.blackboard.get('objects')
@@ -346,7 +347,7 @@ class Goto_Target(pt.behaviour.Behaviour):
                 self.targets = [obj for obj in self.objects if obj[0] != 'B']
             else:    
                 self.targets = [obj for obj in self.objects if obj[0] == self.object]
-            self.sample_point()
+            
             return pt.common.Status.RUNNING
 
         if self.done:
@@ -361,20 +362,27 @@ class Goto_Target(pt.behaviour.Behaviour):
             if self.rotated:
                 self.blackboard.set('reset approach', True)
                 self.done = True
+                self.node.get_logger().info("Go To Target behavior done. Continuing...")
                 return pt.common.Status.SUCCESS
             else:
                 self.node.get_logger().info("Rotating...")
                 return pt.common.Status.RUNNING
-        
+
+        self.sample_point()
         return pt.common.Status.RUNNING
 
     def sample_point(self):
-        if not self.sampled_point:
-            # TODO: Pick target out of list
-            self.target = self.targets[5]
-            if self.object == 'B':
-                self.target = self.targets[0]
-
+        if not self.sampled_point and self.pos:
+            # Pick target out of list
+            closest_target = None
+            min_dist = np.inf
+            for target in self.targets:
+                ds = np.sqrt((target[1] - self.pos[0])**2 + (target[2] - self.pos[1])**2)
+                if ds < min_dist:
+                    closest_target = target
+                    min_dist = ds
+            self.target = closest_target
+            
             if self.object != 'B':
                 # Remove target from list of objects
                 new_objects = []
@@ -409,6 +417,7 @@ class Goto_Target(pt.behaviour.Behaviour):
             self.sampled_point = (x, y, z)
             self.pub_goal_marker()
 
+            self.node.get_logger().info("Go To Target: Sampled Point")
             # self.visualise_grid_and_targets()
 
     def grid_callback(self, msg: OccupancyGrid):
@@ -457,11 +466,11 @@ class Goto_Target(pt.behaviour.Behaviour):
         if self.done:
             return
         if self.target is None:
-            self.node.get_logger().info("No target...")
             return
         if self.sampled_point:
             x, y = msg.pose.pose.position.x, msg.pose.pose.position.y
-            
+            self.pos = (x, y)
+
             heading = self.compute_heading(msg.pose.pose.orientation)
             goal_heading = self.sampled_point[2]
 
@@ -609,6 +618,8 @@ class Goto_Target(pt.behaviour.Behaviour):
         self.origin_y = None
 
         self.done = False
+        self.pos = None
+        self.blackboard.set('reset goto target', False)
 
 
 class Approach_Object(pt.behaviour.Behaviour):
@@ -622,7 +633,10 @@ class Approach_Object(pt.behaviour.Behaviour):
         self.distance_to_target = None
 
         self.object_found = False
-        self.done = False
+        self.done = True
+
+        self.blackboard = pt.blackboard.Blackboard()
+        self.blackboard.set('reset approach', False)
 
         # Subscriber to the point cloud topic
         self._sub = self.node.create_subscription(PointCloud2, '/camera/camera/depth/color/points', self.cloud_callback, 10)
@@ -647,6 +661,7 @@ class Approach_Object(pt.behaviour.Behaviour):
         reset = self.blackboard.get('reset approach')
         if self.status == pt.common.Status.INVALID or reset:
             self.reset()
+            self.node.get_logger().info("Running Approach Object Node")
             return pt.common.Status.RUNNING
 
         # Check if done
@@ -907,10 +922,10 @@ class Approach_Object(pt.behaviour.Behaviour):
         return transform_mat
     
     def control(self):
-        if self.done:
+        if self.done:   
             return
 
-        if not hasattr(self, 'theta') or not hasattr(self, 'x_obj') or not hasattr(self, 'y_obj'):
+        if self.theta is None or self.x_obj is None or self.y_obj is None:
             return
 
         x = self.x_obj - self.x
@@ -1050,6 +1065,8 @@ class Approach_Object(pt.behaviour.Behaviour):
         self.object_found = False
         self.done = False
 
+        self.blackboard.set('reset approach', False)
+
 
 class Pickup(pt.behaviour.Behaviour):
     def __init__(self,node):
@@ -1070,7 +1087,13 @@ class Pickup(pt.behaviour.Behaviour):
         self.sent_grab = False
         self.progress = 0
 
+        self.test = True
+
     def update(self):
+        if self.test:
+            self.test = False
+            self.blackboard.set('reset goto target', True)
+        return pt.common.Status.RUNNING
 
         if self.progress == 0:
             obj_class = self.blackboard.get('Target_type')
@@ -1172,7 +1195,7 @@ class Check_Map(pt.behaviour.Behaviour):
         self.node = node
         self.blackboard = pt.blackboard.Blackboard()
 
-        self.get_logger().info("Checking if there are objects in the map")
+        self.node.get_logger().info("Checking if there are objects in the map")
 
     def update(self):
         objects = self.blackboard.get('objects')
