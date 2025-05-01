@@ -122,67 +122,69 @@ class OccupancyGridPublisher(Node):
             # Process the detected objects from the response
             if response.object_types:
                 self.detected_objects = list(zip(response.object_types, response.object_positions))
-                # self.get_logger().info(f"Detected {len(self.detected_objects)} objects.")
 
-                # Publish objects
-                self.publish_objects(self.detected_objects)
+                if self.detected_objects[0] != 'trash':
+                    # self.get_logger().info(f"Detected {len(self.detected_objects)} objects.")
 
-                # Save to map file
-                with open("Generated_map.tsv", "w") as file:
-                    for obj_type, pos in self.detected_objects:
-                        x, y, z = float(pos.x), float(pos.y), float(pos.z)
-                        file.write(f"{obj_type} \t {x:.2f} \t {y:.2f} \t {z:.2f}" + "\n")
-                
+                    # Publish objects
+                    self.publish_objects(self.detected_objects)
 
-                # Convert flat map to 2D grid for easier manipulation
-                grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
+                    # Save to map file
+                    with open("Generated_map.tsv", "w") as file:  # filter on trash?
+                        for obj_type, pos in self.detected_objects:
+                            x, y, z = float(pos.x), float(pos.y), float(pos.z)
+                            file.write(f"{obj_type} \t {x:.2f} \t {y:.2f} \t {z:.2f}" + "\n")
+                    
 
-                # Parameters
-                inflation_radius = object_inflation_radius  # Solid border thickness in cells
-                gradient_radius = inflation_radius + 6       # Gradient fade-out radius
+                    # Convert flat map to 2D grid for easier manipulation
+                    grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
 
-                for obj_type, obj_position in self.detected_objects:
-                    object_x = obj_position.x
-                    object_y = obj_position.y
+                    # Parameters
+                    inflation_radius = object_inflation_radius  # Solid border thickness in cells
+                    gradient_radius = inflation_radius + 6       # Gradient fade-out radius
 
-                    gx = int((object_x - self.origin_x) / self.resolution)
-                    gy = int((object_y - self.origin_y) / self.resolution)
+                    for obj_type, obj_position in self.detected_objects:
+                        object_x = obj_position.x
+                        object_y = obj_position.y
 
-                    if 0 <= gx < self.grid_size_x and 0 <= gy < self.grid_size_y:
-                        # Mark the object cell as occupied
-                        grid[gy, gx] = obstacle_value
+                        gx = int((object_x - self.origin_x) / self.resolution)
+                        gy = int((object_y - self.origin_y) / self.resolution)
 
-                        # Inflate border with gradient
-                        for dx in range(-gradient_radius, gradient_radius + 1):
-                            for dy in range(-gradient_radius, gradient_radius + 1):
-                                nx = gx + dx
-                                ny = gy + dy
+                        if 0 <= gx < self.grid_size_x and 0 <= gy < self.grid_size_y:
+                            # Mark the object cell as occupied
+                            grid[gy, gx] = obstacle_value
 
-                                if 0 <= nx < self.grid_size_x and 0 <= ny < self.grid_size_y:
-                                    distance_sq = dx**2 + dy**2
-                                    distance = np.sqrt(distance_sq)
+                            # Inflate border with gradient
+                            for dx in range(-gradient_radius, gradient_radius + 1):
+                                for dy in range(-gradient_radius, gradient_radius + 1):
+                                    nx = gx + dx
+                                    ny = gy + dy
 
-                                    if distance <= gradient_radius:
-                                        if distance <= inflation_radius:
-                                            # Solid inflation
-                                            if grid[ny, nx] != obstacle_value:
-                                                grid[ny, nx] = border_value
-                                        else:
-                                            # Gradient inflation
-                                            decay = 1 - ((distance - inflation_radius) / (gradient_radius - inflation_radius))
-                                            value = int(border_value * decay)
-                                            if grid[ny, nx] < value:
-                                                grid[ny, nx] = value  # Only update if value is stronger
+                                    if 0 <= nx < self.grid_size_x and 0 <= ny < self.grid_size_y:
+                                        distance_sq = dx**2 + dy**2
+                                        distance = np.sqrt(distance_sq)
 
-                        # self.get_logger().info(f"Object {obj_type} placed at grid cell ({gx}, {gy})")
+                                        if distance <= gradient_radius:
+                                            if distance <= inflation_radius:
+                                                # Solid inflation
+                                                if grid[ny, nx] != obstacle_value:
+                                                    grid[ny, nx] = border_value
+                                            else:
+                                                # Gradient inflation
+                                                decay = 1 - ((distance - inflation_radius) / (gradient_radius - inflation_radius))
+                                                value = int(border_value * decay)
+                                                if grid[ny, nx] < value:
+                                                    grid[ny, nx] = value  # Only update if value is stronger
 
-                # Update the flattened map data
-                self.map_data = grid.flatten().tolist()
+                            # self.get_logger().info(f"Object {obj_type} placed at grid cell ({gx}, {gy})")
 
-                # self.get_detected_objects_info()
+                    # Update the flattened map data
+                    self.map_data = grid.flatten().tolist()
 
-            # else:
-            #     self.get_logger().warn("No objects detected.")
+                    # self.get_detected_objects_info()
+
+                # else:
+                #     self.get_logger().warn("No objects detected.")
 
         except Exception as e:
             self.get_logger().error(f"Service call failed: {e}")
@@ -260,40 +262,85 @@ class OccupancyGridPublisher(Node):
 
         return grid.flatten().tolist()
 
-    def lidar_callback(self, msg):
+    def lidar_callback(self, msg: PointCloud2):
         """ Process LiDAR scan and update the occupancy grid """
+
+        # Transformation
+        to_frame_rel = 'map'
+        from_frame_rel = msg.header.frame_id
+
+        time = rclpy.time.Time().from_msg(msg.header.stamp)
+
+        tf_future = self.tf_buffer.wait_for_transform_async(
+            target_frame=to_frame_rel,
+            source_frame=from_frame_rel,
+            time=time
+        )
+
+        rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
+
         try:
-            # Transform PointCloud2 to the map frame
-            transform = self.tf_buffer.lookup_transform('map', msg.header.frame_id, rclpy.time.Time())
-            cloud_transformed = do_transform_cloud(msg, transform)
+            transform = self.tf_buffer.lookup_transform(
+                to_frame_rel,
+                from_frame_rel,
+                time)
+        except Exception as ex:
+            self.get_logger().info(
+                f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
+            return
+        
+        # Transform PointCloud2 to the map frame
+        cloud_transformed = do_transform_cloud(msg, transform)
 
-            # Get the robot's position in the map frame
-            robot_transform = self.tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time())
-            robot_x = robot_transform.transform.translation.x
-            robot_y = robot_transform.transform.translation.y
-                
-            # Convert PointCloud2 to numpy array
-            points = np.array(list(pc2.read_points(cloud_transformed, field_names=("x", "y"), skip_nans=True)))
+        # Get the robot's position in the map frame
+        # Transformation
+        to_frame_rel = 'map'
+        from_frame_rel = 'base_link'
 
-            # Distance thresholding relative to the robot's position
-            min_distance = 0.4 # Minimum distance, 0.35 enough to remove the arm from the lidar
-            max_distance = 2.5  # Maximum distance (e.g., 10 meters)
+        time = rclpy.time.Time().from_msg(msg.header.stamp)
 
-            # Filter points based on distance threshold relative to the robot
-            filtered_points = []
-            for point in points:
-                # Calculate distance from the robot (in the map frame)
-                distance = np.sqrt((point[0] - robot_x)**2 + (point[1] - robot_y)**2)
+        tf_future = self.tf_buffer.wait_for_transform_async(
+            target_frame=to_frame_rel,
+            source_frame=from_frame_rel,
+            time=time
+        )
 
-                # Apply the distance thresholding (ignore points too close or too far from the robot)
-                if min_distance <= distance <= max_distance:
-                    filtered_points.append(point)
+        rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
 
-            # Update the occupancy grid with filtered points
-            self.update_occupancy_grid(filtered_points)
+        try:
+            robot_transform = self.tf_buffer.lookup_transform(
+                to_frame_rel,
+                from_frame_rel,
+                time)
+        except Exception as ex:
+            self.get_logger().info(
+                f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
+            return
+        
+        robot_x = robot_transform.transform.translation.x
+        robot_y = robot_transform.transform.translation.y
+            
+        # Convert PointCloud2 to numpy array
+        points = np.array(list(pc2.read_points(cloud_transformed, field_names=("x", "y"), skip_nans=True)))
 
-        except Exception as e:
-            self.get_logger().warn(f"Transform failed: {e}")
+        # Distance thresholding relative to the robot's position
+        min_distance = 0.4 # Minimum distance, 0.35 enough to remove the arm from the lidar
+        max_distance = 2.5  # Maximum distance (e.g., 10 meters)
+
+        # Filter points based on distance threshold relative to the robot
+        filtered_points = []
+        for point in points:
+            # Calculate distance from the robot (in the map frame)
+            distance = np.sqrt((point[0] - robot_x)**2 + (point[1] - robot_y)**2)
+
+            # Apply the distance thresholding (ignore points too close or too far from the robot)
+            if min_distance <= distance <= max_distance:
+                filtered_points.append(point)
+
+        # Update the occupancy grid with filtered points
+        self.update_occupancy_grid(filtered_points)
+
+       
 
     def update_occupancy_grid(self, points, inflation_radius=INFLATION_RADIUS, obstacle_value=OBSTACLE_VALUE, inflation_value=INFLATION_VALUE):
         # Mark free space and obstacles in the occupancy grid
@@ -493,6 +540,8 @@ class OccupancyGridPublisher(Node):
                 marker.scale.x = 0.3
                 marker.scale.y = 0.15
                 marker.scale.z = 0.1
+            else:
+                return
             self.objects_pub.publish(marker)
             #claerprint(f'Publishing marker ID: {marker.id} at x={marker.pose.position.x}, y={marker.pose.position.y}')
 

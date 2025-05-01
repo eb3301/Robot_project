@@ -211,6 +211,7 @@ class Load_Map(pt.behaviour.Behaviour):
                 obj_tuple = (str(obj[0]), float(obj[1])/100, float(obj[2])/100, float(obj[3]))
                 objects.append(obj_tuple)
         self.blackboard.set('objects', objects)
+        self.blackboard.set('Target_type', objects[0])
         self.publish_objects(objects)
 
         return pt.common.Status.SUCCESS
@@ -1092,10 +1093,10 @@ class Pickup(pt.behaviour.Behaviour):
         self.test = True
 
     def update(self):
-        if self.test:
-            self.test = False
-            self.blackboard.set('reset goto target', True)
-        return pt.common.Status.RUNNING
+        # if self.test:
+        #     self.test = False
+        #     self.blackboard.set('reset goto target', True)
+        # return pt.common.Status.RUNNING
 
         if self.progress == 0:
             obj_class = self.blackboard.get('Target_type')
@@ -1108,7 +1109,7 @@ class Pickup(pt.behaviour.Behaviour):
         elif self.progress == 1: # Here the robot will look and return if it sees
             print("6")
             if not self.sent_look:
-                self.look_response = self.cli.send_request(2,[],[]) 
+                self.look_response = self.cli.send_request(2,[],[]) # do we need obj class as well? 
                 self.sent_look = True
             if self.look_response != None and self.look_response.success:
                 self.progress = 3
@@ -1176,6 +1177,7 @@ class Pickup(pt.behaviour.Behaviour):
         response = self.send_request(2,obj)
         self.node.get_logger().info('Response from arm is: ' + str(response.success))
            
+
 
 class Place(pt.behaviour.Behaviour):
     def __init__(self):
