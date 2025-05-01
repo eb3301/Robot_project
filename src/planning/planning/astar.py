@@ -12,6 +12,7 @@ from nav_msgs.msg import OccupancyGrid, Path
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped, Twist
 
+# Only for test function
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm
 
@@ -60,6 +61,7 @@ class Planner(Node):
     self.planned = False
     self.path = []
 
+
   # Get the most recent map all the time. Also logic for plan and replan
   def map_callback(self, msg : OccupancyGrid):
     if self.goal_received:
@@ -94,37 +96,32 @@ class Planner(Node):
         self.plan_path(map_data, resolution, time)
         self.planned = True
 
+
   # The actual path planning and publishing of the path
   def plan_path(self, map_data, resolution, time):
-    # Check if the current pose is occupierd or not to be able to plan
+    # Check if the current pose is occupierd or not, to be able to plan
     x_index = int((self.x0 - self.origin[0]) / resolution)  
     y_index = int((self.y0 - self.origin[1]) / resolution)
     if map_data[y_index][x_index] >= 80:
-      # self.get_logger().info(f"grid > 80")
+      # Current pose occupied, search for candidates around
       radius = 1  # Start expanding from radius 1
       x0, y0 = None, None
       while x0 is None and y0 is None:
-        # Start checking cells at the current radius level
         for dy in range(-radius, radius + 1):
           for dx in range(-radius, radius + 1):
             if abs(dy) + abs(dx) == radius:
-              # Get the new (y, x) coordinates
               ny, nx = y_index + dy, x_index + dx
-              # self.get_logger().info(f"Grid cell: {map_data[ny][nx]}")
-              # Check the value at the new cell
               if map_data[ny][nx] < 80:
-                # Convert grid index to world coordinates
                 y0 = self.origin[1] + ny * resolution
                 x0 = self.origin[0] + nx * resolution
-                break
-                #return x0, y0  # Return the world coordinates
+                break # Return the closest free world coordinates
         
-        # If no valid neighbor found at current radius, expand the radius
         radius += 1
     else:
+      # Return the free world coordinates
       x0 = self.x0
       y0 = self.y0
-    # self.get_logger().info(f"OUT OF LOOP")
+      
     # Path planning algortim
     path = solution(x0, y0, self.theta0, self.xt, self.yt, map_data, resolution, self.origin)
     self.path = path # Store path to be able to determine when to replan
@@ -144,10 +141,13 @@ class Planner(Node):
         pose_msg.pose.position.y = pose[1]
         
         message.poses.append(pose_msg)
+
       self.get_logger().info("Publishing path")
       self.path_pub.publish(message)
-    else: # If no path exist, publish empty path
+    else: 
+      # If no path exist, publish empty path
       self.get_logger().info('Publishing empty path')
+
 
   # To get the position of the robot at all times
   def pose_callback(self, msg : PoseWithCovarianceStamped):
@@ -177,6 +177,7 @@ class Planner(Node):
       self.y0 = map_pose.position.y
     except TransformException:
       self.get_logger().info('No transform found')
+
 
   # To get the position of the target when it is published
   def goal_callback(self, msg : Marker):

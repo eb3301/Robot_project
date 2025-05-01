@@ -294,7 +294,6 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
         plt.show()
 
 
-
 class ExploreSamples(pt.behaviour.Behaviour):
     '''Explores waypoints'''
     def __init__(self, node):
@@ -421,12 +420,6 @@ class ExploreSamples(pt.behaviour.Behaviour):
         req = SetBool.Request()
         req.data = value
         client.call_async(req)
-
-
-
-
-
-
 
 
 class ExploreUknownSpace(pt.behaviour.Behaviour):
@@ -583,9 +576,6 @@ class ExploreUknownSpace(pt.behaviour.Behaviour):
         req.data = value
         client.call_async(req)
            
-        
-        
-
 
 def main():
     rclpy.init()

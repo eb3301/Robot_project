@@ -259,46 +259,6 @@ class OccupancyGridPublisher(Node):
         #grid[20,30] = 100
 
         return grid.flatten().tolist()
-    
-        """    def cloud_callback(self, msg: PointCloud2):
-                #Process depth camera PointCloud2 message and update the occupancy grid.
-                points = pc2.read_points_numpy(msg, skip_nans=True)[:, :3]  # Extract points (x, y, z)
-
-                # Calculate the min and max x, y values from the point cloud
-                min_x = np.min(points[:, 0])
-                max_x = np.max(points[:, 0])
-                min_y = np.min(points[:, 1])
-                max_y = np.max(points[:, 1])
-
-                # Convert the min and max x, y into grid coordinates (cell indices)
-                min_gx = int((min_x - self.origin_x) / self.resolution)
-                max_gx = int((max_x - self.origin_x) / self.resolution)
-                min_gy = int((min_y - self.origin_y) / self.resolution)
-                max_gy = int((max_y - self.origin_y) / self.resolution)
-
-                # Make sure the grid indices are within bounds
-                min_gx = max(min_gx, 0)
-                max_gx = min(max_gx, self.grid_size_x - 1)
-                min_gy = max(min_gy, 0)
-                max_gy = min(max_gy, self.grid_size_y - 1)
-
-                # Update the grid within the bounding box to mark it as "seen"
-                self.update_grid_from_bounding_box(min_gx, max_gx, min_gy, max_gy)"""
-
-        """    def update_grid_from_bounding_box(self, min_gx, max_gx, min_gy, max_gy, seen_value=50):
-                
-                #Update the occupancy grid for the region defined by the bounding box (min_x, max_x, min_y, max_y).
-                
-                grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))  # Use grid_size_y and grid_size_x
-
-                # Mark all cells within the bounding box as "seen" (free space)
-                for gy in range(min_gy, max_gy + 1):
-                    for gx in range(min_gx, max_gx + 1):
-                        grid[gy, gx] = seen_value
-
-                # Update the map data with the modified grid
-                self.map_data = grid.flatten().tolist()
-                self.get_logger().info(f"Updated grid from bounding box: min({min_gx}, {min_gy}), max({max_gx}, {max_gy})")"""
 
     def lidar_callback(self, msg):
         """ Process LiDAR scan and update the occupancy grid """
