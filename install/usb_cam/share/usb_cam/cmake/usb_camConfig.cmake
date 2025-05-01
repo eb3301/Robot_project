@@ -1,1 +1,1 @@
-/home/group1/dd2419_ws/build/usb_cam/ament_cmake_core/usb_camConfig.cmake
+/home/robot/Project/Robot_project/build/usb_cam/ament_cmake_core/usb_camConfig.cmake

@@ -1109,6 +1109,7 @@ class Pickup(pt.behaviour.Behaviour):
         elif self.progress == 1: # Here the robot will look and return if it sees
             print("6")
             if not self.sent_look:
+                self.get_logger().info("going to look position")
                 self.look_response = self.cli.send_request(2,[],[]) # do we need obj class as well? 
                 self.sent_look = True
             if self.look_response != None and self.look_response.success:
@@ -1117,7 +1118,7 @@ class Pickup(pt.behaviour.Behaviour):
                 self.look_response.success = False
         elif self.progress == 3:
             self.obj_grabbed = False
-            print("going to pick now")
+            print("going to picking position now")
             time.sleep(2.5) # might swith to checking that time is 2.5 more than at start
             if not self.sent_pick:
                 self.grab_pos_response = self.cli.send_request(6,[],[]) 
@@ -1128,7 +1129,7 @@ class Pickup(pt.behaviour.Behaviour):
                 self.progress = 5
         elif self.progress == 4:
             time.sleep(2.0)
-            print("Grabbing now")
+            print("Grabbing object now")
             time.sleep(1.0)
             if not self.sent_grab:
                 self.grab_response = self.cli.send_request(7,self.grab_pos_response.arm_pos,[])

@@ -1,1 +1,1 @@
-/home/group1/dd2419_ws/build/sllidar_ros2/ament_cmake_core/sllidar_ros2Config.cmake
+/home/robot/Project/Robot_project/build/sllidar_ros2/ament_cmake_core/sllidar_ros2Config.cmake
