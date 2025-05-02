@@ -19,6 +19,7 @@ from tf_transformations import euler_from_quaternion, quaternion_from_euler
 from ament_index_python import get_package_share_directory
 from builtin_interfaces.msg import Duration
 from rclpy.qos import QoSProfile, QoSDurabilityPolicy, QoSReliabilityPolicy
+from collections import deque
 
 class OccupancyGridPublisher(Node):
     # Constants for grid and object properties
@@ -45,7 +46,6 @@ class OccupancyGridPublisher(Node):
                 )
         
         self.objects_pub = self.create_publisher(Marker, '/object_markers', qos)
-
 
         self.workspace_explored = False  # Initially assume the workspace is not fully explored
 
@@ -89,6 +89,9 @@ class OccupancyGridPublisher(Node):
         self.timer = self.create_timer(1.0, self.publish_map)
         self.grid_update_timer = self.create_timer(0.5, self.update_grid_regularly)
         self.get_logger().info("Occupancy Grid Node Started")
+
+        self.scan_history = deque(maxlen=1000)  # Store up to 1000 recent scans
+        self.create_timer(10.0, self.rebuild_occupancy_grid)
 
     def update_grid_regularly(self):
         """Update the occupancy grid based on the robot's rotation for the "seen" mechanic. """
@@ -264,20 +267,20 @@ class OccupancyGridPublisher(Node):
         return grid.flatten().tolist()
 
     def lidar_callback(self, msg: PointCloud2):
-        """ Process LiDAR scan and update the occupancy grid """
+        """Process LiDAR scan and store for deferred occupancy grid update."""
 
-        # Transformation
+        import tf_transformations  # make sure to install this or replace with geometry-based yaw extraction
+
         to_frame_rel = 'map'
         from_frame_rel = msg.header.frame_id
-
         time = rclpy.time.Time().from_msg(msg.header.stamp)
 
+        # Try to transform cloud to the 'map' frame
         tf_future = self.tf_buffer.wait_for_transform_async(
             target_frame=to_frame_rel,
             source_frame=from_frame_rel,
             time=time
         )
-
         rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
 
         try:
@@ -286,60 +289,56 @@ class OccupancyGridPublisher(Node):
                 from_frame_rel,
                 time)
         except Exception as ex:
-            self.get_logger().info(
-                f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
+            self.get_logger().info(f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
             return
-        
-        # Transform PointCloud2 to the map frame
+
         cloud_transformed = do_transform_cloud(msg, transform)
 
-        # Get the robot's position in the map frame
-        # Transformation
-        to_frame_rel = 'map'
-        from_frame_rel = 'base_link'
-
-        time = rclpy.time.Time().from_msg(msg.header.stamp)
-
+        # Get robot pose in map frame
+        base_link_frame = 'base_link'
         tf_future = self.tf_buffer.wait_for_transform_async(
             target_frame=to_frame_rel,
-            source_frame=from_frame_rel,
+            source_frame=base_link_frame,
             time=time
         )
-
         rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
 
         try:
             robot_transform = self.tf_buffer.lookup_transform(
                 to_frame_rel,
-                from_frame_rel,
+                base_link_frame,
                 time)
         except Exception as ex:
-            self.get_logger().info(
-                f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
+            self.get_logger().info(f'Could not transform {to_frame_rel} to {base_link_frame}: {ex}')
             return
-        
+
         robot_x = robot_transform.transform.translation.x
         robot_y = robot_transform.transform.translation.y
-            
+
+        quat = robot_transform.transform.rotation
+        _, _, robot_yaw = tf_transformations.euler_from_quaternion([quat.x, quat.y, quat.z, quat.w])
+
         # Convert PointCloud2 to numpy array
         points = np.array(list(pc2.read_points(cloud_transformed, field_names=("x", "y"), skip_nans=True)))
 
-        # Distance thresholding relative to the robot's position
-        min_distance = 0.4 # Minimum distance, 0.35 enough to remove the arm from the lidar
-        max_distance = 2.5  # Maximum distance (e.g., 10 meters)
-
-        # Filter points based on distance threshold relative to the robot
+        # Filter points based on distance from robot
+        min_distance = 0.4
+        max_distance = 2.5
         filtered_points = []
+
         for point in points:
-            # Calculate distance from the robot (in the map frame)
             distance = np.sqrt((point[0] - robot_x)**2 + (point[1] - robot_y)**2)
-
-            # Apply the distance thresholding (ignore points too close or too far from the robot)
             if min_distance <= distance <= max_distance:
-                filtered_points.append(point)
+                filtered_points.append((point[0], point[1]))
 
-        # Update the occupancy grid with filtered points
-        self.update_occupancy_grid(filtered_points)
+        # Store scan in history buffer
+        self.scan_history.append({
+            'timestamp': msg.header.stamp,
+            'pose': (robot_x, robot_y, robot_yaw),
+            'points': filtered_points
+        })
+
+        self.get_logger().info(f"Stored scan at time {msg.header.stamp.sec}.{msg.header.stamp.nanosec} with {len(filtered_points)} points")
 
     def update_occupancy_grid(self, points, inflation_radius=INFLATION_RADIUS, obstacle_value=OBSTACLE_VALUE, inflation_value=INFLATION_VALUE):
         # Mark free space and obstacles in the occupancy grid
@@ -383,6 +382,28 @@ class OccupancyGridPublisher(Node):
         # Optionally, log if the workspace is fully explored
         if self.workspace_explored:
             self.get_logger().info("The entire workspace has been explored!")
+
+    def clear_occupancy_grid(self):
+        self.map_data = [-1] * (self.grid_size_x * self.grid_size_y)
+
+    def rebuild_occupancy_grid(self):
+        self.get_logger().info("Reuilding Occupancy #########################################################################################################")
+        self.clear_occupancy_grid()
+
+        for entry in self.scan_history:
+            x, y, yaw = entry['pose']
+            points = entry['points']
+
+            cos_yaw = np.cos(yaw)
+            sin_yaw = np.sin(yaw)
+
+            transformed = []
+            for px, py in points:
+                mx = cos_yaw * px - sin_yaw * py + x
+                my = sin_yaw * px + cos_yaw * py + y
+                transformed.append((mx, my))
+
+            self.update_occupancy_grid(transformed)
 
     def mark_area_in_front_of_robot(self, robot_x, robot_y, robot_yaw, length=1.5, width=0.6, seen_value=SEEN_VALUE, cone_angle=np.radians(30)):
         """
