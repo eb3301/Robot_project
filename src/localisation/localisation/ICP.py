@@ -217,7 +217,10 @@ class ICPNode(Node):
 
 
     def ICP(self, source_pcd):
+<<<<<<< HEAD
         
+=======
+>>>>>>> 6821ec87 ( dsds)
         '''ICP Algorithm Implementation'''
         if source_pcd is None or not self.target_pcd_list:
             return
