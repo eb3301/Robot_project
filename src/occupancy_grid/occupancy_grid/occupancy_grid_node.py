@@ -123,68 +123,70 @@ class OccupancyGridPublisher(Node):
             if response.object_types:
                 self.detected_objects = list(zip(response.object_types, response.object_positions))
 
-                if self.detected_objects[0] != 'trash':
-                    # self.get_logger().info(f"Detected {len(self.detected_objects)} objects.")
+                for i, (obj_type, obj_pos) in enumerate(self.detected_objects):
+                    if obj_type == 'trash':
+                        self.detected_objects.pop(i)
+                        self.get_logger().info(f"Removed: {i}, type: {obj_type}")
 
-                    # Publish objects
-                    self.publish_objects(self.detected_objects)
 
-                    # Save to map file
-                    with open("Generated_map.tsv", "w") as file:  # filter on trash?
-                        for obj_type, pos in self.detected_objects:
-                            x, y, z = float(pos.x), float(pos.y), float(pos.z)
-                            file.write(f"{obj_type} \t {x:.2f} \t {y:.2f} \t {z:.2f}" + "\n")
-                    
+                self.publish_objects(self.detected_objects)
 
-                    # Convert flat map to 2D grid for easier manipulation
-                    grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
+                # Save to map file
+                with open("Generated_map.tsv", "w") as file:  # filter on trash?
+                    for obj_type, pos in self.detected_objects:
+                        x, y, z = float(pos.x), float(pos.y), float(pos.z)
+                        file.write(f"{obj_type} \t {x:.2f} \t {y:.2f} \t {z:.2f}" + "\n")
+                
 
-                    # Parameters
-                    inflation_radius = object_inflation_radius  # Solid border thickness in cells
-                    gradient_radius = inflation_radius + 6       # Gradient fade-out radius
+                # Convert flat map to 2D grid for easier manipulation
+                grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
 
-                    for obj_type, obj_position in self.detected_objects:
-                        object_x = obj_position.x
-                        object_y = obj_position.y
+                # Parameters
+                inflation_radius = object_inflation_radius  # Solid border thickness in cells
+                gradient_radius = inflation_radius + 6       # Gradient fade-out radius
 
-                        gx = int((object_x - self.origin_x) / self.resolution)
-                        gy = int((object_y - self.origin_y) / self.resolution)
+                for obj_type, obj_position in self.detected_objects:
+                    object_x = obj_position.x
+                    object_y = obj_position.y
 
-                        if 0 <= gx < self.grid_size_x and 0 <= gy < self.grid_size_y:
-                            # Mark the object cell as occupied
-                            grid[gy, gx] = obstacle_value
+                    gx = int((object_x - self.origin_x) / self.resolution)
+                    gy = int((object_y - self.origin_y) / self.resolution)
 
-                            # Inflate border with gradient
-                            for dx in range(-gradient_radius, gradient_radius + 1):
-                                for dy in range(-gradient_radius, gradient_radius + 1):
-                                    nx = gx + dx
-                                    ny = gy + dy
+                    if 0 <= gx < self.grid_size_x and 0 <= gy < self.grid_size_y:
+                        # Mark the object cell as occupied
+                        grid[gy, gx] = obstacle_value
 
-                                    if 0 <= nx < self.grid_size_x and 0 <= ny < self.grid_size_y:
-                                        distance_sq = dx**2 + dy**2
-                                        distance = np.sqrt(distance_sq)
+                        # Inflate border with gradient
+                        for dx in range(-gradient_radius, gradient_radius + 1):
+                            for dy in range(-gradient_radius, gradient_radius + 1):
+                                nx = gx + dx
+                                ny = gy + dy
 
-                                        if distance <= gradient_radius:
-                                            if distance <= inflation_radius:
-                                                # Solid inflation
-                                                if grid[ny, nx] != obstacle_value:
-                                                    grid[ny, nx] = border_value
-                                            else:
-                                                # Gradient inflation
-                                                decay = 1 - ((distance - inflation_radius) / (gradient_radius - inflation_radius))
-                                                value = int(border_value * decay)
-                                                if grid[ny, nx] < value:
-                                                    grid[ny, nx] = value  # Only update if value is stronger
+                                if 0 <= nx < self.grid_size_x and 0 <= ny < self.grid_size_y:
+                                    distance_sq = dx**2 + dy**2
+                                    distance = np.sqrt(distance_sq)
 
-                            # self.get_logger().info(f"Object {obj_type} placed at grid cell ({gx}, {gy})")
+                                    if distance <= gradient_radius:
+                                        if distance <= inflation_radius:
+                                            # Solid inflation
+                                            if grid[ny, nx] != obstacle_value:
+                                                grid[ny, nx] = border_value
+                                        else:
+                                            # Gradient inflation
+                                            decay = 1 - ((distance - inflation_radius) / (gradient_radius - inflation_radius))
+                                            value = int(border_value * decay)
+                                            if grid[ny, nx] < value:
+                                                grid[ny, nx] = value  # Only update if value is stronger
 
-                    # Update the flattened map data
-                    self.map_data = grid.flatten().tolist()
+                        # self.get_logger().info(f"Object {obj_type} placed at grid cell ({gx}, {gy})")
 
-                    # self.get_detected_objects_info()
+                # Update the flattened map data
+                self.map_data = grid.flatten().tolist()
 
-                # else:
-                #     self.get_logger().warn("No objects detected.")
+                # self.get_detected_objects_info()
+
+            # else:
+            #     self.get_logger().warn("No objects detected.")
 
         except Exception as e:
             self.get_logger().error(f"Service call failed: {e}")

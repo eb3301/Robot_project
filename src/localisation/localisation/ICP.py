@@ -190,6 +190,7 @@ class ICPNode(Node):
                 else:
                     self.counter += 1
 
+
     def ref_msg_callback(self, msg):
         self.pub_ref = True
 
@@ -216,7 +217,7 @@ class ICPNode(Node):
 
 
     def ICP(self, source_pcd):
-        # return
+        
         '''ICP Algorithm Implementation'''
         if source_pcd is None or not self.target_pcd_list:
             return
@@ -269,11 +270,11 @@ class ICPNode(Node):
 
         translation = result.transformation[:3, 3]
         dist = np.linalg.norm(translation)
-        if result.fitness > 0.02 and result.inlier_rmse < 0.04 and dist < 0.5: 
+        if result.fitness > 0.02 and result.inlier_rmse < 0.04 and dist < 0.3: 
             self.fitness_counter = 0
             self.transform = result.transformation
 
-            #self.get_logger().info(f"RUNNING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse}")
+            self.get_logger().info(f"RUNNING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} \n")
 
             end_time = time.time()
             #self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
