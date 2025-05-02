@@ -66,5 +66,17 @@ def generate_launch_description():
             name='lidar_launch'
         ),
 
+        # Start arm
+        ExecuteProcess(
+            cmd=['ros2', 'run', 'micro_ros_agent', 'micro_ros_agent', 'serial', '--dev', '/dev/hiwonder_arm', '-v6'],
+            output='screen',
+            name='arm_launch'
+        ),  
 
+        #Arm camera Launch
+        ExecuteProcess(
+            cmd=['ros2', 'launch', 'robp_launch', 'arm_camera_launch.yaml'],
+            output='screen',
+            name='arm_camera_launch'
+        )
     ])

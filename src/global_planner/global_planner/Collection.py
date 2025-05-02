@@ -70,7 +70,7 @@ class BehaviourTree(Node):
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = False,
-                                          children = [goto_target, approach_object, pickup, goto_box]
+                                          children = [goto_target, approach_object, pickup,goto_box]
                                           )
 
         test_sel = pt.composites.Selector(name = 'Test Selector',
@@ -494,8 +494,8 @@ class Goto_Target(pt.behaviour.Behaviour):
                         max_factor = 1 / 6
                         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
                         twist_msg = Twist()
-                        # twist_msg.angular.z = d_z / np.abs(d_z) * np.pi / 2 * max_rot
-                        twist_msg.angular.z = np.pi / 4 * max_rot
+                        twist_msg.angular.z = d_z / np.abs(d_z) * np.pi / 2 * max_rot
+                        #twist_msg.angular.z = np.pi / 4 * max_rot
                         # self.node.get_logger().info(f"Sending twist {np.pi/2} rad/s")
                         twist_msg._linear.z = max_factor
                         self.cmd_vel_pub.publish(twist_msg)
@@ -1079,6 +1079,7 @@ class Pickup(pt.behaviour.Behaviour):
         if not self.cli.wait_for_service(timeout_sec=1.0):
             self.node.get_logger().info('Arm service not available, waiting again...')
         self.req = Arm.Request()
+        self.future = self.cli.call_async(self.req)
         self.blackboard = pt.blackboard.Blackboard()
         self.request_sent = False
         self.look_response = None
@@ -1099,18 +1100,19 @@ class Pickup(pt.behaviour.Behaviour):
         # return pt.common.Status.RUNNING
 
         if self.progress == 0:
-            obj_class = self.blackboard.get('Target_type')
+            self.blackboard.set('Target_type', 'cube')
+            self.obj_class = self.blackboard.get('Target_type')
             
-            if obj_class is None:
+            if self.obj_class is None:
                 self.node.get_logger().error("No object class specified on blackboard.")
                 return pt.common.Status.FAILURE
-            self.req.obj_class = obj_class
+            self.req.obj_class = self.obj_class
             self.progress = 1
         elif self.progress == 1: # Here the robot will look and return if it sees
             print("6")
             if not self.sent_look:
-                self.get_logger().info("going to look position")
-                self.look_response = self.cli.send_request(2,[],[]) # do we need obj class as well? 
+                self.node.get_logger().info("going to look position")
+                self.look_response = self.send_request(2, self.obj_class, [],[]) # do we need obj class as well? 
                 self.sent_look = True
             if self.look_response != None and self.look_response.success:
                 self.progress = 3
@@ -1121,7 +1123,7 @@ class Pickup(pt.behaviour.Behaviour):
             print("going to picking position now")
             time.sleep(2.5) # might swith to checking that time is 2.5 more than at start
             if not self.sent_pick:
-                self.grab_pos_response = self.cli.send_request(6,[],[]) 
+                self.grab_pos_response = self.send_request(6, self.obj_class, [],[]) 
                 self.sent_pick = True
             if self.grab_pos_response != None and self.grab_pos_response.success:
                 self.progress = 4
@@ -1132,16 +1134,16 @@ class Pickup(pt.behaviour.Behaviour):
             print("Grabbing object now")
             time.sleep(1.0)
             if not self.sent_grab:
-                self.grab_response = self.cli.send_request(7,self.grab_pos_response.arm_pos,[])
+                self.grab_response = self.send_request(7, self.obj_cla, self.grab_pos_response.arm_pos,[])
                 self.sent_grab = True
             if self.grab_response != None and self.grab_response.success:
                 self.progress = 6
-                response = self.cli.send_request(8,[], self.grab_response.xyfix)
+                response = self.send_request(8, self.obj_class, [], self.grab_response.xyfix)
         elif self.progress == 5:
             print("Driving now, error is: " + self.grab_response.message + " and obj is at: " + str(self.grab_response.xyfix))
 
             if not self.sent_drive:
-                self.drive_response = self.cli.send_request(8,[],self.grab_response.xyfix) 
+                self.drive_response = self.send_request(8, self.obj_class, [],self.grab_response.xyfix) 
                 self.sent_drive = True
             
             if self.drive_response != None and self.drive_response.success:
@@ -1167,11 +1169,20 @@ class Pickup(pt.behaviour.Behaviour):
         # waiting
         return pt.common.Status.RUNNING
 
-    def send_request(self, command, obj_class):
-        self.req.xy[0] = command
+    # def send_request(self, command, obj_class):
+    #     self.req.xy[0] = command
+    #     self.req.obj_class = obj_class
+    #     self.future = self.cli.call_async(self.req)
+    #     rclpy.spin_until_future_complete(self, self.future)
+    #     return self.future.result()
+    
+    def send_request(self, command, obj_class, arm_pos, xyfix):
+        self.req.command = command
         self.req.obj_class = obj_class
+        self.req.arm_pos = arm_pos
+        self.req.xy = xyfix
         self.future = self.cli.call_async(self.req)
-        rclpy.spin_until_future_complete(self, self.future)
+        rclpy.spin_until_future_complete(self.node, self.future)
         return self.future.result()
     
     def pickup(self,obj='1'): # cube

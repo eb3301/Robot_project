@@ -75,8 +75,7 @@ def generate_launch_description():
         cmd=['ros2', 'run', 'arm_service', 'arm_service'],
         output='screen',
         name='Arm_Service'
-    ),
-
+    )
     ])
 
 

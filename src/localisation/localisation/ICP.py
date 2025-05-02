@@ -217,10 +217,6 @@ class ICPNode(Node):
 
 
     def ICP(self, source_pcd):
-<<<<<<< HEAD
-        
-=======
->>>>>>> 6821ec87 ( dsds)
         '''ICP Algorithm Implementation'''
         if source_pcd is None or not self.target_pcd_list:
             return
@@ -277,7 +273,7 @@ class ICPNode(Node):
             self.fitness_counter = 0
             self.transform = result.transformation
 
-            self.get_logger().info(f"RUNNING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} \n")
+            #self.get_logger().info(f"RUNNING ICP: \n Distance moved: {dist} \n fitness: {result.fitness} \n Inlier rmse: {result.inlier_rmse} \n")
 
             end_time = time.time()
             #self.get_logger().info(f"ICP algorithm took {end_time - start_time:.6f} seconds")
