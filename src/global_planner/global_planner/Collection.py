@@ -415,6 +415,11 @@ class Goto_Target(pt.behaviour.Behaviour):
             x = (best_candidate[0] * self.resolution) + self.origin_x    
             y = (best_candidate[1] * self.resolution) + self.origin_y
             z = np.arctan2(self.target[2] - y, self.target[1] - x)  
+<<<<<<< HEAD
+
+=======
+    
+>>>>>>> 6821ec87 ( dsds)
             self.sampled_point = (x, y, z)
             self.pub_goal_marker()
 
@@ -494,9 +499,18 @@ class Goto_Target(pt.behaviour.Behaviour):
                         max_factor = 1 / 6
                         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
                         twist_msg = Twist()
+<<<<<<< HEAD
                         twist_msg.angular.z = d_z / np.abs(d_z) * np.pi / 2 * max_rot
                         #twist_msg.angular.z = np.pi / 4 * max_rot
+=======
+<<<<<<< HEAD
+                        twist_msg.angular.z = d_z / np.abs(d_z) * np.pi / 2 * max_rot
+                        # self.node.get_logger().info(f"Sending twist msg {d_z} rad/s")
+=======
+                        twist_msg.angular.z = np.pi / 4 * max_rot
+>>>>>>> 679faa18 (idk)
                         # self.node.get_logger().info(f"Sending twist {np.pi/2} rad/s")
+>>>>>>> 6821ec87 ( dsds)
                         twist_msg._linear.z = max_factor
                         self.cmd_vel_pub.publish(twist_msg)
                     else: 
