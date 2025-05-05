@@ -1109,6 +1109,7 @@ class Approach_Object(pt.behaviour.Behaviour):
 #                 return pt.common.Status.FAILURE
 #             self.req.obj_class = self.obj_class
 #             self.progress = 1
+
 #         elif self.progress == 1: # Here the robot will look and return if it sees
 #             if not self.sent_look:
 #                 self.node.get_logger().info("going to look position")
@@ -1120,6 +1121,7 @@ class Approach_Object(pt.behaviour.Behaviour):
 #                 self.progress = 3
 #                 print("success: "+ str(self.look_response.success))
 #                 self.look_response.success = False
+
 #         elif self.progress == 3:
 #             self.obj_grabbed = False
 #             print("going to picking position now")
@@ -1131,6 +1133,7 @@ class Approach_Object(pt.behaviour.Behaviour):
 #                 self.progress = 4
 #             elif self.look_response != None and not self.look_response.success:
 #                 self.progress = 5
+
 #         elif self.progress == 4:
 #             time.sleep(2.0)
 #             print("Grabbing object now")
@@ -1141,6 +1144,7 @@ class Approach_Object(pt.behaviour.Behaviour):
 #             if self.grab_response != None and self.grab_response.success:
 #                 self.progress = 6
 #                 response = self.send_request(8, self.obj_class, [], self.grab_response.xyfix)
+
 #         elif self.progress == 5:
 #             print("Driving now, error is: " + self.grab_response.message + " and obj is at: " + str(self.grab_response.xyfix))
 
@@ -1150,6 +1154,7 @@ class Approach_Object(pt.behaviour.Behaviour):
             
 #             if self.drive_response != None and self.drive_response.success:
 #                 self.progress == 3
+
 #         elif self.progress == 6:
 #             return pt.common.Status.SUCCESS
         
@@ -1346,6 +1351,71 @@ class Pickup(pt.behaviour.Behaviour):
                 return pt.common.Status.SUCCESS
             return pt.common.Status.RUNNING
         
+        return pt.common.Status.RUNNING
+
+
+class Place(pt.behaviour.Behaviour):
+    DROP_CMD = 4
+    HOME_CMD = 1
+
+    def __init__(self, node):
+        super().__init__("Place")
+        self.node = node
+        self.blackboard = pt.blackboard.Blackboard()
+        # create non‑blocking client
+        self.cli = node.create_client(Arm, 'arm')
+        if not self.cli.wait_for_service(timeout_sec=1.0):
+            self.node.get_logger().error('Arm service not available, waiting again...')
+        # internal state
+        self.req = Arm.Request()
+        self.progress = 0
+        self.request_sent = False
+        self.future = None
+
+    def update(self):
+        # --- decide which command to send ---
+        if self.progress == 0:
+            # first: move to drop position
+            self.req.command   = self.DROP_CMD
+            self.req.obj_class = self.blackboard.get('Target_type')
+            if self.req.obj_class is None:
+                self.node.get_logger().error("No object class on blackboard")
+                return pt.common.Status.FAILURE
+        elif self.progress == 1:
+            # then: return to top/home
+            self.req.command   = self.HOME_CMD
+            self.req.obj_class = self.blackboard.get('Target_type')
+        else:
+            # done both steps
+            return pt.common.Status.SUCCESS
+
+        # --- send the service request once ---
+        if not self.request_sent:
+            self.future = self.cli.call_async(self.req)
+            self.request_sent = True
+            return pt.common.Status.RUNNING
+
+        # --- process the response when ready ---
+        if self.future.done():
+            try:
+                resp = self.future.result()
+            except Exception as e:
+                self.node.get_logger().error(f"Place service exception: {e}")
+                return pt.common.Status.FAILURE
+            # reset so we can send the next command
+            self.request_sent = False
+
+            if not resp.success:
+                self.node.get_logger().error(
+                    f"Arm command {self.req.command} failed: {resp.message}"
+                )
+                return pt.common.Status.FAILURE
+
+            self.node.get_logger().info(f"Arm command {self.req.command} succeeded")
+            self.progress += 1
+            return pt.common.Status.RUNNING
+
+        # still waiting
         return pt.common.Status.RUNNING
 
 
