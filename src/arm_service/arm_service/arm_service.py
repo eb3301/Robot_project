@@ -255,7 +255,7 @@ class MinimalService(Node):
         plt.xlabel("X Position")
         plt.ylabel("Y Position")
         plt.title("2D Robot Arm Visualization (User Input Angles)")
-        plt.show()
+        #plt.show()
 
     def get_color_mask(self,image):
         # Convert to HSV
@@ -322,7 +322,7 @@ class MinimalService(Node):
         mask = self.get_color_mask(cropped_frame)
         #contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)    
         plt.imshow(mask)
-        plt.show()
+        #plt.show()
 
         edges = cv.Canny(grey_crop,100,500)
         contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
@@ -380,7 +380,7 @@ class MinimalService(Node):
             plt.imshow(edges,cmap='gray')
             plt.subplot(2,2,3)
             plt.imshow(cropped_frame)
-            plt.show()
+            #plt.show()
             return [tmpx,tmpy],angle
         
 
@@ -415,7 +415,7 @@ class MinimalService(Node):
         plt.axis('equal')
         plt.legend()
         plt.gca().invert_yaxis() 
-        plt.show()
+        #plt.show()
         return angle_deg
 
     def detect_shape(self,contours):
@@ -560,8 +560,6 @@ class MinimalService(Node):
 
         #either this, or we can look at the pos and set values accordingly.
 
-        
-
     def arm_callback(self, request, response):
         time_data_set = [2000,2000,2000,2000,2000,2000]
         
@@ -581,6 +579,7 @@ class MinimalService(Node):
 
             response.success = True 
             response.message = 'successful'
+            self.get_logger().info(f'Response: {response.message} {response}')
             return response
         elif request.command == 4: 
             self.get_logger().info('moving arm to drop')

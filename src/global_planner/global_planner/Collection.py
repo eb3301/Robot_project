@@ -70,7 +70,7 @@ class BehaviourTree(Node):
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = False,
-                                          children = [goto_target, approach_object, pickup,goto_box]
+                                          children = [pickup, goto_target, approach_object, goto_box]
                                           )
 
         test_sel = pt.composites.Selector(name = 'Test Selector',
@@ -1071,124 +1071,282 @@ class Approach_Object(pt.behaviour.Behaviour):
         self.blackboard.set('reset approach', False)
 
 
+# class Pickup(pt.behaviour.Behaviour):
+#     def __init__(self,node):
+#         super().__init__("Pickup")
+#         self.node = node
+#         self.cli = self.node.create_client(Arm, 'arm')
+#         if not self.cli.wait_for_service(timeout_sec=1.0):
+#             self.node.get_logger().info('Arm service not available, waiting again...')
+#         self.req = Arm.Request()
+#         # self.future = self.cli.call_async(self.req)
+#         self.blackboard = pt.blackboard.Blackboard()
+#         self.request_sent = False
+#         self.look_response = None
+#         self.grab_pos_response = None
+#         self.grab_response = None
+#         self.drive_response = None
+#         self.sent_look = False
+#         self.sent_pick = False
+#         self.sent_grab = False
+#         self.sent_drive = False
+#         self.progress = 0
+
+#         self.test = True
+
+#     def update(self):
+#         # if self.test:
+#         #     self.test = False
+#         #     self.blackboard.set('reset goto target', True)
+#         # return pt.common.Status.RUNNING
+
+#         if self.progress == 0:
+#             self.blackboard.set('Target_type', 'cube')
+#             self.obj_class = self.blackboard.get('Target_type')
+            
+#             if self.obj_class is None:
+#                 self.node.get_logger().error("No object class specified on blackboard.")
+#                 return pt.common.Status.FAILURE
+#             self.req.obj_class = self.obj_class
+#             self.progress = 1
+#         elif self.progress == 1: # Here the robot will look and return if it sees
+#             if not self.sent_look:
+#                 self.node.get_logger().info("going to look position")
+#                 self.look_response = self.send_request(2, self.obj_class, [],[]) # do we need obj class as well? 
+#                 self.sent_look = True
+#                 self.node.get_logger().info("TestTesTest")
+#             self.node.get_logger().info(f"{self.look_response}")
+#             if self.look_response != None and self.look_response.success:
+#                 self.progress = 3
+#                 print("success: "+ str(self.look_response.success))
+#                 self.look_response.success = False
+#         elif self.progress == 3:
+#             self.obj_grabbed = False
+#             print("going to picking position now")
+#             time.sleep(2.5) # might swith to checking that time is 2.5 more than at start
+#             if not self.sent_pick:
+#                 self.grab_pos_response = self.send_request(6, self.obj_class, [],[]) 
+#                 self.sent_pick = True
+#             if self.grab_pos_response != None and self.grab_pos_response.success:
+#                 self.progress = 4
+#             elif self.look_response != None and not self.look_response.success:
+#                 self.progress = 5
+#         elif self.progress == 4:
+#             time.sleep(2.0)
+#             print("Grabbing object now")
+#             time.sleep(1.0)
+#             if not self.sent_grab:
+#                 self.grab_response = self.send_request(7, self.obj_class, self.grab_pos_response.arm_pos,[])
+#                 self.sent_grab = True
+#             if self.grab_response != None and self.grab_response.success:
+#                 self.progress = 6
+#                 response = self.send_request(8, self.obj_class, [], self.grab_response.xyfix)
+#         elif self.progress == 5:
+#             print("Driving now, error is: " + self.grab_response.message + " and obj is at: " + str(self.grab_response.xyfix))
+
+#             if not self.sent_drive:
+#                 self.drive_response = self.send_request(8, self.obj_class, [],self.grab_response.xyfix) 
+#                 self.sent_drive = True
+            
+#             if self.drive_response != None and self.drive_response.success:
+#                 self.progress == 3
+#         elif self.progress == 6:
+#             return pt.common.Status.SUCCESS
+        
+#         # self.node.get_logger().info(f"{self.progress}")
+
+#         # if self.future.done():
+#         #     if self.future.result() is not None:
+#         #         response = self.future.result()
+#         #         if response.success:
+#         #             self.node.get_logger().info("pickup successful")
+#         #             return pt.common.Status.SUCCESS
+#         #         else:
+#         #             self.node.get_logger().info("pickup failed: " + response.message)
+#         #             return pt.common.Status.FAILURE
+#         #     else:
+#         #         self.node.get_logger().error(f"Service call failed:")
+#         #         return pt.common.Status.FAILURE
+
+#         if not self.request_sent:
+#             self.future = self.cli.call_async(self.req)
+#             self.request_sent = True
+
+#         if self.future.done():
+#             self.resp = self.future.result()
+#             return pt.common.Status.RUNNING
+#         else:
+#             # waiting
+#             return pt.common.Status.RUNNING
+
+#     # def send_request(self, command, obj_class):
+#     #     self.req.xy[0] = command
+#     #     self.req.obj_class = obj_class
+#     #     self.future = self.cli.call_async(self.req)
+#     #     rclpy.spin_until_future_complete(self, self.future)
+#     #     return self.future.result()
+    
+#     def send_request(self, command, obj_class, arm_pos, xyfix):
+#         self.req.command = command  
+#         self.req.obj_class = obj_class
+#         self.req.arm_pos = arm_pos
+#         self.req.xy = xyfix
+#         self.future = self.cli.call_async(self.req)
+#         self.node.get_logger().info('Before future')
+#         # rclpy.spin_until_future_complete(self.node, self.future) #, timeout_sec=5)
+#         self.node.get_logger().info('After future')
+#         return self.future.result()
+    
+#     def pickup(self,obj='1'): # cube
+#         response = self.send_request(2,obj)
+#         self.node.get_logger().info('Response from arm is: ' + str(response.success))
+           
 class Pickup(pt.behaviour.Behaviour):
-    def __init__(self,node):
+    def __init__(self, node):
         super().__init__("Pickup")
         self.node = node
         self.cli = self.node.create_client(Arm, 'arm')
         if not self.cli.wait_for_service(timeout_sec=1.0):
-            self.node.get_logger().info('Arm service not available, waiting again...')
-        self.req = Arm.Request()
-        self.future = self.cli.call_async(self.req)
+            self.node.get_logger().error('Arm service unavailable.')
+
         self.blackboard = pt.blackboard.Blackboard()
+        self.progress = 0
         self.request_sent = False
-        self.look_response = None
+        self.future = None
+        self.req = None
+
+        # Intermediate storage
+        self.obj_class = None
         self.grab_pos_response = None
         self.grab_response = None
-        self.drive_response = None
-        self.sent_look = False
-        self.sent_pick = False
-        self.sent_grab = False
-        self.progress = 0
-
-        self.test = True
 
     def update(self):
-        # if self.test:
-        #     self.test = False
-        #     self.blackboard.set('reset goto target', True)
-        # return pt.common.Status.RUNNING
-
-        if self.progress == 0:
+        self.node.get_logger().info(f"Progress: {self.progress}")
+        # 0) Initialize object class
+        if self.progress == 0: 
             self.blackboard.set('Target_type', 'cube')
             self.obj_class = self.blackboard.get('Target_type')
-            
-            if self.obj_class is None:
-                self.node.get_logger().error("No object class specified on blackboard.")
+            if not self.obj_class:
+                self.node.get_logger().error("No object class on blackboard.")
                 return pt.common.Status.FAILURE
-            self.req.obj_class = self.obj_class
             self.progress = 1
-        elif self.progress == 1: # Here the robot will look and return if it sees
-            print("6")
-            if not self.sent_look:
-                self.node.get_logger().info("going to look position")
-                self.look_response = self.send_request(2, self.obj_class, [],[]) # do we need obj class as well? 
-                self.sent_look = True
-            if self.look_response != None and self.look_response.success:
-                self.progress = 3
-                print("success: "+ str(self.look_response.success))
-                self.look_response.success = False
-        elif self.progress == 3:
-            self.obj_grabbed = False
-            print("going to picking position now")
-            time.sleep(2.5) # might swith to checking that time is 2.5 more than at start
-            if not self.sent_pick:
-                self.grab_pos_response = self.send_request(6, self.obj_class, [],[]) 
-                self.sent_pick = True
-            if self.grab_pos_response != None and self.grab_pos_response.success:
-                self.progress = 4
-            elif self.look_response != None and not self.look_response.success:
-                self.progress = 5
-        elif self.progress == 4:
-            time.sleep(2.0)
-            print("Grabbing object now")
-            time.sleep(1.0)
-            if not self.sent_grab:
-                self.grab_response = self.send_request(7, self.obj_cla, self.grab_pos_response.arm_pos,[])
-                self.sent_grab = True
-            if self.grab_response != None and self.grab_response.success:
-                self.progress = 6
-                response = self.send_request(8, self.obj_class, [], self.grab_response.xyfix)
-        elif self.progress == 5:
-            print("Driving now, error is: " + self.grab_response.message + " and obj is at: " + str(self.grab_response.xyfix))
+            return pt.common.Status.RUNNING
 
-            if not self.sent_drive:
-                self.drive_response = self.send_request(8, self.obj_class, [],self.grab_response.xyfix) 
-                self.sent_drive = True
+        # 1) LOOK (command=2)
+        if self.progress == 1:
+            if not self.request_sent:
+                self.req = Arm.Request()
+                self.req.command = 2
+                self.req.obj_class = self.obj_class
+                self.req.arm_pos = []
+                self.req.xy = []
+                self.future = self.cli.call_async(self.req)
+                self.request_sent = True
+                time.sleep(2)
+                return pt.common.Status.RUNNING
             
-            if self.drive_response != None and self.drive_response.success:
-                self.progress == 3
-        elif self.progress == 6:
-            return pt.common.Status.SUCCESS
-        
-
-        if self.future.done():
-            if self.future.result() is not None:
-                response = self.future.result()
-                if response.success:
-                    self.node.get_logger().info("pickup successful")
-                    return pt.common.Status.SUCCESS
-                else:
-                    self.node.get_logger().info("pickup failed: " + response.message)
+            if self.future.done():
+                try:
+                    resp = self.future.result()
+                except Exception as e:
+                    self.node.get_logger().error(f"Look service exception: {e}")
                     return pt.common.Status.FAILURE
-            else:
-                self.node.get_logger().error(f"Service call failed:")
-                return pt.common.Status.FAILURE
-            
-        
-        # waiting
-        return pt.common.Status.RUNNING
 
-    # def send_request(self, command, obj_class):
-    #     self.req.xy[0] = command
-    #     self.req.obj_class = obj_class
-    #     self.future = self.cli.call_async(self.req)
-    #     rclpy.spin_until_future_complete(self, self.future)
-    #     return self.future.result()
-    
-    def send_request(self, command, obj_class, arm_pos, xyfix):
-        self.req.command = command
-        self.req.obj_class = obj_class
-        self.req.arm_pos = arm_pos
-        self.req.xy = xyfix
-        self.future = self.cli.call_async(self.req)
-        rclpy.spin_until_future_complete(self.node, self.future)
-        return self.future.result()
-    
-    def pickup(self,obj='1'): # cube
-        response = self.send_request(2,obj)
-        self.node.get_logger().info('Response from arm is: ' + str(response.success))
-           
+                self.request_sent = False
+                if not resp.success:
+                    self.node.get_logger().error(f"Look failed: {resp.message}")
+                    return pt.common.Status.FAILURE
+
+                self.progress = 3
+            return pt.common.Status.RUNNING
+
+        # 3) GET GRAB POSITION (command=6)
+        if self.progress == 3:
+            if not self.request_sent:
+                self.req = Arm.Request()
+                self.req.command = 6
+                self.req.obj_class = self.obj_class
+                self.req.arm_pos = []
+                self.req.xy = []
+                self.future = self.cli.call_async(self.req)
+                self.request_sent = True
+                time.sleep(2)
+                return pt.common.Status.RUNNING
+
+            if self.future.done():
+                try:
+                    resp = self.future.result()
+                except Exception as e:
+                    self.node.get_logger().error(f"Grab pos exception: {e}")
+                    return pt.common.Status.FAILURE
+
+                self.request_sent = False
+                if not resp.success:
+                    self.node.get_logger().error(f"Grab pos failed: {resp.message}")
+                    return pt.common.Status.FAILURE
+
+                self.grab_pos_response = resp
+                self.progress = 4
+            return pt.common.Status.RUNNING
+
+        # 4) GRAB (command=7)
+        if self.progress == 4:
+            if not self.request_sent:
+                self.req = Arm.Request()
+                self.req.command = 7
+                self.req.obj_class = self.obj_class
+                self.req.arm_pos = self.grab_pos_response.arm_pos
+                self.req.xy = []
+                self.future = self.cli.call_async(self.req)
+                self.request_sent = True
+                time.sleep(2)
+                return pt.common.Status.RUNNING
+
+            if self.future.done():
+                try:
+                    resp = self.future.result()
+                except Exception as e:
+                    self.node.get_logger().error(f"Grab exception: {e}")
+                    return pt.common.Status.FAILURE
+
+                self.request_sent = False
+                if not resp.success:
+                    self.node.get_logger().error(f"Grab failed: {resp.message}")
+                    return pt.common.Status.FAILURE
+
+                self.grab_response = resp
+                self.progress = 5
+            return pt.common.Status.RUNNING
+
+        # 5) DRIVE BACK (command=8)
+        if self.progress == 5:
+            if not self.request_sent:
+                self.req = Arm.Request()
+                self.req.command = 8
+                self.req.obj_class = self.obj_class
+                self.req.arm_pos = []
+                self.req.xy = self.grab_response.xyfix
+                self.future = self.cli.call_async(self.req)
+                self.request_sent = True
+                time.sleep(2)
+                return pt.common.Status.RUNNING
+
+            if self.future.done():
+                try:
+                    resp = self.future.result()
+                except Exception as e:
+                    self.node.get_logger().error(f"Drive back exception: {e}")
+                    return pt.common.Status.FAILURE
+
+                self.request_sent = False
+                if not resp.success:
+                    self.node.get_logger().error(f"Drive back failed: {resp.message}")
+                    return pt.common.Status.FAILURE
+
+                return pt.common.Status.SUCCESS
+            return pt.common.Status.RUNNING
+        
+        return pt.common.Status.RUNNING
 
 
 class Place(pt.behaviour.Behaviour):

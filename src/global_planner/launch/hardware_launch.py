@@ -69,7 +69,7 @@ def generate_launch_description():
         # Start arm
         ExecuteProcess(
             cmd=['ros2', 'run', 'micro_ros_agent', 'micro_ros_agent', 'serial', '--dev', '/dev/hiwonder_arm', '-v6'],
-            output='screen',
+            output='log',
             name='arm_launch'
         ),  
 
