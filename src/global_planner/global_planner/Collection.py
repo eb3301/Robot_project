@@ -415,11 +415,6 @@ class Goto_Target(pt.behaviour.Behaviour):
             x = (best_candidate[0] * self.resolution) + self.origin_x    
             y = (best_candidate[1] * self.resolution) + self.origin_y
             z = np.arctan2(self.target[2] - y, self.target[1] - x)  
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> 6821ec87 ( dsds)
             self.sampled_point = (x, y, z)
             self.pub_goal_marker()
 
@@ -499,18 +494,10 @@ class Goto_Target(pt.behaviour.Behaviour):
                         max_factor = 1 / 6
                         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
                         twist_msg = Twist()
-<<<<<<< HEAD
-                        twist_msg.angular.z = d_z / np.abs(d_z) * np.pi / 2 * max_rot
-                        #twist_msg.angular.z = np.pi / 4 * max_rot
-=======
-<<<<<<< HEAD
                         twist_msg.angular.z = d_z / np.abs(d_z) * np.pi / 2 * max_rot
                         # self.node.get_logger().info(f"Sending twist msg {d_z} rad/s")
-=======
-                        twist_msg.angular.z = np.pi / 4 * max_rot
->>>>>>> 679faa18 (idk)
+                        #twist_msg.angular.z = np.pi / 4 * max_rot
                         # self.node.get_logger().info(f"Sending twist {np.pi/2} rad/s")
->>>>>>> 6821ec87 ( dsds)
                         twist_msg._linear.z = max_factor
                         self.cmd_vel_pub.publish(twist_msg)
                     else: 
@@ -682,6 +669,7 @@ class Approach_Object(pt.behaviour.Behaviour):
 
         # Check if done
         if self.done:
+            self.blackboard.set('pickup reset', True)
             return pt.common.Status.SUCCESS
 
         return pt.common.Status.RUNNING
@@ -1229,6 +1217,7 @@ class Pickup(pt.behaviour.Behaviour):
             self.node.get_logger().error('Arm service unavailable.')
 
         self.blackboard = pt.blackboard.Blackboard()
+        self.done = False
         self.progress = 0
         self.request_sent = False
         self.future = None
@@ -1240,7 +1229,16 @@ class Pickup(pt.behaviour.Behaviour):
         self.grab_response = None
 
     def update(self):
+        # Check whether reset is needed
+        reset = self.blackboard.get('pickup reset')
+        if reset:
+            self.reset()
+        if self.done:
+            return pt.common.Status.SUCCESS # SUPPOSED TO BE RUNNING!? -- same for progress == 5
+
         self.node.get_logger().info(f"Progress: {self.progress}")
+    
+
         # 0) Initialize object class
         if self.progress == 0: 
             self.blackboard.set('Target_type', 'cube')
@@ -1337,35 +1335,51 @@ class Pickup(pt.behaviour.Behaviour):
                 self.progress = 5
             return pt.common.Status.RUNNING
 
-        # 5) DRIVE BACK (command=8)
-        if self.progress == 5:
-            if not self.request_sent:
-                self.req = Arm.Request()
-                self.req.command = 8
-                self.req.obj_class = self.obj_class
-                self.req.arm_pos = []
-                self.req.xy = self.grab_response.xyfix
-                self.future = self.cli.call_async(self.req)
-                self.request_sent = True
-                time.sleep(2)
-                return pt.common.Status.RUNNING
+        # 5) DRIVE BACK (command=8) --- I dont understand how this works /Loke
+        if self.progress == 5: # -- Done?
+            self.blackboard.set('reset goto target', True)
+            self.done = True
+            return pt.common.Status.RUNNING 
+            # if not self.request_sent:
+            #     self.req = Arm.Request()
+            #     self.req.command = 8
+            #     self.req.obj_class = self.obj_class
+            #     self.req.arm_pos = []
+            #     self.req.xy = self.grab_response.xyfix
+            #     self.future = self.cli.call_async(self.req)
+            #     self.request_sent = True
+            #     time.sleep(2)
+            #     return pt.common.Status.RUNNING
 
-            if self.future.done():
-                try:
-                    resp = self.future.result()
-                except Exception as e:
-                    self.node.get_logger().error(f"Drive back exception: {e}")
-                    return pt.common.Status.FAILURE
+            # if self.future.done():
+            #     try:
+            #         resp = self.future.result()
+            #     except Exception as e:
+            #         self.node.get_logger().error(f"Drive back exception: {e}")
+            #         return pt.common.Status.FAILURE
 
-                self.request_sent = False
-                if not resp.success:
-                    self.node.get_logger().error(f"Drive back failed: {resp.message}")
-                    return pt.common.Status.FAILURE
+            #     self.request_sent = False
+            #     if not resp.success:
+            #         self.node.get_logger().error(f"Drive back failed: {resp.message}")
+            #         return pt.common.Status.FAILURE
 
-                return pt.common.Status.SUCCESS
-            return pt.common.Status.RUNNING
+            #     self.blackboard.set('place reset', True)
+            #     return pt.common.Status.SUCCESS
+            # return pt.common.Status.RUNNING
         
         return pt.common.Status.RUNNING
+
+    def reset(self):
+        self.done = False
+        self.progress = 0
+        self.request_sent = False
+        self.future = None
+        self.req = None
+        self.obj_class = None
+        self.grab_pos_response = None
+        self.grab_response = None
+        self.req = Arm.Request()  # <-- Add this line
+        self.blackboard.set('pickup reset', False)
 
 
 class Place(pt.behaviour.Behaviour):
@@ -1387,6 +1401,11 @@ class Place(pt.behaviour.Behaviour):
         self.future = None
 
     def update(self):
+        # Check if reset is needed
+        reset = self.blackboard.get('place reset')
+        if reset:
+            self.reset()
+
         # --- decide which command to send ---
         if self.progress == 0:
             # first: move to drop position
@@ -1433,18 +1452,13 @@ class Place(pt.behaviour.Behaviour):
         return pt.common.Status.RUNNING
 
 
-class Place(pt.behaviour.Behaviour):
-    def __init__(self):
-        super().__init__("Pickup")
-    def update(self):
-        pass
+    def reset(self):
+        self.progress = 0
+        self.request_sent = False
+        self.future = None
+        self.req = Arm.Request()  # <-- Add this line
+        self.blackboard.set('place reset', False)
 
-
-class Detection(pt.behaviour.Behaviour):
-    def __init__(self):
-        super().__init__("Detection")
-    def update(self):
-        pass
 
 
 class Check_Map(pt.behaviour.Behaviour):
