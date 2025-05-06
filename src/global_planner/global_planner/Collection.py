@@ -1394,13 +1394,21 @@ class Place(pt.behaviour.Behaviour):
 
     def __init__(self, node):
         super().__init__("Place")
+
         self.node = node
         self.blackboard = pt.blackboard.Blackboard()
-        # create non‑blocking client
+
+        # Create client
         self.cli = node.create_client(Arm, 'arm')
         if not self.cli.wait_for_service(timeout_sec=1.0):
             self.node.get_logger().error('Arm service not available, waiting again...')
-        # internal state
+
+        # Publisher to velocity command topic   
+        self.cmd_vel_pub = self.node.create_publisher(Twist, "/cmd_vel", 10)
+        # Drive back duration
+        self.drive_start_time = None
+        self.drive_duration = Duration(seconds=3.0)  # dura 3 secondi
+
         self.req = Arm.Request()
         self.progress = 0
         self.request_sent = False
@@ -1415,39 +1423,55 @@ class Place(pt.behaviour.Behaviour):
         if self.reset:
             self.reset_self()
 
-        # --- decide which command to send ---
+        # --- logica a stati ---
         if self.progress == 0:
-            # first: move to drop position
+            # move to drop position
             self.req.command   = self.DROP_CMD
             self.req.obj_class = self.blackboard.get('Target_type')
             if self.req.obj_class is None:
                 self.node.get_logger().error("No object class on blackboard")
                 return pt.common.Status.FAILURE
+
         elif self.progress == 1:
-            # then: return to top/home
+            # drive back
+            now = self.node.get_clock().now()
+            if self.drive_start_time is None:
+                self.drive_start_time = now
+            if now - self.drive_start_time < self.drive_duration:
+                self.drive_back()
+                return pt.common.Status.RUNNING
+            else:
+                # finished driving -> next state
+                self.progress = 2
+                self.request_sent = False  # per inviare il prossimo servizio
+                # prepara la home request
+                self.req = Arm.Request()
+        
+        elif self.progress == 2:
+            # return to top/home
             self.req.command   = self.HOME_CMD
             self.req.obj_class = self.blackboard.get('Target_type')
         else:
-            # done both steps
+            # done
             self.blackboard.set('reset goto target', True) # Reset goto target
-            return pt.common.Status.SUCCESS
-
-        # --- send the service request once ---
+            return pt.common.Status.RUNNING
+        
+        # send the service request
         if not self.request_sent:
             self.future = self.cli.call_async(self.req)
             self.request_sent = True
             return pt.common.Status.RUNNING
 
-        # --- process the response when ready ---
+        # process the response when ready
         if self.future.done():
             try:
                 resp = self.future.result()
             except Exception as e:
                 self.node.get_logger().error(f"Place service exception: {e}")
                 return pt.common.Status.FAILURE
+
             # reset so we can send the next command
             self.request_sent = False
-
             if not resp.success:
                 self.node.get_logger().error(
                     f"Arm command {self.req.command} failed: {resp.message}"
@@ -1457,9 +1481,28 @@ class Place(pt.behaviour.Behaviour):
             self.node.get_logger().info(f"Arm command {self.req.command} succeeded")
             self.progress += 1
             return pt.common.Status.RUNNING
-
+        
         # still waiting
         return pt.common.Status.RUNNING
+    
+
+    def drive_back(self):
+        wheel_radius = 0.046 # 0.04915
+        base = 0.3 # 0.30
+        max_factor = 1 / 6
+
+        max_vel = wheel_radius * max_factor # m/s
+        max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
+
+        linear_velocity=-0.5*max_vel
+        angular_velocity=0.0*max_rot
+
+        twist_msg = Twist()
+        twist_msg.linear.x = linear_velocity
+        twist_msg.linear.z = max_factor
+        twist_msg.angular.z = angular_velocity
+
+        self.cmd_vel_pub.publish(twist_msg)
 
 
     def reset_self(self):
