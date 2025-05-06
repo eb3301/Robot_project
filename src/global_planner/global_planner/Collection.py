@@ -64,13 +64,14 @@ class BehaviourTree(Node):
 
         pickup = Pickup(self) # Pickup object
         check_map = Check_Map(self)
+        place = Place(self)
         
         # create_ws, load_map, goto_target, create_ws, load_map, goto_target, 
 
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = False,
-                                          children = [pickup, goto_target, approach_object, goto_box]
+                                          children = [pickup, place, goto_target, approach_object, goto_box]
                                           )
 
         test_sel = pt.composites.Selector(name = 'Test Selector',
@@ -341,7 +342,7 @@ class Goto_Target(pt.behaviour.Behaviour):
 
         reset = self.blackboard.get('reset goto target')
         if self.status == pt.common.Status.INVALID or reset:
-            self.reset()
+            self.reset_self()
             self.objects = self.blackboard.get('objects')
         
             # Save targets in list
@@ -605,7 +606,7 @@ class Goto_Target(pt.behaviour.Behaviour):
         plt.tight_layout()
         plt.show()
 
-    def reset(self):
+    def reset_self(self):
         self.objects = None
         self.targets = None
         self.target = None
@@ -663,7 +664,7 @@ class Approach_Object(pt.behaviour.Behaviour):
     def update(self):
         reset = self.blackboard.get('reset approach')
         if self.status == pt.common.Status.INVALID or reset:
-            self.reset()
+            self.reset_self()
             self.node.get_logger().info("Running Approach Object Node")
             return pt.common.Status.RUNNING
 
@@ -1056,7 +1057,7 @@ class Approach_Object(pt.behaviour.Behaviour):
         # twist_msg.angular.z = float(w)
         # self.cmd_vel_pub.publish(twist_msg)
 
-    def reset(self):
+    def reset_self(self):
         self.x = 0.0
         self.y = 0.0
         self.theta = 0.0
@@ -1228,11 +1229,14 @@ class Pickup(pt.behaviour.Behaviour):
         self.grab_pos_response = None
         self.grab_response = None
 
+        self.blackboard.set('pickup reset', True)
+
     def update(self):
         # Check whether reset is needed
-        reset = self.blackboard.get('pickup reset')
-        if reset:
-            self.reset()
+        
+        self.reset = self.blackboard.get('pickup reset')
+        if self.reset:
+            self.reset_self()
         if self.done:
             return pt.common.Status.SUCCESS # SUPPOSED TO BE RUNNING!? -- same for progress == 5
 
@@ -1369,7 +1373,8 @@ class Pickup(pt.behaviour.Behaviour):
         
         return pt.common.Status.RUNNING
 
-    def reset(self):
+    def reset_self(self):
+        self.node.get_logger().info('Resetting pickup behaviour')
         self.done = False
         self.progress = 0
         self.request_sent = False
@@ -1379,6 +1384,7 @@ class Pickup(pt.behaviour.Behaviour):
         self.grab_pos_response = None
         self.grab_response = None
         self.req = Arm.Request()  # <-- Add this line
+        self.reset = False
         self.blackboard.set('pickup reset', False)
 
 
@@ -1400,11 +1406,14 @@ class Place(pt.behaviour.Behaviour):
         self.request_sent = False
         self.future = None
 
+        self.blackboard.set('place reset', True)
+
     def update(self):
         # Check if reset is needed
-        reset = self.blackboard.get('place reset')
-        if reset:
-            self.reset()
+        
+        self.reset = self.blackboard.get('place reset')
+        if self.reset:
+            self.reset_self()
 
         # --- decide which command to send ---
         if self.progress == 0:
@@ -1420,6 +1429,7 @@ class Place(pt.behaviour.Behaviour):
             self.req.obj_class = self.blackboard.get('Target_type')
         else:
             # done both steps
+            self.blackboard.set('reset goto target', True) # Reset goto target
             return pt.common.Status.SUCCESS
 
         # --- send the service request once ---
@@ -1452,11 +1462,12 @@ class Place(pt.behaviour.Behaviour):
         return pt.common.Status.RUNNING
 
 
-    def reset(self):
+    def reset_self(self):
         self.progress = 0
         self.request_sent = False
         self.future = None
         self.req = Arm.Request()  # <-- Add this line
+        self.reset = False
         self.blackboard.set('place reset', False)
 
 
