@@ -345,15 +345,18 @@ class ExploreSamples(pt.behaviour.Behaviour):
 
         # Pick out target
         if self.target is None or self.target_in_occupied:
+            self.node.get_logger().info('Picking target.')
             self.target_in_occupied = False
-            # if self.first_waypoint: # Ugly fix
-            #     self.fist_waypoint = False 
-            #     for i, waypoint in enumerate(self.waypoints):
-            #         if waypoint[0] > 800:
-            #             self.get_logger().info(f"X_cor: {waypoint[0]}")
-            #             self.target = self.waypoints.pop(i)
-            # else:
-            self.target = self.waypoints.pop(0) #(x, y)
+            if self.first_waypoint: # Ugly fix
+                self.first_waypoint = False 
+                for i, waypoint in enumerate(self.waypoints):
+                    if waypoint[0] > 8.25:
+                        self.target = self.waypoints.pop(i)
+                        break
+                if self.target is None:
+                    self.node.get_logger().info("ERROR. DID NOT SAMPLE A POINT IN THE CORNER :( )")
+            else:
+                self.target = self.waypoints.pop(0) #(x, y)
             self.blackboard.set('waypoints', self.waypoints) 
             self.pub_goal_marker()
 

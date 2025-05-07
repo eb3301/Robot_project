@@ -41,3 +41,5 @@ Rosbag:
 
 Start DDS: 
 	fastdds discovery -i 0 -t 192.168.128.112 -q 42100
+
+ros2 bag record -o exploration_hard1 /tf_static /motor/encoders /imu/data_raw /scan /camera/camera/depth/color/points /camera/camera/color/image_raw

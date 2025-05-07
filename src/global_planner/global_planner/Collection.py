@@ -340,7 +340,6 @@ class Goto_Target(pt.behaviour.Behaviour):
 
     def update(self):
         if self.object == 'B':
-            self.node.get_logger().info("IN NODE GOTO BOX")
             reset = self.blackboard.get('reset goto box')
         else:
             reset = self.blackboard.get('reset goto target')
@@ -443,6 +442,9 @@ class Goto_Target(pt.behaviour.Behaviour):
         '''Sample points on a circle with X cells radius around the target'''
         x0, y0 = target[1], target[2]
         self.candidates = []
+
+        if self.object == 'B':
+            distance = 0.70
         for angle_deg in range(0, 360, angle_step):
             angle_rad = np.radians(angle_deg)
             x = x0 + distance * np.cos(angle_rad)
@@ -634,9 +636,10 @@ class Goto_Target(pt.behaviour.Behaviour):
         self.done = False
         if self.object == 'B':
             self.blackboard.set('reset goto box', False)
+            self.node.get_logger().info("Reseting goto box")
         else:
             self.blackboard.set('reset goto target', False)
-
+            self.node.get_logger().info("Reseting goto target")
 
 class Approach_Object(pt.behaviour.Behaviour):
     def __init__(self, node):
@@ -959,8 +962,10 @@ class Approach_Object(pt.behaviour.Behaviour):
             self.cmd_vel_pub.publish(twist_msg)
 
             if self.blackboard.get('is a box') is True:
+                self.node.get_logger().info('Reset Place is set to True')
                 self.blackboard.set('place reset', True)
             else:
+                self.node.get_logger().info("Reset Pickyp is set to True")
                 self.blackboard.set('pickup reset', True)
 
             self.done = True   
@@ -1085,7 +1090,7 @@ class Approach_Object(pt.behaviour.Behaviour):
         self.done = False
 
         self.blackboard.set('reset approach', False)
-
+        self.node.get_logger().info("Reseting Approach Node")
 
 # class Pickup(pt.behaviour.Behaviour):
 #     def __init__(self,node):
@@ -1242,8 +1247,8 @@ class Pickup(pt.behaviour.Behaviour):
         self.grab_pos_response = None
         self.grab_response = None
 
-        # self.blackboard.set('pickup reset', False) ###############################3
-        # self.blackboard.set('Target_type', 'cube') ##########################################
+        #self.blackboard.set('pickup reset', False) ###############################3
+        #self.blackboard.set('Target_type', '3') ##########################################
 
     def update(self):
         # Check whether reset is needed
@@ -1251,7 +1256,7 @@ class Pickup(pt.behaviour.Behaviour):
         if self.reset:
             self.reset_self()
         if self.done:
-            return pt.common.Status.SUCCESS # SUPPOSED TO BE RUNNING!? -- same for progress == 5
+            return pt.common.Status.RUNNING # SUPPOSED TO BE RUNNING!? -- same for progress == 5
 
         self.node.get_logger().info(f"Progress: {self.progress}")
     
@@ -1259,6 +1264,13 @@ class Pickup(pt.behaviour.Behaviour):
         # 0) Initialize object class
         if self.progress == 0: 
             self.obj_class = self.blackboard.get('Target_type')
+            if self.obj_class == '1':
+                self.obj_class = 'cube'
+            elif self.obj_class == '2':
+                self.obj_class = 'sphere'
+            elif self.obj_class == '3':
+                self.obj_class = 'animal'
+
             if not self.obj_class:
                 self.node.get_logger().error("No object class on blackboard.")
                 return pt.common.Status.FAILURE
@@ -1348,9 +1360,10 @@ class Pickup(pt.behaviour.Behaviour):
                     return pt.common.Status.FAILURE
                 # else:
                 #     time.sleep(2)
+                self.grab_response = resp
                 self.progress = 5
 
-                self.grab_response = resp
+                
             return pt.common.Status.RUNNING
 
         # 5) DRIVE BACK (command=8) --- I dont understand how this works /Loke
@@ -1400,7 +1413,7 @@ class Pickup(pt.behaviour.Behaviour):
         self.req = Arm.Request()  # <-- Add this line
         self.reset = False
         self.blackboard.set('pickup reset', False)
-
+        self.node.get_logger().info("Reseting Pickup")
 
 class Place(pt.behaviour.Behaviour):
     DROP_CMD = 4
@@ -1528,7 +1541,7 @@ class Place(pt.behaviour.Behaviour):
         self.req = Arm.Request()  # <-- Add this line
         self.reset = False
         self.blackboard.set('place reset', False)
-
+        self.node.get_logger().info("Reseting Place")
 
 class Check_Map(pt.behaviour.Behaviour):
     def __init__(self, node):

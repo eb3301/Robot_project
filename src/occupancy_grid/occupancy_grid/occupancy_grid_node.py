@@ -21,6 +21,8 @@ from builtin_interfaces.msg import Duration
 from rclpy.qos import QoSProfile, QoSDurabilityPolicy, QoSReliabilityPolicy
 from skimage.draw import line
 from matplotlib.path import Path
+from shapely.geometry import Polygon
+from shapely.geometry import Point
 
 class OccupancyGridPublisher(Node):
     # Constants for grid and object properties
@@ -67,8 +69,15 @@ class OccupancyGridPublisher(Node):
         package_share_dir = get_package_share_directory('occupancy_grid')
         ws_path = os.path.join(package_share_dir, 'data', 'workspace_3.tsv')
         if os.path.exists(ws_path):
+            
             self.workspace_coordinates = self.read_workspace_coordinates(ws_path)
+            shapely_polygon = Polygon(self.workspace_coordinates)
             self.workspace_polygon = Path(self.workspace_coordinates)
+            self.shrunk_polygon = shapely_polygon.buffer(-self.BORDER_THICKNESS)
+            self.obj_polygon = shapely_polygon.buffer(-0.04)
+
+            #self.workspace_polygon = Path(self.workspace_coordinates)
+            #self.small_workspace_polygon = Path(list(self.workspace_polygon.buffer(-self.BORDER_THICKNESS).exterior.coords))
         else:
             self.get_logger().error(f"Workspace file {ws_path} not found.")
 
@@ -121,7 +130,10 @@ class OccupancyGridPublisher(Node):
                 for i, (obj_type, obj_pos) in enumerate(self.detected_objects):
                     if obj_type == 'trash':
                         self.detected_objects.pop(i)
-                        self.get_logger().info(f"Removed: {i}, type: {obj_type}")
+                        #self.get_logger().info(f"Removed: {i}, type: {obj_type}")
+                    if not self.obj_polygon.contains(Point(obj_pos.x, obj_pos.y)):
+                        self.detected_objects.pop(i)
+                        self.get_logger().info(f"Removed a object outside obj_polygon")
 
                 self.publish_objects(self.detected_objects)
 
@@ -360,7 +372,8 @@ class OccupancyGridPublisher(Node):
                         world_x = self.origin_x + x * self.resolution
                         world_y = self.origin_y + y * self.resolution
 
-                        if self.workspace_polygon.contains_point((world_x, world_y)):
+                        if self.shrunk_polygon.contains(Point(world_x, world_y)):
+                        #if self.shrunk_polygon.contains_point((world_x, world_y)) : 
                             grid[y, x] = -1
 
                 # Mark obstacle cell

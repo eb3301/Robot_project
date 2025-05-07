@@ -32,7 +32,7 @@ class WheelController(Node):
 
     def twist_callback(self, msg: Twist):
         # Update linear and rotational velocities based on cmd_vel message
-        self.vel_x = msg.linear.x*0.6
+        self.vel_x = msg.linear.x*0.7
         self.max_factor = msg.linear.z
         self.rot_z = msg.angular.z
 

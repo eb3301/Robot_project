@@ -297,7 +297,7 @@ class Detection(Node):
             volume = 1000*np.prod(bbox_size)*magn**2
             npoints=cluster_points.shape[0]
 
-            x_lim = 0.35
+            x_lim = 0.2
             x_min, x_max = -x_lim, x_lim
             if (bbox_min[0] < x_min or bbox_max[0] > x_max):
                 continue

@@ -35,7 +35,9 @@ class EKF_Algorithm(Node):
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self, spin_thread = True)
         self._tf_broadcaster = TransformBroadcaster(self)
-
+        
+        # Broadcast timer
+        self.broadcast_timer = self.create_timer(1.0, self.broadcast_transform)
 
         # EKF Parameters
         self.ekf_x = np.array([0.0, 0.0, 0.0]) # Initial state
@@ -51,6 +53,12 @@ class EKF_Algorithm(Node):
         # None
         self.yaw_offset = None
         self.imu_yaw = 0
+
+        # Initialise variables needed for odom-base_link
+        self.x = 0
+        self.y = 0
+        self.t = None
+        self.yaw = 0
         
         self.get_logger().info("Initialised EKF node...")
 
@@ -115,8 +123,8 @@ class EKF_Algorithm(Node):
             self.ekf_x = predicted_pose.T + kalman_gain * yaw_error
             
             x, y, yaw = self.ekf_x.flatten()
-            yaw = self.normalize_angle(yaw)
-            self.broadcast_transform(t, x, y, yaw)
+            self.yaw = self.normalize_angle(yaw)
+            self.x, self.y, self.yaw = x, y, yaw # Save for odom-base_link transform
             self.publish_pose(x, y, yaw)
 
 
@@ -129,6 +137,7 @@ class EKF_Algorithm(Node):
         self.imu_counter= 0
         '''Process imu data and perform update step '''
 
+        self.t = msg.header.stamp
 
         # Transform data to correct orientation
         q = np.array([msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w])
@@ -198,10 +207,14 @@ class EKF_Algorithm(Node):
         self.pose_pub.publish(pose_msg)
         
 
-    def broadcast_transform(self, time, x, y, yaw):
+    def broadcast_transform(self):
         """Takes a 2D pose and broadcasts it as a ROS transform. """
+        time, x, y, yaw = self.t, self.x, self.y, self.yaw
+        if time is None:
+            return
+
         t = TransformStamped()
-        t.header.stamp = time.to_msg()
+        t.header.stamp = time   
         t.header.frame_id = 'odom'
         t.child_frame_id = 'base_link'
 
