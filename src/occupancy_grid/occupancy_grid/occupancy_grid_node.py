@@ -72,6 +72,7 @@ class OccupancyGridPublisher(Node):
             
             self.workspace_coordinates = self.read_workspace_coordinates(ws_path)
             shapely_polygon = Polygon(self.workspace_coordinates)
+            shapely_polygon = Polygon(self.workspace_coordinates)
             self.workspace_polygon = Path(self.workspace_coordinates)
             self.shrunk_polygon = shapely_polygon.buffer(-self.BORDER_THICKNESS)
             self.obj_polygon = shapely_polygon.buffer(-0.04)
