@@ -87,7 +87,8 @@ class AutoControll(Node):
             self.current_position = (x, y)
             self.current_heading = self.compute_heading(map_pose.orientation)
         except TransformException:
-            self.get_logger().info('No transform found')
+            # self.get_logger().info('No transform found')
+            return
 
     # Compute heading from Loke
     def compute_heading(self, orientation):

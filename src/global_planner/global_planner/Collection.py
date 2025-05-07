@@ -71,7 +71,7 @@ class BehaviourTree(Node):
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = False,
-                                          children = [pickup, place, goto_target, approach_object, goto_box]
+                                          children = [goto_target, approach_object, pickup, goto_box, place]
                                           )
 
         test_sel = pt.composites.Selector(name = 'Test Selector',
@@ -212,7 +212,6 @@ class Load_Map(pt.behaviour.Behaviour):
                 obj_tuple = (str(obj[0]), float(obj[1])/100, float(obj[2])/100, float(obj[3]))
                 objects.append(obj_tuple)
         self.blackboard.set('objects', objects)
-        self.blackboard.set('Target_type', objects[0])
         self.publish_objects(objects)
 
         return pt.common.Status.SUCCESS
@@ -324,6 +323,7 @@ class Goto_Target(pt.behaviour.Behaviour):
         self.pos = (0.0, 0.0)
 
         self.blackboard.set('reset goto target', False)
+        self.blackboard.set('reset goto box', False)
 
         self.grid_sub = self.node.create_subscription(OccupancyGrid, '/map', self.grid_callback, 10)
         self.pose_sub = self.node.create_subscription(PoseWithCovarianceStamped, '/map_pose', self.pose_callback, 10)
@@ -339,8 +339,12 @@ class Goto_Target(pt.behaviour.Behaviour):
         print('Initialising Coordinate Retriever...')
 
     def update(self):
-
-        reset = self.blackboard.get('reset goto target')
+        if self.object == 'B':
+            self.node.get_logger().info("IN NODE GOTO BOX")
+            reset = self.blackboard.get('reset goto box')
+        else:
+            reset = self.blackboard.get('reset goto target')
+            
         if self.status == pt.common.Status.INVALID or reset:
             self.reset_self()
             self.objects = self.blackboard.get('objects')
@@ -363,7 +367,6 @@ class Goto_Target(pt.behaviour.Behaviour):
             return pt.common.Status.FAILURE
         if self.arrived:
             if self.rotated:
-                self.blackboard.set('reset approach', True)
                 self.done = True
                 self.node.get_logger().info("Go To Target behavior done. Continuing...")
                 return pt.common.Status.SUCCESS
@@ -385,7 +388,7 @@ class Goto_Target(pt.behaviour.Behaviour):
                     closest_target = target
                     min_dist = ds
             self.target = closest_target
-
+            self.obj_class = self.blackboard.set('Target_type',self.target[0])
             if self.object != 'B':
                 # Remove target from list of objects
                 new_objects = []
@@ -419,7 +422,7 @@ class Goto_Target(pt.behaviour.Behaviour):
             self.sampled_point = (x, y, z)
             self.pub_goal_marker()
 
-            self.node.get_logger().info("Go To Target: Sampled Point")
+            self.node.get_logger().info(f"Go To Target: Sampled Point. Going to {self.object}")
             # self.visualise_grid_and_targets()
 
     def grid_callback(self, msg: OccupancyGrid):
@@ -505,6 +508,12 @@ class Goto_Target(pt.behaviour.Behaviour):
                         twist_msg = Twist()
                         self.cmd_vel_pub.publish(twist_msg)
                         self.rotated = True
+                        if self.object == 'B':
+                            self.blackboard.set('is a box', True)
+                        else:
+                            self.blackboard.set('is a box', False)
+                        self.blackboard.set('reset approach', True)
+
                         self.node.get_logger().info('Robot is in position to look for the object!')
 
     def compute_heading(self, orientation):
@@ -623,7 +632,10 @@ class Goto_Target(pt.behaviour.Behaviour):
         self.origin_y = None
 
         self.done = False
-        self.blackboard.set('reset goto target', False)
+        if self.object == 'B':
+            self.blackboard.set('reset goto box', False)
+        else:
+            self.blackboard.set('reset goto target', False)
 
 
 class Approach_Object(pt.behaviour.Behaviour):
@@ -640,7 +652,6 @@ class Approach_Object(pt.behaviour.Behaviour):
         self.done = True
 
         self.blackboard = pt.blackboard.Blackboard()
-        self.blackboard.set('reset approach', False)
 
         # Subscriber to the point cloud topic
         self._sub = self.node.create_subscription(PointCloud2, '/camera/camera/depth/color/points', self.cloud_callback, 10)
@@ -670,7 +681,6 @@ class Approach_Object(pt.behaviour.Behaviour):
 
         # Check if done
         if self.done:
-            self.blackboard.set('pickup reset', True)
             return pt.common.Status.SUCCESS
 
         return pt.common.Status.RUNNING
@@ -947,6 +957,12 @@ class Approach_Object(pt.behaviour.Behaviour):
         if self.distance_to_target is not None and self.distance_to_target < 0.20: # ----------------------------------------- 
             twist_msg = Twist()
             self.cmd_vel_pub.publish(twist_msg)
+
+            if self.blackboard.get('is a box') is True:
+                self.blackboard.set('place reset', True)
+            else:
+                self.blackboard.set('pickup reset', True)
+
             self.done = True   
             self.node.get_logger().info("Approach Object Node: Completed. Ready for pick up!")
  
@@ -977,7 +993,7 @@ class Approach_Object(pt.behaviour.Behaviour):
         angle_to_target = np.arctan2(vector_to_target[1], vector_to_target[0])
 
         # Steering angle is the difference between the vehicle's heading and the angle to the target
-        steering_angle = angle_to_target - current_heading
+        steering_angle = angle_to_target - current_heading + np.deg2rad(10)
 
         # Normalize the steering angle to be in the range of -pi to pi
         steering_angle = (steering_angle + np.pi) % (2 * np.pi) - np.pi
@@ -1061,13 +1077,10 @@ class Approach_Object(pt.behaviour.Behaviour):
         self.x = 0.0
         self.y = 0.0
         self.theta = 0.0
-
         self.x_obj = None
         self.y_obj = None
-
         self.distance_to_target = None
         self.latest_cloud = None
-
         self.object_found = False
         self.done = False
 
@@ -1229,11 +1242,11 @@ class Pickup(pt.behaviour.Behaviour):
         self.grab_pos_response = None
         self.grab_response = None
 
-        self.blackboard.set('pickup reset', True)
+        # self.blackboard.set('pickup reset', False) ###############################3
+        # self.blackboard.set('Target_type', 'cube') ##########################################
 
     def update(self):
         # Check whether reset is needed
-        
         self.reset = self.blackboard.get('pickup reset')
         if self.reset:
             self.reset_self()
@@ -1245,7 +1258,6 @@ class Pickup(pt.behaviour.Behaviour):
 
         # 0) Initialize object class
         if self.progress == 0: 
-            self.blackboard.set('Target_type', 'cube')
             self.obj_class = self.blackboard.get('Target_type')
             if not self.obj_class:
                 self.node.get_logger().error("No object class on blackboard.")
@@ -1334,14 +1346,16 @@ class Pickup(pt.behaviour.Behaviour):
                 if not resp.success:
                     self.node.get_logger().error(f"Grab failed: {resp.message}")
                     return pt.common.Status.FAILURE
+                # else:
+                #     time.sleep(2)
+                self.progress = 5
 
                 self.grab_response = resp
-                self.progress = 5
             return pt.common.Status.RUNNING
 
         # 5) DRIVE BACK (command=8) --- I dont understand how this works /Loke
         if self.progress == 5: # -- Done?
-            self.blackboard.set('reset goto target', True)
+            self.blackboard.set('reset goto box', True)
             self.done = True
             return pt.common.Status.RUNNING 
             # if not self.request_sent:
@@ -1407,18 +1421,18 @@ class Place(pt.behaviour.Behaviour):
         self.cmd_vel_pub = self.node.create_publisher(Twist, "/cmd_vel", 10)
         # Drive back duration
         self.drive_start_time = None
-        self.drive_duration = Duration(seconds=3.0)  # dura 3 secondi
+        self.drive_duration = 1.0 # dura 3 secondi
 
         self.req = Arm.Request()
         self.progress = 0
         self.request_sent = False
         self.future = None
 
-        self.blackboard.set('place reset', True)
 
     def update(self):
         # Check if reset is needed
-        
+
+        self.node.get_logger().info(f"Progress: {self.progress}")
         self.reset = self.blackboard.get('place reset')
         if self.reset:
             self.reset_self()
@@ -1437,7 +1451,9 @@ class Place(pt.behaviour.Behaviour):
             now = self.node.get_clock().now()
             if self.drive_start_time is None:
                 self.drive_start_time = now
-            if now - self.drive_start_time < self.drive_duration:
+            time_driven = now - self.drive_start_time
+            if time_driven.nanoseconds * 1e-9 < self.drive_duration:
+                self.node.get_logger().info(f"Driving back")
                 self.drive_back()
                 return pt.common.Status.RUNNING
             else:
@@ -1453,7 +1469,7 @@ class Place(pt.behaviour.Behaviour):
             self.req.obj_class = self.blackboard.get('Target_type')
         else:
             # done
-            self.blackboard.set('reset goto target', True) # Reset goto target
+            self.blackboard.set('reset goto target', True)
             return pt.common.Status.RUNNING
         
         # send the service request
@@ -1494,7 +1510,7 @@ class Place(pt.behaviour.Behaviour):
         max_vel = wheel_radius * max_factor # m/s
         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
 
-        linear_velocity=-0.5*max_vel
+        linear_velocity=-max_vel
         angular_velocity=0.0*max_rot
 
         twist_msg = Twist()
@@ -1512,7 +1528,6 @@ class Place(pt.behaviour.Behaviour):
         self.req = Arm.Request()  # <-- Add this line
         self.reset = False
         self.blackboard.set('place reset', False)
-
 
 
 class Check_Map(pt.behaviour.Behaviour):
@@ -1535,6 +1550,7 @@ class Check_Map(pt.behaviour.Behaviour):
             return pt.common.Status.FAILURE
         else:
             return pt.common.Status.SUCCESS
+
 
 def main():
     rclpy.init()

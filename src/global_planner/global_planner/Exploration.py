@@ -304,6 +304,7 @@ class ExploreSamples(pt.behaviour.Behaviour):
         self.target = None
         self.target_in_occupied = False
         self.detection_active = False
+        self.first_waypoint = True
 
     def update(self):
         if self.status == pt.common.Status.INVALID:
@@ -345,8 +346,15 @@ class ExploreSamples(pt.behaviour.Behaviour):
         # Pick out target
         if self.target is None or self.target_in_occupied:
             self.target_in_occupied = False
-            self.target = self.waypoints.pop(0)
-            self.blackboard.set('waypoints', self.waypoints)
+            # if self.first_waypoint: # Ugly fix
+            #     self.fist_waypoint = False 
+            #     for i, waypoint in enumerate(self.waypoints):
+            #         if waypoint[0] > 800:
+            #             self.get_logger().info(f"X_cor: {waypoint[0]}")
+            #             self.target = self.waypoints.pop(i)
+            # else:
+            self.target = self.waypoints.pop(0) #(x, y)
+            self.blackboard.set('waypoints', self.waypoints) 
             self.pub_goal_marker()
 
         print('Exploring...')        

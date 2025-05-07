@@ -176,7 +176,8 @@ class Planner(Node):
       self.x0 = map_pose.position.x
       self.y0 = map_pose.position.y
     except TransformException:
-      self.get_logger().info('No transform found')
+      # self.get_logger().info('No transform found')
+      return
 
 
   # To get the position of the target when it is published
@@ -190,6 +191,7 @@ class Planner(Node):
     # Publish zero velocity when planning
     twist_msg = Twist()
     self.cmd_vel_pub.publish(twist_msg)
+    self.get_logger().info('Goal recived')
 
     # Stop planning
     if msg.pose.position.z == -1:
