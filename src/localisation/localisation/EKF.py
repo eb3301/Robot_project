@@ -37,7 +37,7 @@ class EKF_Algorithm(Node):
         self._tf_broadcaster = TransformBroadcaster(self)
         
         # Broadcast timer
-        self.broadcast_timer = self.create_timer(1.0, self.broadcast_transform)
+        #self.broadcast_timer = self.create_timer(1.0, self.broadcast_transform)
 
         # EKF Parameters
         self.ekf_x = np.array([0.0, 0.0, 0.0]) # Initial state
@@ -125,6 +125,7 @@ class EKF_Algorithm(Node):
             x, y, yaw = self.ekf_x.flatten()
             self.yaw = self.normalize_angle(yaw)
             self.x, self.y, self.yaw = x, y, yaw # Save for odom-base_link transform
+            self.broadcast_transform()
             self.publish_pose(x, y, yaw)
 
 

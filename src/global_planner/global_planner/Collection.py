@@ -957,7 +957,7 @@ class Approach_Object(pt.behaviour.Behaviour):
         max_vel = wheel_radius * max_factor # m/s
         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
         self.node.get_logger().info(f'Distance to target: {self.distance_to_target}')
-        if self.distance_to_target is not None and self.distance_to_target < 0.20: # ----------------------------------------- 
+        if self.distance_to_target is not None and self.distance_to_target < 0.18: # ----------------------------------------- 
             twist_msg = Twist()
             self.cmd_vel_pub.publish(twist_msg)
 
@@ -1256,7 +1256,7 @@ class Pickup(pt.behaviour.Behaviour):
         if self.reset:
             self.reset_self()
         if self.done:
-            return pt.common.Status.RUNNING # SUPPOSED TO BE RUNNING!? -- same for progress == 5
+            return pt.common.Status.SUCCESS # SUPPOSED TO BE RUNNING!? -- same for progress == 5
 
         self.node.get_logger().info(f"Progress: {self.progress}")
     
@@ -1370,7 +1370,7 @@ class Pickup(pt.behaviour.Behaviour):
         if self.progress == 5: # -- Done?
             self.blackboard.set('reset goto box', True)
             self.done = True
-            return pt.common.Status.RUNNING 
+            return pt.common.Status.SUCCESS 
             # if not self.request_sent:
             #     self.req = Arm.Request()
             #     self.req.command = 8
