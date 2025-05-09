@@ -45,10 +45,8 @@ class BehaviourTree(Node):
         self.blackboard = pt.blackboard.Blackboard()
 
         # Initialise Behaviours
-        create_ws = Create_ws(self) # Read workspace and map file
+        create_ws = Create_ws(self)
         load_map = Load_Map(self)
-
-
 
         # Get target coordinates
         ''' Possible arguments:
@@ -61,17 +59,15 @@ class BehaviourTree(Node):
         goto_target = Goto_Target(self, 'object')
         approach_object = Approach_Object(self)
         goto_box = Goto_Target(self, 'B')
+        approach_box = Approach_Object(self)
 
-        pickup = Pickup(self) # Pickup object
+        pickup = Pickup(self) 
         check_map = Check_Map(self)
         place = Place(self)
-        
-        # create_ws, load_map, goto_target, create_ws, load_map, goto_target, 
-
 
         test_seq = pt.composites.Sequence(name = 'Test Sequence', 
                                           memory = False,
-                                          children = [goto_target, approach_object, pickup, goto_box, place]
+                                          children = [goto_target, approach_object, pickup, goto_box, approach_box, place]
                                           )
 
         test_sel = pt.composites.Selector(name = 'Test Selector',
@@ -84,11 +80,8 @@ class BehaviourTree(Node):
                                           children = [create_ws, load_map, test_sel]
                                           )
 
-
         self.BT = pt.trees.BehaviourTree(root = base_seq)
-
         self.timer = self.create_timer(0.5, self.tick_tree)
-
 
     def tick_tree(self):
         '''Ticks the tree and stops if sequence is complete'''
@@ -285,7 +278,7 @@ class Load_Map(pt.behaviour.Behaviour):
             elif object[0] == 'B': # Box
                 # Marker Colour
                 marker.color.a = 1.0  # Alpha
-                marker.color.r = 1.0  # Black
+                marker.color.r = 1.0  # 'Black'
                 marker.color.g = 1.0
                 marker.color.b = 1.0
 
@@ -367,7 +360,8 @@ class Goto_Target(pt.behaviour.Behaviour):
         if self.arrived:
             if self.rotated:
                 self.done = True
-                self.node.get_logger().info("Go To Target behavior done. Continuing...")
+                self.blackboard.set('reset approach', self.object)
+                self.node.get_logger().info("Go To Target behavior done. Going to approach")
                 return pt.common.Status.SUCCESS
             else:
                 self.node.get_logger().info("Rotating...")
@@ -387,7 +381,7 @@ class Goto_Target(pt.behaviour.Behaviour):
                     closest_target = target
                     min_dist = ds
             self.target = closest_target
-            self.obj_class = self.blackboard.set('Target_type',self.target[0])
+            self.blackboard.set('Target_type',self.target[0])
             if self.object != 'B':
                 # Remove target from list of objects
                 new_objects = []
@@ -407,14 +401,31 @@ class Goto_Target(pt.behaviour.Behaviour):
             # Find the best candidate
             best_candidate = None
             max_free_cells = -1
-            for point in candidates:
-                # Count free cells around this candidate
-                free_cells = self.count_free_cells_around(point, radius = 5)
+            # for point in candidates:
+            #     # Count free cells around this candidate
+            #     free_cells = self.count_free_cells_around(point, radius = 5)
 
-                # Update best candidate
+            #     # Update best candidate
+            #     if free_cells > max_free_cells:
+            #         max_free_cells = free_cells
+            #         best_candidate = point
+
+            qualified_candidates = [] # Johan change to closest point
+            for point in candidates:
+                free_cells = self.count_free_cells_around(point, radius=5)
+
                 if free_cells > max_free_cells:
                     max_free_cells = free_cells
-                    best_candidate = point
+                    qualified_candidates = [point]
+                elif free_cells == max_free_cells:
+                    qualified_candidates.append(point)
+
+            x0, y0 = self.pos
+            best_candidate = min(
+                qualified_candidates,
+                key=lambda p: (p[0] - x0)**2 + (p[1] - y0)**2
+            )
+                    
             x = (best_candidate[0] * self.resolution) + self.origin_x    
             y = (best_candidate[1] * self.resolution) + self.origin_y
             z = np.arctan2(self.target[2] - y, self.target[1] - x)  
@@ -501,22 +512,18 @@ class Goto_Target(pt.behaviour.Behaviour):
                         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
                         twist_msg = Twist()
                         twist_msg.angular.z = d_z / np.abs(d_z) * np.pi / 2 * max_rot
-                        # self.node.get_logger().info(f"Sending twist msg {d_z} rad/s")
-                        #twist_msg.angular.z = np.pi / 4 * max_rot
-                        # self.node.get_logger().info(f"Sending twist {np.pi/2} rad/s")
                         twist_msg._linear.z = max_factor
                         self.cmd_vel_pub.publish(twist_msg)
                     else: 
                         twist_msg = Twist()
                         self.cmd_vel_pub.publish(twist_msg)
                         self.rotated = True
-                        if self.object == 'B':
-                            self.blackboard.set('is a box', True)
-                        else:
-                            self.blackboard.set('is a box', False)
-                        self.blackboard.set('reset approach', True)
+                        # if self.object == 'B':
+                        #     self.blackboard.set('is a box', True)
+                        # else:
+                        #     self.blackboard.set('is a box', False)
 
-                        self.node.get_logger().info('Robot is in position to look for the object!')
+                        self.node.get_logger().info('Done rotating')
 
     def compute_heading(self, orientation):
         if isinstance(orientation, np.ndarray):
@@ -641,6 +648,7 @@ class Goto_Target(pt.behaviour.Behaviour):
             self.blackboard.set('reset goto target', False)
             self.node.get_logger().info("Reseting goto target")
 
+
 class Approach_Object(pt.behaviour.Behaviour):
     def __init__(self, node):
         super().__init__('Approaching Object')
@@ -676,8 +684,8 @@ class Approach_Object(pt.behaviour.Behaviour):
         self.node.get_logger().info("Approaching object...")
      
     def update(self):
-        reset = self.blackboard.get('reset approach')
-        if self.status == pt.common.Status.INVALID or reset:
+        self.reset = self.blackboard.get('reset approach')
+        if self.status == pt.common.Status.INVALID or self.reset != '0':
             self.reset_self()
             self.node.get_logger().info("Running Approach Object Node")
             return pt.common.Status.RUNNING
@@ -961,15 +969,15 @@ class Approach_Object(pt.behaviour.Behaviour):
             twist_msg = Twist()
             self.cmd_vel_pub.publish(twist_msg)
 
-            if self.blackboard.get('is a box') is True:
+            if self.obj_class == 'B':
                 self.node.get_logger().info('Reset Place is set to True')
                 self.blackboard.set('place reset', True)
             else:
-                self.node.get_logger().info("Reset Pickyp is set to True")
+                self.node.get_logger().info("Reset Pickup is set to True")
                 self.blackboard.set('pickup reset', True)
 
             self.done = True   
-            self.node.get_logger().info("Approach Object Node: Completed. Ready for pick up!")
+            self.node.get_logger().info("Approach Object Node: Completed.")
  
         else:
             # Calculate the steering angle to the target point
@@ -1089,143 +1097,11 @@ class Approach_Object(pt.behaviour.Behaviour):
         self.object_found = False
         self.done = False
 
-        self.blackboard.set('reset approach', False)
+        self.obj_class = self.reset
+
+        self.blackboard.set('reset approach', '0')
         self.node.get_logger().info("Reseting Approach Node")
 
-# class Pickup(pt.behaviour.Behaviour):
-#     def __init__(self,node):
-#         super().__init__("Pickup")
-#         self.node = node
-#         self.cli = self.node.create_client(Arm, 'arm')
-#         if not self.cli.wait_for_service(timeout_sec=1.0):
-#             self.node.get_logger().info('Arm service not available, waiting again...')
-#         self.req = Arm.Request()
-#         # self.future = self.cli.call_async(self.req)
-#         self.blackboard = pt.blackboard.Blackboard()
-#         self.request_sent = False
-#         self.look_response = None
-#         self.grab_pos_response = None
-#         self.grab_response = None
-#         self.drive_response = None
-#         self.sent_look = False
-#         self.sent_pick = False
-#         self.sent_grab = False
-#         self.sent_drive = False
-#         self.progress = 0
-
-#         self.test = True
-
-#     def update(self):
-#         # if self.test:
-#         #     self.test = False
-#         #     self.blackboard.set('reset goto target', True)
-#         # return pt.common.Status.RUNNING
-
-#         if self.progress == 0:
-#             self.blackboard.set('Target_type', 'cube')
-#             self.obj_class = self.blackboard.get('Target_type')
-            
-#             if self.obj_class is None:
-#                 self.node.get_logger().error("No object class specified on blackboard.")
-#                 return pt.common.Status.FAILURE
-#             self.req.obj_class = self.obj_class
-#             self.progress = 1
-
-#         elif self.progress == 1: # Here the robot will look and return if it sees
-#             if not self.sent_look:
-#                 self.node.get_logger().info("going to look position")
-#                 self.look_response = self.send_request(2, self.obj_class, [],[]) # do we need obj class as well? 
-#                 self.sent_look = True
-#                 self.node.get_logger().info("TestTesTest")
-#             self.node.get_logger().info(f"{self.look_response}")
-#             if self.look_response != None and self.look_response.success:
-#                 self.progress = 3
-#                 print("success: "+ str(self.look_response.success))
-#                 self.look_response.success = False
-
-#         elif self.progress == 3:
-#             self.obj_grabbed = False
-#             print("going to picking position now")
-#             time.sleep(2.5) # might swith to checking that time is 2.5 more than at start
-#             if not self.sent_pick:
-#                 self.grab_pos_response = self.send_request(6, self.obj_class, [],[]) 
-#                 self.sent_pick = True
-#             if self.grab_pos_response != None and self.grab_pos_response.success:
-#                 self.progress = 4
-#             elif self.look_response != None and not self.look_response.success:
-#                 self.progress = 5
-
-#         elif self.progress == 4:
-#             time.sleep(2.0)
-#             print("Grabbing object now")
-#             time.sleep(1.0)
-#             if not self.sent_grab:
-#                 self.grab_response = self.send_request(7, self.obj_class, self.grab_pos_response.arm_pos,[])
-#                 self.sent_grab = True
-#             if self.grab_response != None and self.grab_response.success:
-#                 self.progress = 6
-#                 response = self.send_request(8, self.obj_class, [], self.grab_response.xyfix)
-
-#         elif self.progress == 5:
-#             print("Driving now, error is: " + self.grab_response.message + " and obj is at: " + str(self.grab_response.xyfix))
-
-#             if not self.sent_drive:
-#                 self.drive_response = self.send_request(8, self.obj_class, [],self.grab_response.xyfix) 
-#                 self.sent_drive = True
-            
-#             if self.drive_response != None and self.drive_response.success:
-#                 self.progress == 3
-
-#         elif self.progress == 6:
-#             return pt.common.Status.SUCCESS
-        
-#         # self.node.get_logger().info(f"{self.progress}")
-
-#         # if self.future.done():
-#         #     if self.future.result() is not None:
-#         #         response = self.future.result()
-#         #         if response.success:
-#         #             self.node.get_logger().info("pickup successful")
-#         #             return pt.common.Status.SUCCESS
-#         #         else:
-#         #             self.node.get_logger().info("pickup failed: " + response.message)
-#         #             return pt.common.Status.FAILURE
-#         #     else:
-#         #         self.node.get_logger().error(f"Service call failed:")
-#         #         return pt.common.Status.FAILURE
-
-#         if not self.request_sent:
-#             self.future = self.cli.call_async(self.req)
-#             self.request_sent = True
-
-#         if self.future.done():
-#             self.resp = self.future.result()
-#             return pt.common.Status.RUNNING
-#         else:
-#             # waiting
-#             return pt.common.Status.RUNNING
-
-#     # def send_request(self, command, obj_class):
-#     #     self.req.xy[0] = command
-#     #     self.req.obj_class = obj_class
-#     #     self.future = self.cli.call_async(self.req)
-#     #     rclpy.spin_until_future_complete(self, self.future)
-#     #     return self.future.result()
-    
-#     def send_request(self, command, obj_class, arm_pos, xyfix):
-#         self.req.command = command  
-#         self.req.obj_class = obj_class
-#         self.req.arm_pos = arm_pos
-#         self.req.xy = xyfix
-#         self.future = self.cli.call_async(self.req)
-#         self.node.get_logger().info('Before future')
-#         # rclpy.spin_until_future_complete(self.node, self.future) #, timeout_sec=5)
-#         self.node.get_logger().info('After future')
-#         return self.future.result()
-    
-#     def pickup(self,obj='1'): # cube
-#         response = self.send_request(2,obj)
-#         self.node.get_logger().info('Response from arm is: ' + str(response.success))
            
 class Pickup(pt.behaviour.Behaviour):
     def __init__(self, node):
@@ -1358,45 +1234,17 @@ class Pickup(pt.behaviour.Behaviour):
                 if not resp.success:
                     self.node.get_logger().error(f"Grab failed: {resp.message}")
                     return pt.common.Status.FAILURE
-                # else:
-                #     time.sleep(2)
-                self.grab_response = resp
-                self.progress = 5
 
-                
+                self.grab_response = resp
+                self.progress = 5      
             return pt.common.Status.RUNNING
 
-        # 5) DRIVE BACK (command=8) --- I dont understand how this works /Loke
-        if self.progress == 5: # -- Done?
-            self.blackboard.set('reset goto box', True)
+        # 5) DRIVE BACK (command=8) 
+        if self.progress == 5:
+            self.node.get_logger().info('Pickup behaviour done')
+            self.blackboard.set('reset goto box', True) # This does not work for the first iteration??
             self.done = True
             return pt.common.Status.SUCCESS 
-            # if not self.request_sent:
-            #     self.req = Arm.Request()
-            #     self.req.command = 8
-            #     self.req.obj_class = self.obj_class
-            #     self.req.arm_pos = []
-            #     self.req.xy = self.grab_response.xyfix
-            #     self.future = self.cli.call_async(self.req)
-            #     self.request_sent = True
-            #     time.sleep(2)
-            #     return pt.common.Status.RUNNING
-
-            # if self.future.done():
-            #     try:
-            #         resp = self.future.result()
-            #     except Exception as e:
-            #         self.node.get_logger().error(f"Drive back exception: {e}")
-            #         return pt.common.Status.FAILURE
-
-            #     self.request_sent = False
-            #     if not resp.success:
-            #         self.node.get_logger().error(f"Drive back failed: {resp.message}")
-            #         return pt.common.Status.FAILURE
-
-            #     self.blackboard.set('place reset', True)
-            #     return pt.common.Status.SUCCESS
-            # return pt.common.Status.RUNNING
         
         return pt.common.Status.RUNNING
 
@@ -1413,7 +1261,7 @@ class Pickup(pt.behaviour.Behaviour):
         self.req = Arm.Request()  # <-- Add this line
         self.reset = False
         self.blackboard.set('pickup reset', False)
-        self.node.get_logger().info("Reseting Pickup")
+
 
 class Place(pt.behaviour.Behaviour):
     DROP_CMD = 4
@@ -1444,13 +1292,12 @@ class Place(pt.behaviour.Behaviour):
 
     def update(self):
         # Check if reset is needed
-
-        self.node.get_logger().info(f"Progress: {self.progress}")
         self.reset = self.blackboard.get('place reset')
         if self.reset:
             self.reset_self()
 
-        # --- logica a stati ---
+        self.node.get_logger().info(f"Progress: {self.progress}")
+
         if self.progress == 0:
             # move to drop position
             self.req.command   = self.DROP_CMD
@@ -1542,6 +1389,7 @@ class Place(pt.behaviour.Behaviour):
         self.reset = False
         self.blackboard.set('place reset', False)
         self.node.get_logger().info("Reseting Place")
+
 
 class Check_Map(pt.behaviour.Behaviour):
     def __init__(self, node):

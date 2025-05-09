@@ -533,24 +533,57 @@ class OccupancyGridPublisher(Node):
             marker.pose.orientation.z = q[2]
             marker.pose.orientation.w = q[3]
 
-            # Marker Colour
-            marker.color.a = 1.0  # Alpha
-            marker.color.r = 1.0  # Red
-            marker.color.g = 0.0
-            marker.color.b = 0.0
+            # # Marker Colour
+            # marker.color.a = 1.0  # Alpha
+            # marker.color.r = 1.0  # Red
+            # marker.color.g = 0.0
+            # marker.color.b = 0.0
 
-            # Scale marker size
-            marker.scale.x = 0.1
-            marker.scale.y = 0.1
-            marker.scale.z = 0.1
+            # # Scale marker size
+            # marker.scale.x = 0.1
+            # marker.scale.y = 0.1
+            # marker.scale.z = 0.1
 
             if obj_type == '1': # Cube
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 1.0  # Red
+                marker.color.g = 0.0
+                marker.color.b = 0.0
+
                 marker.type = marker.CUBE
+                marker.scale.x = 0.1
+                marker.scale.y = 0.11
+                marker.scale.z = 0.1
             elif obj_type == '2': # Sphere
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 0.2  # Puprle
+                marker.color.g = 0.2
+                marker.color.b = 0.8
+
                 marker.type = marker.SPHERE
+                marker.scale.x = 0.1
+                marker.scale.y = 0.1
+                marker.scale.z = 0.1
             elif obj_type == '3': # Plushie
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 0.0  # Green
+                marker.color.g = 1.0
+                marker.color.b = 0.0
+
                 marker.type = marker.CYLINDER
+                marker.scale.x = 0.1
+                marker.scale.y = 0.1
+                marker.scale.z = 0.2
             elif obj_type == 'B': # Box
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 1.0  # 'Black'
+                marker.color.g = 1.0
+                marker.color.b = 1.0
+
                 marker.type = marker.CUBE
                 marker.scale.x = 0.3
                 marker.scale.y = 0.15
