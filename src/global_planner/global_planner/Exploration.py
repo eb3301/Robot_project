@@ -265,6 +265,7 @@ class Sample_Waypoints(pt.behaviour.Behaviour):
             uncovered = [u for u in uncovered if u not in best_covered]
         return self.waypoints
 
+
     def plot_workspace(self):
         '''Plots the workspace boundary and sampled waypoints'''
         if not self.ws:
@@ -309,7 +310,8 @@ class ExploreSamples(pt.behaviour.Behaviour):
     def update(self):
         if self.status == pt.common.Status.INVALID:
             # Get waypoints
-            self.waypoints = self.blackboard.get('waypoints')
+            waypoints = self.blackboard.get('waypoints')
+            self.waypoints = self.sort_waypoints(self, waypoints)
             
             # Initialise sub/pub
             qos = QoSProfile(
@@ -347,16 +349,7 @@ class ExploreSamples(pt.behaviour.Behaviour):
         if self.target is None or self.target_in_occupied:
             self.node.get_logger().info('Picking target.')
             self.target_in_occupied = False
-            if self.first_waypoint: # Ugly fix
-                self.first_waypoint = False 
-                for i, waypoint in enumerate(self.waypoints):
-                    if waypoint[0] > 8.25:
-                        self.target = self.waypoints.pop(i)
-                        break
-                if self.target is None:
-                    self.node.get_logger().info("ERROR. DID NOT SAMPLE A POINT IN THE CORNER :( )")
-            else:
-                self.target = self.waypoints.pop(0) #(x, y)
+            self.target = self.waypoints.pop(0)
             self.blackboard.set('waypoints', self.waypoints) 
             self.pub_goal_marker()
 
@@ -393,6 +386,30 @@ class ExploreSamples(pt.behaviour.Behaviour):
             if grid[gy, gx] > 0:
                 self.node.get_logger().info("Target is in occupied space. Skipping to next sampled waypoint")
                 self.target_in_occupied = True
+
+    def sort_waypoints(self, waypoints):
+        '''Sort the wapoints in trios. Takes the 3 waypoints farthest away from trio'''
+        ref_point = (0, 0)
+        sorted_waypoints = []
+        while len(waypoints) > 2: # We just ignore the last two points
+
+            # Find top 3 waypoints farthest away from reference point
+            distances = np.sqrt((np.array(waypoints)[:, 0] - ref_point[0]) ** 2 + (np.array(waypoints)[:, 1] - ref_point[1]) ** 2)
+            sorted_distances = np.argsort(distances)[::-1] # Sorted largest - smallest
+            top_3_idx = sorted_distances[0:3]
+            top_3_points = [waypoints[idx] for idx in top_3_idx]
+            
+            # Add trio to sorted_waypoints
+            sorted_waypoints.extend(top_3_points)
+
+            # Remove trio from waypoints. Need to be sorted to not shift indices
+            for idx in sorted(top_3_idx, reverse = True):
+                del waypoints[idx]
+
+            # Update reference point
+            ref_point = top_3_points[0]
+
+        return sorted_waypoints
 
     def pub_goal_marker(self, stop = False):
         if stop is True:
