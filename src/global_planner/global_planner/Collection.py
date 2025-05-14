@@ -192,7 +192,7 @@ class Load_Map(pt.behaviour.Behaviour):
         self.done = True
 
         package_share_dir = get_package_share_directory('global_planner')
-        map_path = os.path.join(package_share_dir, 'data', 'map_3.tsv')
+        map_path = os.path.join(package_share_dir, 'data', 'hard_collection.tsv')
 
         if not os.path.exists(map_path):
             print(f"Map file {map_path} not found.")
@@ -412,7 +412,7 @@ class Goto_Target(pt.behaviour.Behaviour):
 
             qualified_candidates = [] # Johan change to closest point
             for point in candidates:
-                free_cells = self.count_free_cells_around(point, radius=5)
+                free_cells = self.count_free_cells_around(point, radius=15)
 
                 if free_cells > max_free_cells:
                     max_free_cells = free_cells
@@ -433,7 +433,7 @@ class Goto_Target(pt.behaviour.Behaviour):
             self.pub_goal_marker()
 
             self.node.get_logger().info(f"Go To Target: Sampled Point. Going to {self.object}")
-            # self.visualise_grid_and_targets()
+            #   self.visualise_grid_and_targets()
 
     def grid_callback(self, msg: OccupancyGrid):
         if self.done:
@@ -682,7 +682,10 @@ class Approach_Object(pt.behaviour.Behaviour):
         self.tf_listener = TransformListener(self.tf_buffer, self.node)
 
         self.node.get_logger().info("Approaching object...")
-     
+
+        self.blackboard.set('reset approach', True)
+
+
     def update(self):
         self.reset = self.blackboard.get('reset approach')
         if self.status == pt.common.Status.INVALID or self.reset != '0':
@@ -953,8 +956,8 @@ class Approach_Object(pt.behaviour.Behaviour):
         if self.theta is None or self.x_obj is None or self.y_obj is None:
             return
 
-        x = self.x_obj - self.x
-        y = self.y_obj - self.y
+        x = self.x_obj - self.x #- 0.005
+        y = self.y_obj - self.y #- 0.02
 
         self.distance_to_target = math.sqrt(x**2 + y**2)
 
@@ -965,7 +968,11 @@ class Approach_Object(pt.behaviour.Behaviour):
         max_vel = wheel_radius * max_factor # m/s
         max_rot = ((wheel_radius / base) / (np.pi/2)) * max_factor # rad/s
         self.node.get_logger().info(f'Distance to target: {self.distance_to_target}')
-        if self.distance_to_target is not None and self.distance_to_target < 0.18: # ----------------------------------------- 
+        if self.obj_class == 'B' or self.obj_class == '3':
+            threshold = 0.24 # 22 without battery
+        else:
+            threshold = 0.20 # 19 without battery
+        if self.distance_to_target is not None and self.distance_to_target < threshold: # ----------------------------------------- 
             twist_msg = Twist()
             self.cmd_vel_pub.publish(twist_msg)
 
@@ -1006,7 +1013,10 @@ class Approach_Object(pt.behaviour.Behaviour):
         angle_to_target = np.arctan2(vector_to_target[1], vector_to_target[0])
 
         # Steering angle is the difference between the vehicle's heading and the angle to the target
-        steering_angle = angle_to_target - current_heading + np.deg2rad(10)
+        if self.obj_class != 'B':
+            steering_angle = angle_to_target - current_heading + np.deg2rad(10)
+        else:
+            steering_angle = angle_to_target - current_heading
 
         # Normalize the steering angle to be in the range of -pi to pi
         steering_angle = (steering_angle + np.pi) % (2 * np.pi) - np.pi
@@ -1123,8 +1133,8 @@ class Pickup(pt.behaviour.Behaviour):
         self.grab_pos_response = None
         self.grab_response = None
 
-        #self.blackboard.set('pickup reset', False) ###############################3
-        #self.blackboard.set('Target_type', '3') ##########################################
+        # self.blackboard.set('pickup reset', False) ###############################3
+        # self.blackboard.set('Target_type', '3') ##########################################
 
     def update(self):
         # Check whether reset is needed

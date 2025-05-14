@@ -32,7 +32,7 @@ class OccupancyGridPublisher(Node):
     SEEN_VALUE = 0
     BORDER_THICKNESS = 0.2
     OBJECT_VALUE = 100
-    OBJECT_INFLATION_RADIUS = 7
+    OBJECT_INFLATION_RADIUS = 10
     OBJECT_INFLATION_VALUE = 80
 
     def __init__(self):
@@ -45,7 +45,7 @@ class OccupancyGridPublisher(Node):
         qos = QoSProfile(
                 reliability=QoSReliabilityPolicy.RELIABLE,  # Ensures message delivery
                 durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  # Keeps the last message for new subscribers
-                depth=10  # Stores up to 10 messages in queue
+                depth=20  # Stores up to 10 messages in queue
                 )
         
         self.objects_pub = self.create_publisher(Marker, '/object_markers', qos)
@@ -94,6 +94,9 @@ class OccupancyGridPublisher(Node):
 
         self.timer = self.create_timer(1.0, self.publish_map)
         #self.grid_update_timer = self.create_timer(0.5, self.update_grid_regularly)
+
+        self.obj_list = []
+
         self.get_logger().info("Occupancy Grid Node Started")
 
     """    def update_grid_regularly(self):
@@ -121,22 +124,44 @@ class OccupancyGridPublisher(Node):
 
     def on_detect_objects_response(self, future, obstacle_value=OBJECT_VALUE, border_value=OBJECT_INFLATION_VALUE, object_inflation_radius=OBJECT_INFLATION_RADIUS):
         """ Callback to handle the response from the detect_objects service. """
+        threshold = self.resolution * 2
         try:
             response = future.result()
 
             # Process the detected objects from the response
             if response.object_types:
-                self.detected_objects = list(zip(response.object_types, response.object_positions))
+                detected_objects = list(zip(response.object_types, response.object_positions))
 
-                for i, (obj_type, obj_pos) in enumerate(self.detected_objects):
+                # Convert flat map to 2D grid for easier manipulation
+                grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
+
+                for i, (obj_type, obj_pos) in enumerate(detected_objects):
+                    for filtered_obj_type, filtered_obj_pos in self.obj_list:
+                        if np.linalg.norm(np.array([[obj_pos.x - filtered_obj_pos.x],[obj_pos.y - filtered_obj_pos.y]])) < threshold:
+                            detected_objects.pop(i)
+                            continue
+
                     if obj_type == 'trash':
-                        self.detected_objects.pop(i)
+                        self.obj_list.append((obj_type, obj_pos))
+                        detected_objects.pop(i)
                         #self.get_logger().info(f"Removed: {i}, type: {obj_type}")
+
                     if not self.obj_polygon.contains(Point(obj_pos.x, obj_pos.y)):
-                        self.detected_objects.pop(i)
+                        self.obj_list.append(('trash', obj_pos))
+                        detected_objects.pop(i)
                         self.get_logger().info(f"Removed a object outside obj_polygon")
 
-                self.publish_objects(self.detected_objects)
+                    obj_x, obj_y = obj_pos.x, obj_pos.y
+
+                    obj_gx = int((obj_x - self.origin_x) / self.resolution)
+                    obj_gy = int((obj_y - self.origin_y) / self.resolution)
+
+                    if grid[obj_gy, obj_gx] >= 90:
+                        self.obj_list.append(('trash', obj_pos))
+                        detected_objects.pop(i)
+
+                self.publish_objects(detected_objects)
+                self.obj_list.extend(detected_objects)
 
                 # Save to map file
                 with open("Generated_map.tsv", "w") as file:  # filter on trash?
@@ -144,8 +169,6 @@ class OccupancyGridPublisher(Node):
                         x, y, z = float(pos.x), float(pos.y), float(pos.z)
                         file.write(f"{obj_type} \t {x:.2f} \t {y:.2f} \t {z:.2f}" + "\n")
 
-                # Convert flat map to 2D grid for easier manipulation
-                grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
 
                 # Parameters
                 inflation_radius = object_inflation_radius  # Solid border thickness in cells
@@ -328,7 +351,7 @@ class OccupancyGridPublisher(Node):
 
         # Distance thresholding relative to the robot's position
         min_distance = 0.4 # Minimum distance, 0.35 enough to remove the arm from the lidar
-        max_distance = 4  # Maximum distance (e.g., 10 meters)
+        max_distance = 2.5  # Maximum distance (e.g., 10 meters)
 
         # Filter points based on distance threshold relative to the robot
         filtered_points = []
@@ -365,17 +388,18 @@ class OccupancyGridPublisher(Node):
             gy = int((point[1] - self.origin_y) / self.resolution)
 
             if 0 <= gx < self.grid_size_x and 0 <= gy < self.grid_size_y:
-                # Clear cells between robot and obstacle using raytracing
-                rr, cc = line(robot_gy, robot_gx, gy, gx)  # (row, col) => (y, x)
 
-                for y, x in list(zip(rr, cc))[:-1]:
-                    if 0 <= x < self.grid_size_x and 0 <= y < self.grid_size_y:
-                        world_x = self.origin_x + x * self.resolution
-                        world_y = self.origin_y + y * self.resolution
+                # # Clear cells between robot and obstacle using raytracing
+                # rr, cc = line(robot_gy, robot_gx, gy, gx)  # (row, col) => (y, x)
 
-                        if self.shrunk_polygon.contains(Point(world_x, world_y)):
-                        #if self.shrunk_polygon.contains_point((world_x, world_y)) : 
-                            grid[y, x] = -1
+                # for y, x in list(zip(rr, cc))[:-1]:
+                #     if 0 <= x < self.grid_size_x and 0 <= y < self.grid_size_y:
+                #         world_x = self.origin_x + x * self.resolution
+                #         world_y = self.origin_y + y * self.resolution
+
+                #         if self.shrunk_polygon.contains(Point(world_x, world_y)):
+                #         #if self.shrunk_polygon.contains_point((world_x, world_y)) : 
+                #             grid[y, x] = -1
 
                 # Mark obstacle cell
                 grid[gy, gx] = obstacle_value
@@ -389,6 +413,10 @@ class OccupancyGridPublisher(Node):
                             if (dx ** 2 + dy ** 2) <= inflation_radius ** 2:
                                 if grid[ny, nx] != obstacle_value:
                                     grid[ny, nx] = inflation_value
+
+        
+
+
 
         # Check if any unexplored cells remain
         unexplored_found = np.any(grid == -1)

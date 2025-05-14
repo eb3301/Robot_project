@@ -37,7 +37,7 @@ class EKF_Algorithm(Node):
         self._tf_broadcaster = TransformBroadcaster(self)
         
         # Broadcast timer
-        #self.broadcast_timer = self.create_timer(1.0, self.broadcast_transform)
+        self.broadcast_timer = self.create_timer(1.0, self.broadcast_transform)
 
         # EKF Parameters
         self.ekf_x = np.array([0.0, 0.0, 0.0]) # Initial state
@@ -52,13 +52,13 @@ class EKF_Algorithm(Node):
 
         # None
         self.yaw_offset = None
-        self.imu_yaw = 0
+        self.imu_yaw = 0.0
 
         # Initialise variables needed for odom-base_link
-        self.x = 0
-        self.y = 0
+        self.x = 0.0
+        self.y = 0.0
         self.t = None
-        self.yaw = 0
+        self.yaw = 0.0
         
         self.get_logger().info("Initialised EKF node...")
 
@@ -76,8 +76,8 @@ class EKF_Algorithm(Node):
         
         # Rosbag -- drove 243cm
         ticks_per_rev = 48 * 64
-        wheel_radius = 0.048 #9.6cm  
-        base = 0.30 # 29.7cm 
+        wheel_radius = 0.0465    #9.6cm  
+        base = 0.312 # 29.7cm 
 
         # Ticks since last message
         delta_ticks_left = msg.delta_encoder_left
@@ -125,7 +125,7 @@ class EKF_Algorithm(Node):
             x, y, yaw = self.ekf_x.flatten()
             self.yaw = self.normalize_angle(yaw)
             self.x, self.y, self.yaw = x, y, yaw # Save for odom-base_link transform
-            self.broadcast_transform()
+            #self.broadcast_transform()
             self.publish_pose(x, y, yaw)
 
 

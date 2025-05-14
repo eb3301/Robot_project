@@ -188,7 +188,7 @@ class Detection(Node):
 
         distances = np.linalg.norm(points[:, :3], axis=1)
         offset = 0.089
-        mask = (distances <= 1) & (distances >= 0.2) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
+        mask = (distances <= 1.5) & (distances >= 0.2) & (points[:, 1] < offset) & (points[:, 1] > offset - 0.3)
         filtered_indices = np.where(mask)[0]
         filtered_points = points[mask]
         filtered_colors = colors[mask]
@@ -297,10 +297,10 @@ class Detection(Node):
             volume = 1000*np.prod(bbox_size)*magn**2
             npoints=cluster_points.shape[0]
 
-            x_lim = 0.2
-            x_min, x_max = -x_lim, x_lim
-            if (bbox_min[0] < x_min or bbox_max[0] > x_max):
-                continue
+            # x_lim = 0.2
+            # x_min, x_max = -x_lim, x_lim
+            # if (bbox_min[0] < x_min or bbox_max[0] > x_max):
+            #     continue
             
             #self.get_logger().info(f"Volume: {volume}, npoints: {npoints}")
 
@@ -331,7 +331,7 @@ class Detection(Node):
             # self.get_logger().info(f"colore brutto: {fluffly_box_color}")
             
            
-            if volume < 0.05 :#and (npoints < 700 and npoints >200):# and (red or green or blue):  # Small objects (cube, sphere)
+            if (volume < 0.05 and volume > 0.0):#and (npoints < 700 and npoints >200):# and (red or green or blue):  # Small objects (cube, sphere)
                 curvatures = []
                 for p in cluster_points:
                     cov_matrix = np.cov(cluster_points.T)
