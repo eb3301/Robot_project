@@ -19,7 +19,10 @@ from tf_transformations import euler_from_quaternion, quaternion_from_euler
 from ament_index_python import get_package_share_directory
 from builtin_interfaces.msg import Duration
 from rclpy.qos import QoSProfile, QoSDurabilityPolicy, QoSReliabilityPolicy
-from collections import deque
+from skimage.draw import line
+from matplotlib.path import Path
+from shapely.geometry import Polygon
+from shapely.geometry import Point
 
 class OccupancyGridPublisher(Node):
     # Constants for grid and object properties
@@ -29,7 +32,7 @@ class OccupancyGridPublisher(Node):
     SEEN_VALUE = 0
     BORDER_THICKNESS = 0.2
     OBJECT_VALUE = 100
-    OBJECT_INFLATION_RADIUS = 7
+    OBJECT_INFLATION_RADIUS = 10
     OBJECT_INFLATION_VALUE = 80
 
     def __init__(self):
@@ -42,24 +45,18 @@ class OccupancyGridPublisher(Node):
         qos = QoSProfile(
                 reliability=QoSReliabilityPolicy.RELIABLE,  # Ensures message delivery
                 durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,  # Keeps the last message for new subscribers
-                depth=10  # Stores up to 10 messages in queue
+                depth=20  # Stores up to 10 messages in queue
                 )
         
         self.objects_pub = self.create_publisher(Marker, '/object_markers', qos)
-
         self.workspace_explored = False  # Initially assume the workspace is not fully explored
 
         # Add service client to call the detect_objects service
         self.detect_objects_client = self.create_client(DetectObjects, 'detect_objects')
-        # Wait for the service to be available
-        # while not self.detect_objects_client.wait_for_service(timeout_sec=1.0):
-        #     self.get_logger().info('DetectObjects service not available, waiting again...')
-        # Add a timer to periodically get the detected objects
         self.timer = self.create_timer(1.0, self.fetch_detected_objects)
         
         # LiDAR Subscribers
         self.subscription = self.create_subscription(PointCloud2, '/lidar', self.lidar_callback, 10)
-        #self.cloud_sub = self.create_subscription(PointCloud2, '/camera/camera/depth/color/points', self.cloud_callback, 10)
         
         # TF Listener
         self.tf_buffer = Buffer()
@@ -72,7 +69,16 @@ class OccupancyGridPublisher(Node):
         package_share_dir = get_package_share_directory('occupancy_grid')
         ws_path = os.path.join(package_share_dir, 'data', 'workspace_3.tsv')
         if os.path.exists(ws_path):
+            
             self.workspace_coordinates = self.read_workspace_coordinates(ws_path)
+            shapely_polygon = Polygon(self.workspace_coordinates)
+            shapely_polygon = Polygon(self.workspace_coordinates)
+            self.workspace_polygon = Path(self.workspace_coordinates)
+            self.shrunk_polygon = shapely_polygon.buffer(-self.BORDER_THICKNESS)
+            self.obj_polygon = shapely_polygon.buffer(-0.04)
+
+            #self.workspace_polygon = Path(self.workspace_coordinates)
+            #self.small_workspace_polygon = Path(list(self.workspace_polygon.buffer(-self.BORDER_THICKNESS).exterior.coords))
         else:
             self.get_logger().error(f"Workspace file {ws_path} not found.")
 
@@ -83,18 +89,19 @@ class OccupancyGridPublisher(Node):
         self.map_data = self.generate_room_map()
         
         # Timer to publish occupancy grid
-        self.marker_timer = self.create_timer(1.0, self.publish_workspace_marker)
-        self.publish_workspace_marker()
+        #self.marker_timer = self.create_timer(1.0, self.publish_workspace_marker)
+        #self.publish_workspace_marker()
 
         self.timer = self.create_timer(1.0, self.publish_map)
-        self.grid_update_timer = self.create_timer(0.5, self.update_grid_regularly)
+        #self.grid_update_timer = self.create_timer(0.5, self.update_grid_regularly)
+
+        self.obj_list = []
+        self.marker_idx = 1
+
         self.get_logger().info("Occupancy Grid Node Started")
 
-        self.scan_history = deque(maxlen=1000)  # Store up to 1000 recent scans
-        self.create_timer(10.0, self.rebuild_occupancy_grid)
-
     def update_grid_regularly(self):
-        """Update the occupancy grid based on the robot's rotation for the "seen" mechanic. """
+        #Update the occupancy grid based on the robot's rotation for the "seen" mechanic.
         try:
             # Get the robot's position and orientation from TF
             robot_transform = self.tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time())
@@ -118,36 +125,92 @@ class OccupancyGridPublisher(Node):
 
     def on_detect_objects_response(self, future, obstacle_value=OBJECT_VALUE, border_value=OBJECT_INFLATION_VALUE, object_inflation_radius=OBJECT_INFLATION_RADIUS):
         """ Callback to handle the response from the detect_objects service. """
+        threshold = self.resolution * 2
         try:
             response = future.result()
 
             # Process the detected objects from the response
             if response.object_types:
-                self.detected_objects = list(zip(response.object_types, response.object_positions))
+                detected_objects = list(zip(response.object_types, response.object_positions))
 
-                for i, (obj_type, obj_pos) in enumerate(self.detected_objects):
+                # Convert flat map to 2D grid
+                grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
+
+                new_obj_list = []
+
+                for obj_type, obj_pos in detected_objects:
+                    too_close = False
+                    to_update_index = None
+
+                    obj_x, obj_y = obj_pos.x, obj_pos.y
+
+                    # Grid coordinate conversion
+                    obj_gx = int((obj_x - self.origin_x) / self.resolution)
+                    obj_gy = int((obj_y - self.origin_y) / self.resolution)
+
+                    # Grid bounds and workspace check
+                    if not (0 <= obj_gx < self.grid_size_x and 0 <= obj_gy < self.grid_size_y):
+                        continue
+
+                    if grid[obj_gy, obj_gx] >= 90:
+                        self.obj_list.append(('obstacle', obj_pos))
+                        continue
+
+                    # Check proximity to existing objects
+                    for i, (filtered_obj_type, filtered_obj_pos) in enumerate(self.obj_list):
+                        distance = np.linalg.norm(np.array([[obj_pos.x - filtered_obj_pos.x], [obj_pos.y - filtered_obj_pos.y]]))
+                        if distance < threshold:
+                            too_close = True
+                            if obj_type != filtered_obj_type and filtered_obj_type != 'obstacle':
+                                to_update_index = i  # Mark for update
+                            break
+
+                    # If it's too close but same type, skip
+                    if too_close and to_update_index is None:
+                        continue
+
+                    # If too close but type changed → update it
+                    if to_update_index is not None:
+                        # Replace old object with updated type
+                        self.get_logger().info(f"Changed class")
+                        self.obj_list[to_update_index] = (obj_type, obj_pos)
+                        new_obj_list.append((obj_type, obj_pos))
+                        continue
+
+                    # Trash check
                     if obj_type == 'trash':
-                        self.detected_objects.pop(i)
-                        self.get_logger().info(f"Removed: {i}, type: {obj_type}")
+                        self.obj_list.append((obj_type, obj_pos))
+                        continue
+
+                    # Check if outside polygon
+                    if not self.obj_polygon.contains(Point(obj_pos.x, obj_pos.y)):
+                        self.obj_list.append(('trash', obj_pos))
+                        self.get_logger().info(f"Removed an object outside obj_polygon")
+                        continue
+
+                    # Valid new object
+                    new_obj_list.append((obj_type, obj_pos))
 
 
-                self.publish_objects(self.detected_objects)
+                # Publish only new, filtered objects
+                self.publish_objects(new_obj_list)
+
+                # Add them to the internal memory
+                self.obj_list.extend(new_obj_list)
+
 
                 # Save to map file
                 with open("Generated_map.tsv", "w") as file:  # filter on trash?
-                    for obj_type, pos in self.detected_objects:
+                    for obj_type, pos in new_obj_list: # Maybe change to new_obj_list insted of the self?
                         x, y, z = float(pos.x), float(pos.y), float(pos.z)
                         file.write(f"{obj_type} \t {x:.2f} \t {y:.2f} \t {z:.2f}" + "\n")
-                
 
-                # Convert flat map to 2D grid for easier manipulation
-                grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
 
                 # Parameters
                 inflation_radius = object_inflation_radius  # Solid border thickness in cells
                 gradient_radius = inflation_radius + 6       # Gradient fade-out radius
 
-                for obj_type, obj_position in self.detected_objects:
+                for obj_type, obj_position in new_obj_list:
                     object_x = obj_position.x
                     object_y = obj_position.y
 
@@ -192,11 +255,6 @@ class OccupancyGridPublisher(Node):
 
         except Exception as e:
             self.get_logger().error(f"Service call failed: {e}")
-
-    # def get_detected_objects_info(self):
-    #     """ Print out the information of detected objects. """
-    #     for i, (obj_type, obj_position) in enumerate(self.detected_objects):
-    #         self.get_logger().info(f"Object {i + 1}: Type: {obj_type}, Position: {obj_position}")
 
     def calculate_grid_size_and_origin(self, coordinates):
         """Calculate grid size and origin based on workspace coordinates."""
@@ -267,20 +325,20 @@ class OccupancyGridPublisher(Node):
         return grid.flatten().tolist()
 
     def lidar_callback(self, msg: PointCloud2):
-        """Process LiDAR scan and store for deferred occupancy grid update."""
+        """ Process LiDAR scan and update the occupancy grid """
 
-        import tf_transformations  # make sure to install this or replace with geometry-based yaw extraction
-
+        # Transformation
         to_frame_rel = 'map'
         from_frame_rel = msg.header.frame_id
+
         time = rclpy.time.Time().from_msg(msg.header.stamp)
 
-        # Try to transform cloud to the 'map' frame
         tf_future = self.tf_buffer.wait_for_transform_async(
             target_frame=to_frame_rel,
             source_frame=from_frame_rel,
             time=time
         )
+
         rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
 
         try:
@@ -289,121 +347,128 @@ class OccupancyGridPublisher(Node):
                 from_frame_rel,
                 time)
         except Exception as ex:
-            self.get_logger().info(f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
+            self.get_logger().info(
+                f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
             return
-
+        
+        # Transform PointCloud2 to the map frame
         cloud_transformed = do_transform_cloud(msg, transform)
 
-        # Get robot pose in map frame
-        base_link_frame = 'base_link'
+        # Get the robot's position in the map frame
+        # Transformation
+        to_frame_rel = 'map'
+        from_frame_rel = 'base_link'
+
+        time = rclpy.time.Time().from_msg(msg.header.stamp)
+
         tf_future = self.tf_buffer.wait_for_transform_async(
             target_frame=to_frame_rel,
-            source_frame=base_link_frame,
+            source_frame=from_frame_rel,
             time=time
         )
+
         rclpy.spin_until_future_complete(self, tf_future, timeout_sec=1)
 
         try:
             robot_transform = self.tf_buffer.lookup_transform(
                 to_frame_rel,
-                base_link_frame,
+                from_frame_rel,
                 time)
         except Exception as ex:
-            self.get_logger().info(f'Could not transform {to_frame_rel} to {base_link_frame}: {ex}')
+            self.get_logger().info(
+                f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
             return
-
+        
         robot_x = robot_transform.transform.translation.x
         robot_y = robot_transform.transform.translation.y
-
-        quat = robot_transform.transform.rotation
-        _, _, robot_yaw = tf_transformations.euler_from_quaternion([quat.x, quat.y, quat.z, quat.w])
-
+            
         # Convert PointCloud2 to numpy array
         points = np.array(list(pc2.read_points(cloud_transformed, field_names=("x", "y"), skip_nans=True)))
 
-        # Filter points based on distance from robot
-        min_distance = 0.4
-        max_distance = 2.5
+        # Distance thresholding relative to the robot's position
+        min_distance = 0.4 # Minimum distance, 0.35 enough to remove the arm from the lidar
+        max_distance = 2.5  # Maximum distance (e.g., 10 meters)
+
+        # Filter points based on distance threshold relative to the robot
         filtered_points = []
-
         for point in points:
+            # Calculate distance from the robot (in the map frame)
             distance = np.sqrt((point[0] - robot_x)**2 + (point[1] - robot_y)**2)
+
+            # Apply the distance thresholding (ignore points too close or too far from the robot)
             if min_distance <= distance <= max_distance:
-                filtered_points.append((point[0], point[1]))
+                filtered_points.append(point)
 
-        # Store scan in history buffer
-        self.scan_history.append({
-            'timestamp': msg.header.stamp,
-            'pose': (robot_x, robot_y, robot_yaw),
-            'points': filtered_points
-        })
+        # Update the occupancy grid with filtered points
+        self.update_occupancy_grid(filtered_points, robot_x=robot_x, robot_y=robot_y)
 
-        self.get_logger().info(f"Stored scan at time {msg.header.stamp.sec}.{msg.header.stamp.nanosec} with {len(filtered_points)} points")
+    def update_occupancy_grid(self, points, robot_x=None, robot_y=None,
+                            inflation_radius=INFLATION_RADIUS,
+                            obstacle_value=OBSTACLE_VALUE,
+                            inflation_value=INFLATION_VALUE):
 
-    def update_occupancy_grid(self, points, inflation_radius=INFLATION_RADIUS, obstacle_value=OBSTACLE_VALUE, inflation_value=INFLATION_VALUE):
-        # Mark free space and obstacles in the occupancy grid
-        grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))  # Use grid_size_y and grid_size_x
-        
-        # Flag to track if any unexplored cells are still present
-        unexplored_found = False
+        if robot_x is None or robot_y is None:
+            self.get_logger().warn("Robot position not provided for occupancy update.")
+            return
 
-        # Convert world coordinates to grid coordinates and apply inflation with opacity
+        # Reshape the map for 2D grid processing
+        grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
+
+        # Convert robot world position to grid coordinates
+        robot_gx = int((robot_x - self.origin_x) / self.resolution)
+        robot_gy = int((robot_y - self.origin_y) / self.resolution)
+
         for point in points:
+            # Convert obstacle world position to grid coordinates
             gx = int((point[0] - self.origin_x) / self.resolution)
             gy = int((point[1] - self.origin_y) / self.resolution)
 
-            if 0 <= gx < self.grid_size_x and 0 <= gy < self.grid_size_y:  # Check against grid_size_x and grid_size_y
-                # Mark the obstacle cell with full opacity
-                grid[gy, gx] = obstacle_value
+            if 0 <= gx < self.grid_size_x and 0 <= gy < self.grid_size_y:
 
-                # Apply inflation by marking surrounding cells as a buffer with lower opacity
+                # Clear cells between robot and obstacle using raytracing
+                rr, cc = line(robot_gy, robot_gx, gy, gx)  # (row, col) => (y, x)
+
+                for y, x in list(zip(rr, cc))[:-1]:
+                    if 0 <= x < self.grid_size_x and 0 <= y < self.grid_size_y:
+                        world_x = self.origin_x + x * self.resolution
+                        world_y = self.origin_y + y * self.resolution
+
+                        if self.shrunk_polygon.contains(Point(world_x, world_y)):
+                        #if self.shrunk_polygon.contains_point((world_x, world_y)) : 
+                            grid[y, x] = -1
+
+                # Mark obstacle cell
+                for dx in [-1, 0, 1]:
+                    for dy in [-1, 0, 1]:
+                        nx, ny = gx + dx, gy + dy
+
+                        # Check if this cell is within bounds
+                        if 0 <= nx < self.grid_size_x and 0 <= ny < self.grid_size_y:
+                            grid[ny, nx] = obstacle_value
+
+                # Inflate obstacle
                 for dx in range(-inflation_radius, inflation_radius + 1):
                     for dy in range(-inflation_radius, inflation_radius + 1):
-                        # Check if the cell is within the grid bounds
                         nx = gx + dx
                         ny = gy + dy
-
-                        # Calculate the squared distance to avoid unnecessary sqrt calculation
-                        if (dx ** 2 + dy ** 2) <= inflation_radius ** 2:
-                            if 0 <= nx < self.grid_size_x and 0 <= ny < self.grid_size_y:  # Check against grid_size_x and grid_size_y
-                                # Avoid overwriting actual obstacle cells with buffer value
+                        if 0 <= nx < self.grid_size_x and 0 <= ny < self.grid_size_y:
+                            if (dx ** 2 + dy ** 2) <= inflation_radius ** 2:
                                 if grid[ny, nx] != obstacle_value:
-                                    grid[ny, nx] = inflation_value  # Mark as buffer/low-opacity
+                                    grid[ny, nx] = inflation_value
 
-        # After processing all points, check if there are still any unexplored cells (-1)
-        unexplored_found = np.any(grid == -1)  # Check if there are any unexplored cells left
+        
 
-        # Update the workspace_explored flag
+
+
+        # Check if any unexplored cells remain
+        unexplored_found = np.any(grid == -1)
         self.workspace_explored = not unexplored_found
 
-        # Update the map data with the inflated grid
+        # Flatten and update map data
         self.map_data = grid.flatten().tolist()
 
-        # Optionally, log if the workspace is fully explored
         if self.workspace_explored:
             self.get_logger().info("The entire workspace has been explored!")
-
-    def clear_occupancy_grid(self):
-        self.map_data = [-1] * (self.grid_size_x * self.grid_size_y)
-
-    def rebuild_occupancy_grid(self):
-        self.get_logger().info("Reuilding Occupancy #########################################################################################################")
-        self.clear_occupancy_grid()
-
-        for entry in self.scan_history:
-            x, y, yaw = entry['pose']
-            points = entry['points']
-
-            cos_yaw = np.cos(yaw)
-            sin_yaw = np.sin(yaw)
-
-            transformed = []
-            for px, py in points:
-                mx = cos_yaw * px - sin_yaw * py + x
-                my = sin_yaw * px + cos_yaw * py + y
-                transformed.append((mx, my))
-
-            self.update_occupancy_grid(transformed)
 
     def mark_area_in_front_of_robot(self, robot_x, robot_y, robot_yaw, length=1.5, width=0.6, seen_value=SEEN_VALUE, cone_angle=np.radians(30)):
         """
@@ -514,13 +579,14 @@ class OccupancyGridPublisher(Node):
 
 
     def publish_objects(self, objects):
-        for idx, (obj_type, pos) in enumerate(objects): 
+        for obj_type, pos in objects:
             marker = Marker()
             marker.header = Header()
             marker.header.stamp = self.get_clock().now().to_msg()
             marker.header.frame_id = 'map'
 
-            marker.id = idx + 1
+            marker.id = self.marker_idx
+            self.marker_idx += 1 # Changed so that all markes will have an own idx
             marker.ns = f'Object Markers'
             marker.lifetime = Duration(sec=10000)  # Keep marker visible for 10 seconds
             marker.action = Marker.ADD
@@ -538,24 +604,46 @@ class OccupancyGridPublisher(Node):
             marker.pose.orientation.z = q[2]
             marker.pose.orientation.w = q[3]
 
-            # Marker Colour
-            marker.color.a = 1.0  # Alpha
-            marker.color.r = 1.0  # Red
-            marker.color.g = 0.0
-            marker.color.b = 0.0
-
-            # Scale marker size
-            marker.scale.x = 0.1
-            marker.scale.y = 0.1
-            marker.scale.z = 0.1
-
             if obj_type == '1': # Cube
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 1.0  # Red
+                marker.color.g = 0.0
+                marker.color.b = 0.0
+
                 marker.type = marker.CUBE
+                marker.scale.x = 0.1
+                marker.scale.y = 0.11
+                marker.scale.z = 0.1
             elif obj_type == '2': # Sphere
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 0.2  # Puprle
+                marker.color.g = 0.2
+                marker.color.b = 0.8
+
                 marker.type = marker.SPHERE
+                marker.scale.x = 0.1
+                marker.scale.y = 0.1
+                marker.scale.z = 0.1
             elif obj_type == '3': # Plushie
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 0.0  # Green
+                marker.color.g = 1.0
+                marker.color.b = 0.0
+
                 marker.type = marker.CYLINDER
+                marker.scale.x = 0.1
+                marker.scale.y = 0.1
+                marker.scale.z = 0.2
             elif obj_type == 'B': # Box
+                # Marker Colour
+                marker.color.a = 1.0  # Alpha
+                marker.color.r = 1.0  # 'Black'
+                marker.color.g = 1.0
+                marker.color.b = 1.0
+
                 marker.type = marker.CUBE
                 marker.scale.x = 0.3
                 marker.scale.y = 0.15

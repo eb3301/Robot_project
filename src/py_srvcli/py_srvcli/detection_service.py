@@ -302,7 +302,7 @@ class Detection(Node):
             # if (bbox_min[0] < x_min or bbox_max[0] > x_max):
             #     continue
             
-            #self.get_logger().info(f"Volume: {volume}, npoints: {npoints}")
+            # self.get_logger().info(f"Volume: {volume}, npoints: {npoints}")
 
             obj_type = "trash"  # Default category
 
@@ -330,7 +330,6 @@ class Detection(Node):
             fluffly_box_color = ((np.mean(hsv_array[:,0])) < 0.2 or (np.mean(hsv_array[:,0]) > 0.05)) #or (np.mean(hsv_array[:,1]) < 0.3)
             # self.get_logger().info(f"colore brutto: {fluffly_box_color}")
             
-           
             if (volume < 0.05 and volume > 0.0):#and (npoints < 700 and npoints >200):# and (red or green or blue):  # Small objects (cube, sphere)
                 curvatures = []
                 for p in cluster_points:
@@ -342,8 +341,8 @@ class Detection(Node):
                     curvatures.append(curvature)
 
                 avg_curvature = np.mean(curvatures) if curvatures else 0
-                #self.get_logger().info(f"curvature {avg_curvature}")
-                if avg_curvature < 0.05:
+                # self.get_logger().info(f"curvature {avg_curvature}")
+                if avg_curvature < 0.04:
                     obj_type = "1" # Cube
                 else:
                     obj_type = "2" # Sphere

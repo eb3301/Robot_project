@@ -96,25 +96,26 @@ class OccupancyGridPublisher(Node):
         #self.grid_update_timer = self.create_timer(0.5, self.update_grid_regularly)
 
         self.obj_list = []
+        self.marker_idx = 1
 
         self.get_logger().info("Occupancy Grid Node Started")
 
-    """    def update_grid_regularly(self):
-            #Update the occupancy grid based on the robot's rotation for the "seen" mechanic.
-            try:
-                # Get the robot's position and orientation from TF
-                robot_transform = self.tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time())
-                robot_x = robot_transform.transform.translation.x
-                robot_y = robot_transform.transform.translation.y
-                robot_quaternion = robot_transform.transform.rotation
+    def update_grid_regularly(self):
+        #Update the occupancy grid based on the robot's rotation for the "seen" mechanic.
+        try:
+            # Get the robot's position and orientation from TF
+            robot_transform = self.tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time())
+            robot_x = robot_transform.transform.translation.x
+            robot_y = robot_transform.transform.translation.y
+            robot_quaternion = robot_transform.transform.rotation
 
-                # Convert quaternion to Euler angles (roll, pitch, yaw)
-                _, _, robot_yaw = euler_from_quaternion([robot_quaternion.x, robot_quaternion.y, robot_quaternion.z, robot_quaternion.w])
+            # Convert quaternion to Euler angles (roll, pitch, yaw)
+            _, _, robot_yaw = euler_from_quaternion([robot_quaternion.x, robot_quaternion.y, robot_quaternion.z, robot_quaternion.w])
 
-                self.mark_area_in_front_of_robot(robot_x, robot_y, robot_yaw)
+            self.mark_area_in_front_of_robot(robot_x, robot_y, robot_yaw)
 
-            except Exception as e:
-                self.get_logger().warn(f"Failed to update grid regularly: {e}")"""
+        except Exception as e:
+            self.get_logger().warn(f"Failed to update grid regularly: {e}")
 
     def fetch_detected_objects(self):
         """ Call the 'detect_objects' service to get the detected objects. """
@@ -128,53 +129,85 @@ class OccupancyGridPublisher(Node):
         try:
             response = future.result()
 
-            # Process the detected objects from the response
             if response.object_types:
                 detected_objects = list(zip(response.object_types, response.object_positions))
-
-                # Convert flat map to 2D grid for easier manipulation
                 grid = np.array(self.map_data).reshape((self.grid_size_y, self.grid_size_x))
+                new_obj_list = []
 
-                for i, (obj_type, obj_pos) in enumerate(detected_objects):
-                    for filtered_obj_type, filtered_obj_pos in self.obj_list:
-                        if np.linalg.norm(np.array([[obj_pos.x - filtered_obj_pos.x],[obj_pos.y - filtered_obj_pos.y]])) < threshold:
-                            detected_objects.pop(i)
-                            continue
-
-                    if obj_type == 'trash':
-                        self.obj_list.append((obj_type, obj_pos))
-                        detected_objects.pop(i)
-                        #self.get_logger().info(f"Removed: {i}, type: {obj_type}")
-
-                    if not self.obj_polygon.contains(Point(obj_pos.x, obj_pos.y)):
-                        self.obj_list.append(('trash', obj_pos))
-                        detected_objects.pop(i)
-                        self.get_logger().info(f"Removed a object outside obj_polygon")
+                for obj_type, obj_pos in detected_objects:
+                    too_close = False
+                    to_update_index = None
 
                     obj_x, obj_y = obj_pos.x, obj_pos.y
 
+                    # Grid coordinate conversion
                     obj_gx = int((obj_x - self.origin_x) / self.resolution)
                     obj_gy = int((obj_y - self.origin_y) / self.resolution)
 
-                    if grid[obj_gy, obj_gx] >= 90:
+                    # Grid bounds check
+                    if not (0 <= obj_gx < self.grid_size_x and 0 <= obj_gy < self.grid_size_y):
+                        continue
+
+                    proximity_radius = 2 # Cells around the object to scan
+                    near_obstacle = False
+                    for dx in range(-proximity_radius, proximity_radius + 1):
+                        for dy in range(-proximity_radius, proximity_radius + 1):
+                            nx, ny = obj_gx + dx, obj_gy + dy
+                            if 0 <= nx < self.grid_size_x and 0 <= ny < self.grid_size_y:
+                                if grid[ny, nx] >= 90:
+                                    near_obstacle = True
+                                    break
+                        if near_obstacle:
+                            break
+
+                    if near_obstacle:
+                        # self.get_logger().info(f"Skipping object at ({obj_x:.2f}, {obj_y:.2f}) — too close to obstacle.")
+                        continue
+
+                    # Check proximity to existing objects
+                    for i, (filtered_obj_type, filtered_obj_pos) in enumerate(self.obj_list):
+                        distance = np.linalg.norm(np.array([[obj_pos.x - filtered_obj_pos.x], [obj_pos.y - filtered_obj_pos.y]]))
+                        if distance < threshold:
+                            too_close = True
+                            if obj_type != filtered_obj_type and filtered_obj_type != 'obstacle':
+                                to_update_index = i
+                            break
+
+                    if too_close and to_update_index is None:
+                        continue
+
+                    if to_update_index is not None:
+                        self.get_logger().info(f"Changed class")
+                        self.obj_list[to_update_index] = (obj_type, obj_pos)
+                        new_obj_list.append((obj_type, obj_pos))
+                        continue
+
+                    if obj_type == 'trash':
+                        self.obj_list.append((obj_type, obj_pos))
+                        continue
+
+                    if not self.obj_polygon.contains(Point(obj_pos.x, obj_pos.y)):
                         self.obj_list.append(('trash', obj_pos))
-                        detected_objects.pop(i)
+                        self.get_logger().info(f"Removed an object outside obj_polygon")
+                        continue
 
-                self.publish_objects(detected_objects)
-                self.obj_list.extend(detected_objects)
+                    new_obj_list.append((obj_type, obj_pos))
 
-                # Save to map file
-                with open("Generated_map.tsv", "w") as file:  # filter on trash?
-                    for obj_type, pos in self.detected_objects:
-                        x, y, z = float(pos.x), float(pos.y), float(pos.z)
-                        file.write(f"{obj_type} \t {x:.2f} \t {y:.2f} \t {z:.2f}" + "\n")
+                self.publish_objects(new_obj_list)
+                self.obj_list.extend(new_obj_list)
 
+                with open("Generated_map.tsv", "w") as file:
+                    for obj_type, pos in self.obj_list:
+                        if obj_type != 'trash':
+                            if obj_type != 'obstacle':
+                                x, y, z = float(pos.x), float(pos.y), float(pos.z)
+                                file.write(f"{obj_type} \t {x:.2f} \t {y:.2f} \t {z:.2f}\n")
 
                 # Parameters
-                inflation_radius = object_inflation_radius  # Solid border thickness in cells
-                gradient_radius = inflation_radius + 6       # Gradient fade-out radius
+                inflation_radius = object_inflation_radius
+                gradient_radius = inflation_radius + 6
 
-                for obj_type, obj_position in self.detected_objects:
+                for obj_type, obj_position in new_obj_list:
                     object_x = obj_position.x
                     object_y = obj_position.y
 
@@ -182,10 +215,8 @@ class OccupancyGridPublisher(Node):
                     gy = int((object_y - self.origin_y) / self.resolution)
 
                     if 0 <= gx < self.grid_size_x and 0 <= gy < self.grid_size_y:
-                        # Mark the object cell as occupied
                         grid[gy, gx] = obstacle_value
 
-                        # Inflate border with gradient
                         for dx in range(-gradient_radius, gradient_radius + 1):
                             for dy in range(-gradient_radius, gradient_radius + 1):
                                 nx = gx + dx
@@ -197,25 +228,15 @@ class OccupancyGridPublisher(Node):
 
                                     if distance <= gradient_radius:
                                         if distance <= inflation_radius:
-                                            # Solid inflation
                                             if grid[ny, nx] != obstacle_value:
                                                 grid[ny, nx] = border_value
                                         else:
-                                            # Gradient inflation
                                             decay = 1 - ((distance - inflation_radius) / (gradient_radius - inflation_radius))
                                             value = int(border_value * decay)
                                             if grid[ny, nx] < value:
-                                                grid[ny, nx] = value  # Only update if value is stronger
+                                                grid[ny, nx] = value
 
-                        # self.get_logger().info(f"Object {obj_type} placed at grid cell ({gx}, {gy})")
-
-                # Update the flattened map data
                 self.map_data = grid.flatten().tolist()
-
-                # self.get_detected_objects_info()
-
-            # else:
-            #     self.get_logger().warn("No objects detected.")
 
         except Exception as e:
             self.get_logger().error(f"Service call failed: {e}")
@@ -389,20 +410,26 @@ class OccupancyGridPublisher(Node):
 
             if 0 <= gx < self.grid_size_x and 0 <= gy < self.grid_size_y:
 
-                # # Clear cells between robot and obstacle using raytracing
-                # rr, cc = line(robot_gy, robot_gx, gy, gx)  # (row, col) => (y, x)
+                # Clear cells between robot and obstacle using raytracing
+                rr, cc = line(robot_gy, robot_gx, gy, gx)  # (row, col) => (y, x)
 
-                # for y, x in list(zip(rr, cc))[:-1]:
-                #     if 0 <= x < self.grid_size_x and 0 <= y < self.grid_size_y:
-                #         world_x = self.origin_x + x * self.resolution
-                #         world_y = self.origin_y + y * self.resolution
+                for y, x in list(zip(rr, cc))[:-1]:
+                    if 0 <= x < self.grid_size_x and 0 <= y < self.grid_size_y:
+                        world_x = self.origin_x + x * self.resolution
+                        world_y = self.origin_y + y * self.resolution
 
-                #         if self.shrunk_polygon.contains(Point(world_x, world_y)):
-                #         #if self.shrunk_polygon.contains_point((world_x, world_y)) : 
-                #             grid[y, x] = -1
+                        if self.shrunk_polygon.contains(Point(world_x, world_y)):
+                        #if self.shrunk_polygon.contains_point((world_x, world_y)) : 
+                            grid[y, x] = -1
 
                 # Mark obstacle cell
-                grid[gy, gx] = obstacle_value
+                for dx in [-1, 0, 1]:
+                    for dy in [-1, 0, 1]:
+                        nx, ny = gx + dx, gy + dy
+
+                        # Check if this cell is within bounds
+                        if 0 <= nx < self.grid_size_x and 0 <= ny < self.grid_size_y:
+                            grid[ny, nx] = obstacle_value
 
                 # Inflate obstacle
                 for dx in range(-inflation_radius, inflation_radius + 1):
@@ -537,13 +564,14 @@ class OccupancyGridPublisher(Node):
 
 
     def publish_objects(self, objects):
-        for idx, (obj_type, pos) in enumerate(objects): 
+        for obj_type, pos in objects:
             marker = Marker()
             marker.header = Header()
             marker.header.stamp = self.get_clock().now().to_msg()
             marker.header.frame_id = 'map'
 
-            marker.id = idx + 1
+            marker.id = self.marker_idx
+            self.marker_idx += 1 # Changed so that all markes will have an own idx
             marker.ns = f'Object Markers'
             marker.lifetime = Duration(sec=10000)  # Keep marker visible for 10 seconds
             marker.action = Marker.ADD
@@ -560,17 +588,6 @@ class OccupancyGridPublisher(Node):
             marker.pose.orientation.y = q[1]
             marker.pose.orientation.z = q[2]
             marker.pose.orientation.w = q[3]
-
-            # # Marker Colour
-            # marker.color.a = 1.0  # Alpha
-            # marker.color.r = 1.0  # Red
-            # marker.color.g = 0.0
-            # marker.color.b = 0.0
-
-            # # Scale marker size
-            # marker.scale.x = 0.1
-            # marker.scale.y = 0.1
-            # marker.scale.z = 0.1
 
             if obj_type == '1': # Cube
                 # Marker Colour
