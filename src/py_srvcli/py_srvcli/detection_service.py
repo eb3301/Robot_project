@@ -345,7 +345,7 @@ class Detection(Node):
                 if avg_curvature < 0.04:
                     obj_type = "1" # Cube
                 else:
-                    obj_type = "2" # Sphere
+                    obj_type = "1" # Sphere
 
             elif (volume < 0.5 and volume > 0.1): #and (npoints > 900 and npoints < 1500):
                 obj_type = "3" # Fluffy animal
@@ -361,7 +361,7 @@ class Detection(Node):
 
             for obj in self.ObjectList:
                 obj_position = obj["position"]
-                if np.linalg.norm(new_obj_position - obj_position) < 0.2:
+                if np.linalg.norm(new_obj_position - obj_position) < 0.25:
                     obj["labels"].append(obj_type)
                     found_match = True
                     break
